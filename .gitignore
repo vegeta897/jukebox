@@ -47,3 +47,4 @@ org.eclipse.*
 
 # Custom
 CFDump.php
+db.class.php
