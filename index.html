@@ -12,25 +12,67 @@
         <p>Sup yall.</p>
     </header>
     <section ng-cloak ng-controller="Main">
-        <h3 class="muted" ng-show="playing.title">NOW PLAYING</h3>
-        <h2 ng-show="playing.title" ng-bind="playing.title"></h2>
+        <div class="now-playing">
+            <h3 class="muted" ng-show="playing.title">NOW PLAYING</h3>
+            <h2 ng-show="playing.title" ng-bind="playing.title"></h2>
+        </div>
         <div id="player"></div>
         <div class="video-selection">
             <h2>Pick a video</h2>
-            <ul>
-                <li ng-repeat="video in videoSelection" ng-click="playVideo($index)">
-                    <span class="muted">{{ $index+1 }}.</span> {{ video.title }}
-                </li>
-            </ul>
+            <table>
+                <tr ng-repeat="video in videoSelection">
+                    <td class="title" ng-click="playVideo($index)">
+                        <span class="muted">{{ $index+1 }}. </span>
+                        <span ng-show="video.artist && !video.title">{{ video.artist }} - </span>
+                        <span ng-show="video.track && !video.title">{{ video.track }}</span>
+                        <span ng-show="video.title">{{ video.title }}</span>
+                        <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
+                    </td>
+                    <td class="control">
+                        <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank">Open</a>
+                    </td>
+                </tr>
+            </table>
         </div>
         <div>
             <form ng-submit="addVideo()">
-                <fieldset>
+                <fieldset ng-hide="enableBatch">
                     <legend>Add a video</legend>
-                    <div class="field"><label for="url">URL or Video ID*</label><input name="url" id="url" ng-model="add_url" type="text" placeholder="TgoAgYR4584" size="24" required /></div>
-                    <div class="field"><label for="name">Name</label><input name="name" id="name" ng-model="add_name" type="text" placeholder="The Flashbulb - Undiscovered Colors" size="36" maxlength="255" /></div>
+                    <div class="field">
+                        <label for="url">*URL or video ID</label>
+                        <input name="url" id="url" ng-model="add_url" ng-change="parseURL()" type="text" placeholder="TgoAgYR4584" size="46" required ng-disabled="addingVideo" />
+                        <span ng-hide="add_valid || !add_url" class="invalid">Invalid URL or ID</span>
+                        <span ng-show="add_valid && add_url.length > 0" class="valid" ng-bind="parsedIds[0]"></span>
+                    </div>
+                    <div class="field">
+                        <label for="name">Name</label>
+                        <input name="name" id="name" ng-model="add_name" type="text" placeholder="Plaid - Two Rooms" size="46" maxlength="120" ng-disabled="addingVideo" ng-change="parseTitle()" />
+                    </div>
+                    <div class="field">
+                        <label for="artist">Artist</label>
+                        <input name="artist" id="artist" ng-model="add_artist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />
+                    </div>
+                    <div class="field">
+                        <label for="track">Track</label>
+                        <input name="track" id="track" ng-model="add_track" type="text" placeholder="Two Rooms" size="30" maxlength="120" ng-disabled="addingVideo" />
+                    </div>
                 </fieldset>
-                <input type="submit" value="Add Video">
+                <fieldset ng-show="enableBatch">
+                    <legend>Add a list of videos</legend>
+                    <div class="field field-large">
+                        <label for="url-batch">URL or ID list</label>
+                        <textarea name="url-batch" id="url-batch" ng-model="batchList" ng-change="parseURL()" ng-disabled="addingVideo"></textarea>
+                        <span ng-hide="add_valid || !batchList" class="invalid">Invalid URL or ID</span>
+                        <span ng-show="add_valid && batchList.length > 0" class="valid">List validated</span>
+                    </div>
+                    <div class="field">
+                        <label for="batch_artist">Artist</label>
+                        <input name="batch_artist" id="batch_artist" ng-model="batchArtist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />
+                        <span class="hint muted">If applicable</span>
+                    </div>
+                </fieldset>
+                <input type="submit" value="Add Video" ng-disabled="addingVideo">
+                <input type="checkbox" disabled name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
     </section>

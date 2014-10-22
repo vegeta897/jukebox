@@ -49,8 +49,8 @@ Application.Services.factory("services", ['$http', function($http) {
     obj.getVideos = function(){
         return $http.get(serviceBase + 'videos');
     };
-    obj.addVideo = function (videoId, title, addedBy) {
-        return $http.post(serviceBase + 'addVideo', {video_id:videoId,title:title,added_by:addedBy}).then(function (results) {
+    obj.addVideo = function (videoId, title, artist, track, addedBy) {
+        return $http.post(serviceBase + 'addVideo', {video_id:videoId,title:title,artist:artist,track:track,added_by:addedBy}).then(function (results) {
             return results;
         });
     };
@@ -65,18 +65,50 @@ Application.Services.factory("services", ['$http', function($http) {
 
 Application.Controllers.controller('Main', function($scope, services) {
     console.log('Main controller initialized');
+    
     services.getVideos().then(function(data) {
         console.log(data);
         $scope.videoSelection = data.data;
     });
+    
+    $scope.parseURL = function() {
+        if(!$scope.add_url && !$scope.batchList) { return; }
+        var urls = $scope.enableBatch ? $scope.batchList.split('\n') : [$scope.add_url];
+        console.log(urls);
+        $scope.parsedIds = [];
+        for(var i = 0, il = urls.length; i < il; i++) {
+            var re = /(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/ig;
+            var parsed = urls[i].replace(re,'$1').replace('http://','').replace('https://','').substr(0,11);
+            if(parsed.length == 11) {
+                $scope.parsedIds.push(parsed);
+                $scope.add_valid = true;
+            } else {
+                $scope.add_valid = false;
+                break;
+            }
+        }
+    };
+    
+    $scope.parseTitle = function() {
+        $scope.add_artist = $scope.add_name.split(' - ')[0];
+        $scope.add_track = $scope.add_name.split(' - ')[1];
+    };
+    
     $scope.addVideo = function() {
-        console.log('adding',$scope.add_url, $scope.add_name);
-        if($scope.add_url && $scope.add_name) {
-            services.addVideo($scope.add_url, $scope.add_name, 'vegeta897').then(function(results) {
+        console.log('adding',$scope.parsedId, $scope.add_name);
+        $scope.addingVideo = true;
+        if($scope.parsedIds.length == 1 && $scope.add_name) {
+            services.addVideo($scope.parsedIds[0], $scope.add_name, $scope.add_artist, $scope.add_track, 'vegeta897').then(function(results) {
                 console.log(results);
+                $scope.parsedIds = [];
+                delete $scope.add_url;
+                delete $scope.add_name;
+                delete $scope.batchList;
+                $scope.addingVideo = false;
             });
         }
     };
+    
     $scope.playVideo = function(index) {
         $scope.playing = $scope.videoSelection[index];
         console.log('playing',$scope.playing.title);

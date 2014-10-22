@@ -59,7 +59,7 @@
 				$this->response('',406);
 			}
 			$query="
-                SELECT v.id, v.video_id, v.title, v.add_date, v.added_by 
+                SELECT v.id, v.video_id, v.title, v.artist, v.track, v.add_date, v.added_by 
                 FROM videos v ORDER BY RAND() LIMIT 6;
             ";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
@@ -81,8 +81,10 @@
             $video = json_decode(file_get_contents("php://input"),true);
             $video_id = $video["video_id"];
             $title = $video["title"];
+            $artist = $video["artist"];
+            $track = $video["track"];
             $added_by = $video["added_by"];
-            $query = "INSERT INTO videos(id,video_id,title,add_date,added_by) VALUES(NULL,'".$video_id."','".$title."',NOW(),'".$added_by."')";
+            $query = "INSERT INTO videos(id,video_id,title,artist,track,add_date,added_by) VALUES(NULL,'".$video_id."','".$title."','".$artist."','".$track."',NOW(),'".$added_by."')";
             if(!empty($video)){
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
                 $success = array('status' => "Success", "msg" => "Video Added Successfully.", "data" => $video);
