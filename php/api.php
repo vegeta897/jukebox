@@ -80,9 +80,21 @@
 
             $video = json_decode(file_get_contents("php://input"),true);
             $video_id = $video["video_id"];
-            $title = $video["title"];
-            $artist = $video["artist"];
-            $track = $video["track"];
+            $content = file_get_contents("http://youtube.com/get_video_info?video_id=".$video_id);
+            parse_str($content, $retrieved_info);
+            $title = array_key_exists("title",$video) ? $video["title"] : $retrieved_info["title"];
+            if(array_key_exists("artist",$video)) {
+                $artist = $video["artist"];
+            } else {
+                $exploded = explode(" - ",$title,2);
+                $artist = $exploded[0];
+            }
+            if(array_key_exists("track",$video)) {
+                $track = $video["track"];
+            } else {
+                $exploded = explode(" - ",$title,2);
+                $track = $exploded[1];
+            }
             $added_by = $video["added_by"];
             $query = "INSERT INTO videos(id,video_id,title,artist,track,add_date,added_by) VALUES(NULL,'".$video_id."','".$title."','".$artist."','".$track."',NOW(),'".$added_by."')";
             if(!empty($video)){

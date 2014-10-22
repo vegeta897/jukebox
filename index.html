@@ -19,6 +19,7 @@
         <div id="player"></div>
         <div class="video-selection">
             <h2>Pick a video</h2>
+            <span class="muted" ng-hide="videoSelection">loading videos...</span>
             <table>
                 <tr ng-repeat="video in videoSelection">
                     <td class="title" ng-click="playVideo($index)">
@@ -65,11 +66,12 @@
                         <span ng-hide="add_valid || !batchList" class="invalid">Invalid URL or ID</span>
                         <span ng-show="add_valid && batchList.length > 0" class="valid">List validated</span>
                     </div>
-                    <div class="field">
-                        <label for="batch_artist">Artist</label>
-                        <input name="batch_artist" id="batch_artist" ng-model="batchArtist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />
-                        <span class="hint muted">If applicable</span>
-                    </div>
+                    <!-- Not bothering with this because video title will be retrieved when adding each video -->
+                    <!--<div class="field">-->
+                        <!--<label for="batch_artist">Artist</label>-->
+                        <!--<input name="batch_artist" id="batch_artist" ng-model="batchArtist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />-->
+                        <!--<span class="hint muted">If applicable</span>-->
+                    <!--</div>-->
                 </fieldset>
                 <input type="submit" value="Add Video" ng-disabled="addingVideo">
                 <input type="checkbox" disabled name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
@@ -80,7 +82,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="js/vendor/localStorageModule.js"></script>
-    <script src='https://cdn.firebase.com/js/client/1.0.15/firebase.js'></script> <!-- Firebase -->
+    <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script> <!-- Firebase -->
     <script src="app/app.js"></script>
     <script src="app/jukebox.js"></script>
     <script src="js/vendor/seedrandom.js"></script>

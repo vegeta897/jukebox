@@ -13,7 +13,6 @@ p { margin-bottom: 1em; }
 #player { width: 100%; height: 390px; }
 .video-selection { margin: 32px; }
 .video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; border-spacing: 6px; }
-.video-selection table tr { border: 4px solid; }
 .video-selection table tr td { padding: 4px 1% 6px; }
 .video-selection table tr td:hover { cursor: pointer; }
 .video-selection table tr td.control { text-align: center; }

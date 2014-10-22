@@ -1,20 +1,22 @@
 'use strict';
 
-// 2. This code loads the IFrame Player API code asynchronously.
+var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
+
+// 1. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
 
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// 3. This function creates an <iframe> (and YouTube player)
+// 2. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '390',
         width: '640',
-        videoId: 'M7lc1UVf-VE',
+        //videoId: 'M7lc1UVf-VE',
         events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange
@@ -22,20 +24,20 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-// 4. The API will call this function when the video player is ready.
+// 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
     //event.target.playVideo();
     event.target.unMute(); event.target.setVolume(100);
 }
 
-// 5. The API calls this function when the player's state changes.
+// 4. The API calls this function when the player's state changes.
 //    The function indicates that when playing a video (state=1),
 //    the player should play for six seconds and then stop.
-var done = false;
+var playing = false;
 function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.PLAYING && !done) {
-        setTimeout(stopVideo, 6000);
-        done = true;
+    if (event.data == YT.PlayerState.PLAYING && !playing) {
+        //setTimeout(stopVideo, 6000);
+        playing = true;
     }
 }
 function stopVideo() {
@@ -95,24 +97,25 @@ Application.Controllers.controller('Main', function($scope, services) {
     };
     
     $scope.addVideo = function() {
+        if($scope.parsedIds.length != 1 || !$scope.add_valid) { return; }
         console.log('adding',$scope.parsedId, $scope.add_name);
         $scope.addingVideo = true;
-        if($scope.parsedIds.length == 1 && $scope.add_name) {
-            services.addVideo($scope.parsedIds[0], $scope.add_name, $scope.add_artist, $scope.add_track, 'vegeta897').then(function(results) {
-                console.log(results);
-                $scope.parsedIds = [];
-                delete $scope.add_url;
-                delete $scope.add_name;
-                delete $scope.batchList;
-                $scope.addingVideo = false;
-            });
-        }
+        services.addVideo($scope.parsedIds[0], $scope.add_name, $scope.add_artist, $scope.add_track, 'vegeta897').then(function(results) {
+            console.log(results);
+            $scope.parsedIds = [];
+            delete $scope.add_url;
+            delete $scope.add_name;
+            delete $scope.batchList;
+            $scope.addingVideo = false;
+        });
     };
     
     $scope.playVideo = function(index) {
         $scope.playing = $scope.videoSelection[index];
+        $scope.playing.startTime = new Date().getTime();
         console.log('playing',$scope.playing.title);
         player.loadVideoById($scope.playing.video_id);
         player.unMute(); player.setVolume(100);
+        fireRef.child('playing').set(angular.copy($scope.playing));
     }
 });
