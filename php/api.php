@@ -54,11 +54,14 @@
 			$this->response($this->json($error), 400);
 		}
 		
-		private function videos(){	
+		private function videos(){ // Get 6 random videos
 			if($this->get_request_method() != "GET"){
 				$this->response('',406);
 			}
-			$query="SELECT distinct v.id, v.video_id, v.title, v.add_date, v.added_by FROM videos v order by v.id";
+			$query="
+                SELECT v.id, v.video_id, v.title, v.add_date, v.added_by 
+                FROM videos v ORDER BY RAND() LIMIT 6;
+            ";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
 			if($r->num_rows > 0){
@@ -70,6 +73,23 @@
 			}
 			$this->response('',204);	// If no records "No Content" status
 		}
+        private function addVideo(){
+            if($this->get_request_method() != "POST"){
+                $this->response('',406);
+            }
+
+            $video = json_decode(file_get_contents("php://input"),true);
+            $video_id = $video["video_id"];
+            $title = $video["title"];
+            $added_by = $video["added_by"];
+            $query = "INSERT INTO videos(id,video_id,title,add_date,added_by) VALUES(NULL,'".$video_id."','".$title."',NOW(),'".$added_by."')";
+            if(!empty($video)){
+                $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
+                $success = array('status' => "Success", "msg" => "Video Added Successfully.", "data" => $video);
+                $this->response($this->json($success),200);
+            }else
+                $this->response('',204);	//"No Content" status
+        }
 		private function deleteVideo(){
 			if($this->get_request_method() != "DELETE"){
 				$this->response('',406);

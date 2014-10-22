@@ -6,8 +6,12 @@ h1 { font-size: 3em; color: #d3d9b9; text-shadow: none; -webkit-text-fill-color:
     background: -webkit-linear-gradient(left top, #f2f5eb, #d3d9b9);
     background: -o-linear-gradient(transparent, transparent); -webkit-background-clip: text; }
 
-h2 { color: #f2f5eb; }
+h2, legend { color: #f2f5eb; }
 
 strong { font-weight: bold; }
+.muted { color: #858a71; }
 p:not(.error) strong, dt strong { color: #f2f5eb; }
 .error { font-size: 3em; color: #FF7055; }
+
+.video-selection ul li { border-color: #222; }
+.video-selection ul li:hover { background: #4e5150; }

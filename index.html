@@ -9,12 +9,30 @@
 <body>
     <header>
         <h1>Jukebox</h1>
+        <p>Sup yall.</p>
     </header>
     <section ng-cloak ng-controller="Main">
-        <p>
-            Sup yall.
-        </p>
+        <h3 class="muted" ng-show="playing.title">NOW PLAYING</h3>
+        <h2 ng-show="playing.title" ng-bind="playing.title"></h2>
         <div id="player"></div>
+        <div class="video-selection">
+            <h2>Pick a video</h2>
+            <ul>
+                <li ng-repeat="video in videoSelection" ng-click="playVideo($index)">
+                    <span class="muted">{{ $index+1 }}.</span> {{ video.title }}
+                </li>
+            </ul>
+        </div>
+        <div>
+            <form ng-submit="addVideo()">
+                <fieldset>
+                    <legend>Add a video</legend>
+                    <div class="field"><label for="url">URL or Video ID*</label><input name="url" id="url" ng-model="add_url" type="text" placeholder="TgoAgYR4584" size="24" required /></div>
+                    <div class="field"><label for="name">Name</label><input name="name" id="name" ng-model="add_name" type="text" placeholder="The Flashbulb - Undiscovered Colors" size="36" maxlength="255" /></div>
+                </fieldset>
+                <input type="submit" value="Add Video">
+            </form>
+        </div>
     </section>
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
