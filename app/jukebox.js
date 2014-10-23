@@ -11,6 +11,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
+    console.log('player ready');
     player = new YT.Player('player', {
         height: '390',
         width: '640',
@@ -25,7 +26,7 @@ function onYouTubeIframeAPIReady() {
 // 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
     //event.target.playVideo();
-    event.target.unMute(); event.target.setVolume(100);
+    event.target.unMute();
 }
 
 // 4. The API calls this function when the player's state changes.
@@ -33,7 +34,7 @@ function onPlayerReady(event) {
 //    the player should play for six seconds and then stop.
 var playing = false;
 function onPlayerStateChange(event) {
-    if(event.data == YT.PlayerState.PAUSED) {
+    if(event.data == YT.PlayerState.PAUSED && playing) {
         player.playVideo();
     }
     if (event.data == YT.PlayerState.PLAYING && !playing) {
@@ -43,12 +44,10 @@ function onPlayerStateChange(event) {
 }
 function stopVideo() {
     player.stopVideo();
-    //player.loadVideoById('TgoAgYR4584');
-    //player.unMute(); player.setVolume(100);
 }
 
 function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
-    if(utc.hasOwnProperty('stamp')) return utc;
+    if(!utc || utc.hasOwnProperty('stamp')) return utc;
     var sec = parseInt(utc.substring(utc.indexOf('M')+1,utc.indexOf('S')));
     var min = parseInt(utc.substring(2,utc.indexOf('M')));
     var stamp = utc.substring(2,utc.indexOf('S')).replace('M',':').split(':');
@@ -75,13 +74,15 @@ Application.Services.factory("services", ['$http', function($http) {
 }]);
 
 
-Application.Controllers.controller('Main', function($scope, services, localStorageService) {
+Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService) {
     console.log('Main controller initialized');
     
     var username = localStorageService.get('username');
     var passcode = localStorageService.get('passcode');
+    var volume = localStorageService.get('volume');
     $scope.username = username; $scope.passcode = passcode;
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
+    var init = false, fireBusy = false, resumeTime = 0, voting;
     
     $scope.login = function() {
         if(!$scope.username || !$scope.passcode) return;
@@ -92,7 +93,7 @@ Application.Controllers.controller('Main', function($scope, services, localStora
             var fireUser = fireRef.child('users/'+username);
             var lastOnlineRef = fireUser.child('lastOnline');
             var fireAuths = fireRef.child('auths');
-            fireAuths.child(auth.uid).set(passcode);
+            fireAuths.child(auth.uid).set({username:username,passcode:passcode});
             var connectedRef = new Firebase('https://jukebox897.firebaseio.com/.info/connected');
             connectedRef.on('value', function(snap) {
                 if (snap.val() === true) {
@@ -119,14 +120,6 @@ Application.Controllers.controller('Main', function($scope, services, localStora
         }
     };
     
-    services.getVideos().then(function(data) {
-        console.log('Videos retrieved',data);
-        for(var d = 0, dl = data.data.length; d < dl; d++) {
-            data.data[d].duration = parseUTCtime(data.data[d].duration);
-        }
-        $scope.videoSelection = data.data;
-        fireRef.child('selection').set(angular.copy($scope.videoSelection));
-    });
     
     $scope.parseURL = function() {
         if(!$scope.add_url && !$scope.batchList) { return; }
@@ -170,16 +163,81 @@ Application.Controllers.controller('Main', function($scope, services, localStora
         $scope.playing = $scope.videoSelection[index];
         $scope.playing.startTime = new Date().getTime();
         console.log('playing',$scope.playing);
-        player.loadVideoById($scope.playing.video_id);
+        player.loadVideoById($scope.playing.video_id,0,'large');
         fireRef.child('playing').set(angular.copy($scope.playing));
         delete $scope.videoSelection;
         fireRef.child('selection').remove();
     };
     
-    setInterval(function() { // Run every second
-        player.unMute(); player.setVolume(player.getVolume() == 0 ? 100 : player.getVolume()); // Unmute
-    },1000);
+    $scope.becomeDJ = function() {
+        $scope.dj = username;
+        fireRef.child('dj').set(username);
+    };
+
+    var getVideos = function() {
+        fireBusy = true;
+        console.log('video close to ending or ended');
+        // 30 seconds til end of video, get a new video list
+        services.getVideos().then(function(data) {
+            console.log('Videos retrieved',data.data);
+            if(data.data.length != 6) { return; }
+            for(var d = 0, dl = data.data.length; d < dl; d++) {
+                data.data[d].duration = parseUTCtime(data.data[d].duration);
+            }
+            $scope.videoSelection = data.data;
+            fireRef.child('selection').set(angular.copy($scope.videoSelection));
+            fireBusy = false; voting = true;
+            $timeout(function(){});
+        });
+    };
     
+    var interval = function() {
+        if(!init && player && player.hasOwnProperty('loadVideoById')) {
+            init = true;
+            console.log('Player initialized');
+            fireRef.once('value', function(snap) {
+                $scope.dj = snap.val().dj;
+                $scope.videoSelection = snap.val().selection;
+                $scope.playing = snap.val().playing;
+                if($scope.playing) {
+                    var startTime = parseInt((new Date().getTime()-$scope.playing.startTime)/1000);
+                    console.log('starting video',startTime,'seconds in');
+                    resumeTime = startTime;
+                    startTime = startTime > $scope.playing.duration.totalSec ? 0 : startTime;
+                    player.loadVideoById($scope.playing.video_id,startTime,'large');
+                }
+                if($scope.dj && !snap.val().users[$scope.dj].hasOwnProperty('connections')) {
+                    $scope.dj = ''; fireRef.child('dj').remove();
+                }
+                $timeout(function(){});
+            });
+        }
+        if(init && playing && $scope.playing) {
+            player.setVolume(volume);
+            if(player.isMuted()) player.unMute();
+            player.setVolume(player.getVolume() == 0 ? 100 : player.getVolume()); // Unmute
+            localStorageService.set('volume',parseInt(player.getVolume()));
+            if(fireBusy || $scope.dj != username) return; // If already talking to firebase, don't try again
+            // DJ responsibilities
+            var elapsed = player.getCurrentTime() + resumeTime;
+            if(elapsed + 30 > $scope.playing.duration.totalSec && !voting) {
+                getVideos();
+            } else { // Video not expired or close to being over, remove selection list
+                console.log('video still goin');
+                fireRef.child('selection').remove();
+            }
+            if(elapsed > $scope.playing.duration.totalSec) { // Video expired
+                console.log('video expired');
+                delete $scope.playing;
+                fireRef.child('playing').remove();
+            }
+        }
+        if($scope.dj == username && !$scope.playing && !$scope.videoSelection) {
+            getVideos(); // Get video list have none and nothing playing
+        }
+        $timeout(function(){});
+    };
+    setInterval(interval,500);
 });
 
 Application.Filters.filter('capitalize', function() {

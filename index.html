@@ -41,12 +41,13 @@
             </table>
         </div>
         <div class="now-playing" ng-show="playing">
-            <h3 class="muted" ng-show="playing.title">NOW PLAYING</h3>
-            <h2 ng-show="playing.title" ng-bind="playing.title"></h2>
+            <h3 class="muted">NOW PLAYING</h3>
+            <h2 ng-bind="playing.title"></h2>
         </div>
         <p class="message" ng-class="message.type" ng-bind="message.text"></p>
         <div class="dj">
-            
+            <p ng-show="dj"><span class="muted">Current DJ: </span>{{ dj }}</p>
+            <button ng-hide="dj || !auth" ng-click="becomeDJ()">Become DJ</button>
         </div>
         <div class="add-video" ng-show="auth">
             <form ng-submit="addVideo()">

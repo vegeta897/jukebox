@@ -15,7 +15,6 @@ header form { padding-left: 340px; padding-top: 24px; }
 header form fieldset { float: left; }
 header form input[type="text"] { margin-right: 8px; height: 18px; }
 header form button { float: left; width: 66px; height: 24px; }
-.now-playing { padding: 20px 0; }
 #player { width: 100%; height: 390px; }
 .video-selection { margin: 32px 0; }
 .video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; }
@@ -23,6 +22,9 @@ header form button { float: left; width: 66px; height: 24px; }
 .video-selection table tr td:hover { cursor: pointer; }
 .video-selection table tr td.control { text-align: center; }
 .video-selection table tr td.control a { text-decoration: none; font-size: 0.8em; }
+.now-playing { padding: 20px 0 0; }
+p.message { text-align: center; margin-bottom: 0; }
+.dj { margin: 16px; text-align: center; }
 .add-video form { margin: 12px 0 32px 32px; }
 .add-video legend { text-align: center; margin-bottom: 10px; padding-right: 32px; font-size: 1.5em; }
 .field { height: 24px; margin-bottom: 6px; clear: both; }
@@ -35,6 +37,5 @@ header form button { float: left; width: 66px; height: 24px; }
 .add-video button { float: left; margin-left: 130px; }
 .add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
-p.message { text-align: center; margin-bottom: 0; }
 
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }
