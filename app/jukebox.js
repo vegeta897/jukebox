@@ -82,7 +82,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var volume = localStorageService.get('volume');
     $scope.username = username; $scope.passcode = passcode;
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
-    var init = false, fireBusy = false, resumeTime = 0, voting;
+    var init = false, fireBusy = false, voting;
     
     $scope.login = function() {
         if(!$scope.username || !$scope.passcode) return;
@@ -202,7 +202,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if($scope.playing) {
                     var startTime = parseInt((new Date().getTime()-$scope.playing.startTime)/1000);
                     console.log('starting video',startTime,'seconds in');
-                    resumeTime = startTime;
                     startTime = startTime > $scope.playing.duration.totalSec ? 0 : startTime;
                     player.loadVideoById($scope.playing.video_id,startTime,'large');
                 }
@@ -219,7 +218,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             localStorageService.set('volume',parseInt(player.getVolume()));
             if(fireBusy || $scope.dj != username) return; // If already talking to firebase, don't try again
             // DJ responsibilities
-            var elapsed = player.getCurrentTime() + resumeTime;
+            var elapsed = parseInt((new Date().getTime() - $scope.playing.startTime)/1000);
             if(elapsed + 30 > $scope.playing.duration.totalSec && !voting) {
                 getVideos();
             } else { // Video not expired or close to being over, remove selection list
