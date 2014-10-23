@@ -76,5 +76,4 @@
 			header("HTTP/1.1 ".$this->_code." ".$this->get_status_message());
 			header("Content-Type:".$this->_content_type);
 		}
-	}	
-?>
+	}

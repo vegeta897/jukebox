@@ -6,24 +6,29 @@
     <link href="css/layout.css" media="screen" rel="stylesheet"/>
     <link href="css/theme.css" media="screen" rel="stylesheet"/>
 </head>
-<body>
+<body ng-cloak ng-controller="Main">
     <header>
         <h1>Jukebox</h1>
         <p>Sup yall.</p>
+        <form ng-submit="login()" ng-hide="auth">
+            <fieldset>
+                <input type="text" name="username" id="username" ng-model="username" size="10" placeholder="username" />
+                <input type="text" name="passcode" id="passcode" ng-model="passcode" size="10" placeholder="passcode" />
+            </fieldset>
+            <button type="submit"><span>Log In</span></button>
+        </form>
+        <p ng-show="auth">{{ username }}</p>
     </header>
-    <section ng-cloak ng-controller="Main">
-        <div class="now-playing">
-            <h3 class="muted" ng-show="playing.title">NOW PLAYING</h3>
-            <h2 ng-show="playing.title" ng-bind="playing.title"></h2>
-        </div>
+    <section>
         <div id="player"></div>
-        <div class="video-selection">
-            <h2>Pick a video</h2>
+        <div class="video-selection" ng-show="videoSelection">
+            <h2 ng-show="auth">Pick a video</h2>
             <span class="muted" ng-hide="videoSelection">loading videos...</span>
             <table>
                 <tr ng-repeat="video in videoSelection">
+                    <td class="muted">{{ $index+1 }}.</td>
+                    <td>{{ video.duration.stamp }}</td>
                     <td class="title" ng-click="playVideo($index)">
-                        <span class="muted">{{ $index+1 }}. </span>
                         <span ng-show="video.artist && !video.title">{{ video.artist }} - </span>
                         <span ng-show="video.track && !video.title">{{ video.track }}</span>
                         <span ng-show="video.title">{{ video.title }}</span>
@@ -35,7 +40,15 @@
                 </tr>
             </table>
         </div>
-        <div>
+        <div class="now-playing" ng-show="playing">
+            <h3 class="muted" ng-show="playing.title">NOW PLAYING</h3>
+            <h2 ng-show="playing.title" ng-bind="playing.title"></h2>
+        </div>
+        <p class="message" ng-class="message.type" ng-bind="message.text"></p>
+        <div class="dj">
+            
+        </div>
+        <div class="add-video" ng-show="auth">
             <form ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">
                     <legend>Add a video</legend>
@@ -45,10 +58,10 @@
                         <span ng-hide="add_valid || !add_url" class="invalid">Invalid URL or ID</span>
                         <span ng-show="add_valid && add_url.length > 0" class="valid" ng-bind="parsedIds[0]"></span>
                     </div>
-                    <div class="field">
-                        <label for="name">Name</label>
-                        <input name="name" id="name" ng-model="add_name" type="text" placeholder="Plaid - Two Rooms" size="46" maxlength="120" ng-disabled="addingVideo" ng-change="parseTitle()" />
-                    </div>
+                    <!--<div class="field">-->
+                        <!--<label for="name">Name</label>-->
+                        <!--<input name="name" id="name" ng-model="add_name" type="text" placeholder="Plaid - Two Rooms" size="46" maxlength="120" ng-disabled="addingVideo" ng-change="parseTitle()" />-->
+                    <!--</div>-->
                     <div class="field">
                         <label for="artist">Artist</label>
                         <input name="artist" id="artist" ng-model="add_artist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />
@@ -73,7 +86,7 @@
                         <!--<span class="hint muted">If applicable</span>-->
                     <!--</div>-->
                 </fieldset>
-                <input type="submit" value="Add Video" ng-disabled="addingVideo">
+                <button type="submit" ng-disabled="addingVideo">Add Video</button>
                 <input type="checkbox" disabled name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>

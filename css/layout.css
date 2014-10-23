@@ -2,32 +2,39 @@
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
 
 body { width: 640px; margin: 0 auto; }
-header { width: 100%; }
+header { width: 100%; height: 80px; }
 h1 { padding: 10px 0; float: left; }
-header p { float: left; margin: 30px 0 0 12px; }
+header h1 + p { float: left; margin: 30px 0 0 12px; }
+header p:last-child { float: right; margin-top: 30px; }
 h2 { text-align: center; margin-bottom: 10px; font-size: 1.5em; }
 h3 { text-align: center; margin-bottom: 6px; font-size: 1.1em; }
 dl dt { line-height: 1.2em; }
 p { margin-bottom: 1em; }
-.now-playing { height: 60px; clear: both; }
+form input[type="text"] { padding-left: 4px; }
+header form { padding-left: 340px; padding-top: 24px; }
+header form fieldset { float: left; }
+header form input[type="text"] { margin-right: 8px; height: 18px; }
+header form button { float: left; width: 66px; height: 24px; }
+.now-playing { padding: 20px 0; }
 #player { width: 100%; height: 390px; }
-.video-selection { margin: 32px; }
-.video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; border-spacing: 6px; }
-.video-selection table tr td { padding: 4px 1% 6px; }
+.video-selection { margin: 32px 0; }
+.video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; }
+.video-selection table tr td { padding: 10px 6px; }
 .video-selection table tr td:hover { cursor: pointer; }
 .video-selection table tr td.control { text-align: center; }
 .video-selection table tr td.control a { text-decoration: none; font-size: 0.8em; }
-form { margin: 32px 0 32px 32px; }
-legend { text-align: center; margin-bottom: 10px; padding-right: 32px; font-size: 1.5em; }
+.add-video form { margin: 12px 0 32px 32px; }
+.add-video legend { text-align: center; margin-bottom: 10px; padding-right: 32px; font-size: 1.5em; }
 .field { height: 24px; margin-bottom: 6px; clear: both; }
 .field-large { height: 72px; }
-textarea { width: 349px; height: 64px; resize: none; }
-fieldset label { display: block; float: left; width: 120px; padding: 3px 10px 0 0; text-align: right; }
-input { float: left; }
+.add-video textarea { width: 349px; height: 64px; resize: none; }
+.add-video fieldset label { display: block; float: left; width: 120px; padding: 3px 10px 0 0; text-align: right; }
+.add-video input { float: left; }
 .field .valid, .field .invalid, .field .hint { margin-left: 8px; line-height: 20px; }
 .field .valid, .field .invalid { font-weight: bold; }
-input[type="submit"] { margin-left: 130px; }
-input[type="checkbox"] { margin-left: 10px; margin-top: 4px; }
-input[type="checkbox"] + label { top: 3px; position: relative; }
+.add-video button { float: left; margin-left: 130px; }
+.add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; }
+.add-video input[type="checkbox"] + label { top: 3px; position: relative; }
+p.message { text-align: center; margin-bottom: 0; }
 
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }

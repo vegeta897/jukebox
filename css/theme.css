@@ -6,16 +6,27 @@ h1 { font-size: 3em; color: #d3d9b9; text-shadow: none; -webkit-text-fill-color:
     background: -webkit-linear-gradient(left top, #f2f5eb, #d3d9b9);
     background: -o-linear-gradient(transparent, transparent); -webkit-background-clip: text; }
 
+input[type="text"] { background: #bbb; }
+button { background: #20aa22; color: white; border: none; transition: all 0.3s; padding: 3px 10px; }
+button:hover { background: #1e8020; }
+
+header p:last-child { color: #858a71; }
+
 h2, legend { color: #f2f5eb; }
 
 strong { font-weight: bold; }
 .muted { color: #858a71; }
 p:not(.error) strong, dt strong { color: #f2f5eb; }
-.error { font-size: 3em; color: #FF7055; }
 
 .video-selection table tr { border-color: #222; }
-.video-selection table tr td:hover { background: #4e5150; }
+.video-selection table tr td { transition: all 0.1s; }
+.video-selection table tr:hover { background: #4e5150; color: white; }
 .video-selection table tr td.control:hover a { color: #f2f5eb; }
 
-.field .valid { color: #20aa22; }
-.field .invalid { color: #aa1313; }
+.field .valid, p.message.success { color: #20aa22; }
+.field .invalid, p.message.error { color: #c60a09; }
+
+::-webkit-input-placeholder { color: #777; }
+:-moz-placeholder { color: #777; }
+::-moz-placeholder { color: #777; }
+:-ms-input-placeholder { color: #777; }
