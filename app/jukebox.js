@@ -235,7 +235,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.forceVote = function() {
-        fireRef.child('playing/startTime').set(new Date().getTime() - 60000);
+        fireRef.child('playing/startTime').set(new Date().getTime() - ($scope.playing.duration.totalSec - 60000));
     };
     
     var interval = function() {
