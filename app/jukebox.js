@@ -190,13 +190,17 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.auth || $scope.dj != username) return;
         var winner = { index: 0, votes: 0 };
         for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
+            console.log('contender:',i,countProperties($scope.videoSelection[i].votes));
             if(countProperties($scope.videoSelection[i].votes) > winner.votes) {
+                console.log('contender overtook');
                 winner.index =  i; winner.votes = $scope.videoSelection[i].votes;
             } else if(countProperties($scope.videoSelection[i].votes) == winner.votes) {
+                console.log('contender tied');
                 winner.index = flip() ? i : winner.index;
             }
+            
         }
-        console.log('winner chosen:',winner.index);
+        console.log('winner chosen:',winner);
         var play = $scope.videoSelection[winner.index];
         play.startTime = new Date().getTime();
         fireRef.child('playing').set(angular.copy(play));
