@@ -261,10 +261,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.voteTimeLeft = Math.max(0,parseInt((voteEnd - new Date().getTime())/1000));
         }
         if(init && playing && $scope.playing) {
-            player.setVolume(volume);
+            //player.setVolume(volume);
             //if(player.isMuted()) player.unMute();
             //player.setVolume(player.getVolume() == 0 ? 100 : player.getVolume()); // Unmute
-            localStorageService.set('volume',parseInt(player.getVolume()));
+            //localStorageService.set('volume',parseInt(player.getVolume()));
             if(!gettingVideos && $scope.dj == username) { // If already getting videos, don't try again
                 // DJ responsibilities
                 var elapsed = parseInt((new Date().getTime() - $scope.playing.startTime) / 1000);
