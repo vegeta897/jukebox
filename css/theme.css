@@ -29,6 +29,7 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .field .valid, p.message.success { color: #20aa22; }
 .field .invalid, p.message.error { color: #c60a09; }
 
+.listeners h2 { color: #DEFF7C; }
 .listener { color: #DEFF7C; }
 .listener i { color: #D8DBCD; }
 
