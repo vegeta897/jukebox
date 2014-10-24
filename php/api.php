@@ -35,10 +35,7 @@
 				$this->response('',406);
 			}
             $current_id = $this->_request['current_id'];
-			$query="
-                SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by 
-                FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY RAND() LIMIT 6;
-            ";
+			$query="SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY RAND() LIMIT 6;";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
 			if($r->num_rows > 0){
@@ -83,8 +80,7 @@
                 $insert_values = $insert_values.$pre."('".$value->id."','".$title."','".$artist."','".$track."','".$duration."',NOW(),'".$added_by."','".$embeddable."')";
                 $array_index++;
             }
-            $query = "INSERT INTO videos(video_id,title,artist,track,duration,add_date,added_by,embeddable)
-                  VALUES$insert_values;";
+            $query = "INSERT INTO videos(video_id,title,artist,track,duration,add_date,added_by,embeddable) VALUES$insert_values;";
             if(!empty($video)){
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
                 $success = array('status' => "Success", "msg" => "Video Added Successfully.", "data" => $content);
