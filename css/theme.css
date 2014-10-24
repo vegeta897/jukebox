@@ -18,6 +18,8 @@ strong { font-weight: bold; }
 .muted { color: #858a71; }
 p:not(.error) strong, dt strong { color: #f2f5eb; }
 
+.now-playing h2 { color: #DEFF7C; }
+
 .video-selection table tr { border-color: #222; }
 .video-selection table tr td { transition: all 0.1s; }
 .video-selection table tr:hover { background: #4e5150; color: white; }

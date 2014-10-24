@@ -34,11 +34,10 @@
 			if($this->get_request_method() != "GET"){
 				$this->response('',406);
 			}
-            $current_id = json_decode(file_get_contents("php://input"),true);
-            $current_id = $current_id["current_id"];
+            $current_id = $this->_request['current_id'];
 			$query="
                 SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by 
-                FROM videos v WHERE v.video_id <> '$current_id' ORDER BY RAND() LIMIT 6;
+                FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY RAND() LIMIT 6;
             ";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
@@ -56,26 +55,36 @@
                 $this->response('',406);
             }
             $video = json_decode(file_get_contents("php://input"),true);
-            $video_id = $video["video_id"];
-            $content = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatus&id=".$video_id."&key=".DB::YT_API_KEY));
-            $embeddable = $content->items[0]->status->embeddable; // Do not add this video if it's not embeddable
-            $title = mysql_real_escape_string($content->items[0]->snippet->title);
-            $duration = $content->items[0]->contentDetails->duration;
-            if(array_key_exists("artist",$video)) {
-                $artist = $video["artist"];
-            } else {
-                $exploded = explode(" - ",$title,2);
-                $artist = $exploded[0];
+            $video_ids = $video["video_ids"];
+            $content = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatus&id=".$video_ids."&key=".DB::YT_API_KEY));
+            $insert_values = "";
+            $message = "";
+            $array_index = 0;
+
+            foreach ($content->items as $value) {
+                $message = $message."hello".$value->status->embeddable."end";
+                $embeddable = $value->status->embeddable ? "true" : "false";
+                $title = mysql_real_escape_string($value->snippet->title);
+                $duration = $value->contentDetails->duration;
+                if(array_key_exists("artist",$video)) {
+                    $artist = $video["artist"];
+                } else {
+                    $exploded = explode(" - ",$title,2);
+                    $artist = $exploded[0];
+                }
+                if(array_key_exists("track",$video)) {
+                    $track = $video["track"];
+                } else {
+                    $exploded = explode(" - ",$title,2);
+                    $track = $exploded[1];
+                }
+                $added_by = mysql_real_escape_string($video["added_by"]);
+                $pre = $array_index == 0 ? "" : ",";
+                $insert_values = $insert_values.$pre."(NULL,'".$value->id."','".$title."','".$artist."','".$track."','".$duration."',NOW(),'".$added_by."','".$embeddable."')";
+                $array_index++;
             }
-            if(array_key_exists("track",$video)) {
-                $track = $video["track"];
-            } else {
-                $exploded = explode(" - ",$title,2);
-                $track = $exploded[1];
-            }
-            $added_by = mysql_real_escape_string($video["added_by"]);
-            $query = "INSERT INTO videos(id,video_id,title,artist,track,duration,add_date,added_by)
-                  VALUES(NULL,'$video_id', '$title', '$artist', '$track', '$duration', NOW(), '$added_by')";
+            $query = "INSERT INTO videos(id,video_id,title,artist,track,duration,add_date,added_by,embeddable)
+                  VALUES$insert_values;";
             if(!empty($video)){
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
                 $success = array('status' => "Success", "msg" => "Video Added Successfully.", "data" => $content);

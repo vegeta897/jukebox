@@ -28,6 +28,7 @@
         <div class="video-selection" ng-show="videoSelection">
             <h2 ng-show="auth">Pick a video</h2>
             <span class="muted" ng-hide="videoSelection">loading videos...</span>
+            <div class="vote-timer"><span class="muted">Time Left:</span> {{ voteTimeLeft }}</div>
             <table>
                 <tr ng-repeat="video in videoSelection">
                     <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>
@@ -58,7 +59,7 @@
                     <legend>Add a video</legend>
                     <div class="field">
                         <label for="url">*URL or video ID</label>
-                        <input name="url" id="url" ng-model="add_url" ng-change="parseURL()" type="text" placeholder="TgoAgYR4584" size="46" required ng-disabled="addingVideo" />
+                        <input name="url" id="url" ng-model="add_url" ng-change="parseURL()" type="text" placeholder="TgoAgYR4584" size="46" ng-required="!enableBatch" ng-disabled="addingVideo" />
                         <span ng-hide="add_valid || !add_url" class="invalid">Invalid URL or ID</span>
                         <span ng-show="add_valid && add_url.length > 0" class="valid" ng-bind="parsedIds[0]"></span>
                     </div>
@@ -79,7 +80,7 @@
                     <legend>Add a list of videos</legend>
                     <div class="field field-large">
                         <label for="url-batch">URL or ID list</label>
-                        <textarea name="url-batch" id="url-batch" ng-model="batchList" ng-change="parseURL()" ng-disabled="addingVideo"></textarea>
+                        <textarea name="url-batch" id="url-batch" ng-model="batchList" ng-change="parseURL()" ng-disabled="addingVideo" ng-required="enableBatch"></textarea>
                         <span ng-hide="add_valid || !batchList" class="invalid">Invalid URL or ID</span>
                         <span ng-show="add_valid && batchList.length > 0" class="valid">List validated</span>
                     </div>
@@ -91,7 +92,7 @@
                     <!--</div>-->
                 </fieldset>
                 <button type="submit" ng-disabled="addingVideo">Add Video</button>
-                <input type="checkbox" disabled name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
+                <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
     </section>
