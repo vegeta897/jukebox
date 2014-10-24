@@ -21,18 +21,25 @@
     </header>
     <section>
         <div id="player"></div>
+        <div class="now-playing" ng-show="playing">
+            <h3 class="muted">NOW PLAYING</h3>
+            <h2 ng-bind="playing.title"></h2>
+        </div>
         <div class="video-selection" ng-show="videoSelection">
             <h2 ng-show="auth">Pick a video</h2>
             <span class="muted" ng-hide="videoSelection">loading videos...</span>
             <table>
                 <tr ng-repeat="video in videoSelection">
-                    <td class="muted">{{ $index+1 }}.</td>
-                    <td>{{ video.duration.stamp }}</td>
-                    <td class="title" ng-click="playVideo($index)">
+                    <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>
+                    <td ng-click="vote($index)">{{ video.duration.stamp }}</td>
+                    <td class="title" ng-click="vote($index)">
                         <span ng-show="video.artist && !video.title">{{ video.artist }} - </span>
                         <span ng-show="video.track && !video.title">{{ video.track }}</span>
                         <span ng-show="video.title">{{ video.title }}</span>
                         <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
+                    </td>
+                    <td class="votes">
+                        <div class="vote-icon" ng-repeat="vote in video.votes"></div>
                     </td>
                     <td class="control">
                         <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank">Open</a>
@@ -40,15 +47,11 @@
                 </tr>
             </table>
         </div>
-        <div class="now-playing" ng-show="playing">
-            <h3 class="muted">NOW PLAYING</h3>
-            <h2 ng-bind="playing.title"></h2>
-        </div>
-        <p class="message" ng-class="message.type" ng-bind="message.text"></p>
         <div class="dj">
             <p ng-show="dj"><span class="muted">Current DJ: </span>{{ dj }}</p>
             <button ng-hide="dj || !auth" ng-click="becomeDJ()">Become DJ</button>
         </div>
+        <p class="message" ng-class="message.type" ng-bind="message.text"></p>
         <div class="add-video" ng-show="auth">
             <form ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">

@@ -55,10 +55,16 @@ function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
     return { totalSec: (min*60 + sec), min: min, sec: sec, stamp: stamp };
 }
 
+function countProperties(obj) { // Return number of properties an object has
+    var count = 0; for(var key in obj) { if(!obj.hasOwnProperty(key)) { continue; } count++; } return count; 
+}
+
+function flip() { return Math.random() > 0.5; } // Flip a coin
+
 Application.Services.factory("services", ['$http', function($http) {
     var serviceBase = 'php/', obj = {};
-    obj.getVideos = function(){
-        return $http.get(serviceBase + 'videos');
+    obj.getVideos = function(currentID){
+        return $http.get(serviceBase + 'videos', {current_id:currentID});
     };
     obj.addVideo = function (videoId, artist, track, addedBy) {
         return $http.post(serviceBase + 'addVideo', {video_id:videoId,artist:artist,track:track,added_by:addedBy}).then(function (results) {
@@ -82,7 +88,23 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var volume = localStorageService.get('volume');
     $scope.username = username; $scope.passcode = passcode;
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
-    var init = false, fireBusy = false, voting;
+    var init = false, gettingVideos = false, voting;
+    
+    var onVideoChange = function(snap) {
+        if(snap.val() == null) { delete $scope.playing; return; }
+        console.log('playing update',snap.val());
+        if(snap.val().video_id != $scope.playing.video_id) { // If video changed, load it
+            console.log('video changed');
+            player.loadVideoById(snap.val().video_id,0,'large');
+        }
+        $scope.playing = snap.val();
+    };
+    
+    var onSelectionChange = function(snap) {
+        if(snap.val() == null) { delete $scope.videoSelection; return; }
+        $scope.videoSelection = snap.val();
+        console.log('video selection updated');
+    };
     
     $scope.login = function() {
         if(!$scope.username || !$scope.passcode) return;
@@ -119,7 +141,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             });
         }
     };
-    
     
     $scope.parseURL = function() {
         if(!$scope.add_url && !$scope.batchList) { return; }
@@ -158,15 +179,29 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
     };
     
-    $scope.playVideo = function(index) {
-        if(!$scope.auth) return;
-        $scope.playing = $scope.videoSelection[index];
-        $scope.playing.startTime = new Date().getTime();
-        console.log('playing',$scope.playing);
-        player.loadVideoById($scope.playing.video_id,0,'large');
-        fireRef.child('playing').set(angular.copy($scope.playing));
-        delete $scope.videoSelection;
+    var playVideo = function() { // Tally votes and pick the video with the most
+        if(!$scope.auth || $scope.dj != username) return;
+        var winner = { index: 0, votes: 0 };
+        for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
+            if(countProperties($scope.videoSelection[i].votes) > winner.votes) {
+                winner.index =  i; winner.votes = $scope.videoSelection[i].votes;
+            } else if(countProperties($scope.videoSelection[i].votes) == winner.votes) {
+                winner.index = flip() ? i : winner.index;
+            }
+        }
+        console.log('winner chosen:',winner.index);
+        var play = $scope.videoSelection[winner.index];
+        play.startTime = new Date().getTime();
+        fireRef.child('playing').set(angular.copy(play));
         fireRef.child('selection').remove();
+        voting = false;
+    };
+    
+    $scope.vote = function(index) {
+        if(!$scope.auth) return;
+        for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
+            fireRef.child('selection/'+i+'/votes/'+username).set(i == index ? true : null);
+        }
     };
     
     $scope.becomeDJ = function() {
@@ -175,10 +210,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     var getVideos = function() {
-        fireBusy = true;
-        console.log('video close to ending or ended');
+        voting = true;
+        gettingVideos = true;
         // 30 seconds til end of video, get a new video list
-        services.getVideos().then(function(data) {
+        var currentID = $scope.playing ? $scope.playing.video_id : '';
+        services.getVideos(currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
             if(data.data.length != 6) { return; }
             for(var d = 0, dl = data.data.length; d < dl; d++) {
@@ -186,7 +222,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             }
             $scope.videoSelection = data.data;
             fireRef.child('selection').set(angular.copy($scope.videoSelection));
-            fireBusy = false; voting = true;
+            gettingVideos = false;
             $timeout(function(){});
         });
     };
@@ -202,12 +238,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if($scope.playing) {
                     var startTime = parseInt((new Date().getTime()-$scope.playing.startTime)/1000);
                     console.log('starting video',startTime,'seconds in');
-                    startTime = startTime > $scope.playing.duration.totalSec ? 0 : startTime;
-                    player.loadVideoById($scope.playing.video_id,startTime,'large');
+                    startTime = Math.max(0,startTime > $scope.playing.duration.totalSec ? 0 : startTime);
+                    player.loadVideoById($scope.playing.video_id,startTime+3,'large'); // 3 sec head-start
                 }
                 if($scope.dj && !snap.val().users[$scope.dj].hasOwnProperty('connections')) {
                     $scope.dj = ''; fireRef.child('dj').remove();
                 }
+                fireRef.child('playing').on('value', onVideoChange); // Listen for video changes
+                fireRef.child('selection').on('value', onSelectionChange); // Listen for selection changes
                 $timeout(function(){});
             });
         }
@@ -216,23 +254,31 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(player.isMuted()) player.unMute();
             player.setVolume(player.getVolume() == 0 ? 100 : player.getVolume()); // Unmute
             localStorageService.set('volume',parseInt(player.getVolume()));
-            if(fireBusy || $scope.dj != username) return; // If already talking to firebase, don't try again
+            if(gettingVideos || $scope.dj != username) return; // If already getting videos, don't try again
             // DJ responsibilities
             var elapsed = parseInt((new Date().getTime() - $scope.playing.startTime)/1000);
-            if(elapsed + 30 > $scope.playing.duration.totalSec && !voting) {
+            if(elapsed + 60 > $scope.playing.duration.totalSec && !voting) {
+                console.log('video close to ending or ended');
                 getVideos();
-            } else { // Video not expired or close to being over, remove selection list
-                console.log('video still goin');
+                $timeout(playVideo, 60000); // Voting for 60 seconds
+            } else if(!voting) { // Video not expired or close to being over, remove selection list
                 fireRef.child('selection').remove();
             }
-            if(elapsed > $scope.playing.duration.totalSec) { // Video expired
+            if(elapsed > $scope.playing.duration.totalSec && !voting) { // Video expired
                 console.log('video expired');
-                delete $scope.playing;
                 fireRef.child('playing').remove();
+                getVideos();
+                $timeout(playVideo, 60000); // Voting for 60 seconds
             }
         }
-        if($scope.dj == username && !$scope.playing && !$scope.videoSelection) {
+        if($scope.dj == username && !$scope.playing && !$scope.videoSelection && !voting) {
+            console.log('nothing playing, get list');
             getVideos(); // Get video list have none and nothing playing
+        }
+        if($scope.dj == username && !$scope.playing && $scope.videoSelection && !voting) {
+            console.log('nothing playing, have list, voting ends in 10 seconds');
+            $timeout(playVideo, 10000); // Voting for 10 seconds
+            voting = true;
         }
         $timeout(function(){});
     };

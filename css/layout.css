@@ -16,16 +16,21 @@ header form fieldset { float: left; }
 header form input[type="text"] { margin-right: 8px; height: 18px; }
 header form button { float: left; width: 66px; height: 24px; }
 #player { width: 100%; height: 390px; }
-.video-selection { margin: 32px 0; }
+.now-playing { padding: 20px 0 0; }
+.video-selection { margin: 28px 0; }
 .video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; }
 .video-selection table tr td { padding: 10px 6px; }
 .video-selection table tr td:hover { cursor: pointer; }
 .video-selection table tr td.control { text-align: center; }
 .video-selection table tr td.control a { text-decoration: none; font-size: 0.8em; }
-.now-playing { padding: 20px 0 0; }
-p.message { text-align: center; margin-bottom: 0; }
+.video-selection table tr td.votes { padding: 0; }
+.video-selection table tr td.votes .vote-icon { 
+    width: 8px; height: 16px; background: white; border-radius: 4px; position: relative; top: 3px;
+    float: left; margin-right: 3px;
+}
 .dj { margin: 16px; text-align: center; }
-.add-video form { margin: 12px 0 32px 32px; }
+p.message { text-align: center; margin-bottom: 0; }
+.add-video form { margin: 18px 0 32px 32px; }
 .add-video legend { text-align: center; margin-bottom: 10px; padding-right: 32px; font-size: 1.5em; }
 .field { height: 24px; margin-bottom: 6px; clear: both; }
 .field-large { height: 72px; }

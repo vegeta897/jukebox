@@ -29,47 +29,16 @@
 			else
 				$this->response('',404); // If the method not exist with in this class "Page not found".
 		}
-				
-		private function login(){
-			if($this->get_request_method() != "POST"){
-				$this->response('',406);
-			}
-			$email = $this->_request['email'];		
-			$password = $this->_request['pwd'];
-			if(!empty($email) and !empty($password)){
-				if(filter_var($email, FILTER_VALIDATE_EMAIL)){
-					$query="SELECT uid, name, email FROM users WHERE email = '$email' AND password = '".md5($password)."' LIMIT 1";
-					$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
-
-					if($r->num_rows > 0) {
-						$result = $r->fetch_assoc();	
-						// If success everything is good send header as "OK" and user details
-						$this->response($this->json($result), 200);
-					}
-					$this->response('', 204);	// If no records "No Content" status
-				}
-			}
-			
-			$error = array('status' => "Failed", "msg" => "Invalid Email address or Password");
-			$this->response($this->json($error), 400);
-		}
-        
-        private function auth(){
-            if($this->get_request_method() != "GET"){
-                $this->response('',406);
-            }
-            if(md5($this->_request) == "51313ba0b7317a89aa58b3b7dc7ae1cf") {
-                $this->response("SuperSecretCode", 200);
-            } else { $this->response("Wrong Password!", 400); }
-        }
 		
 		private function videos(){ // Get 6 random videos
 			if($this->get_request_method() != "GET"){
 				$this->response('',406);
 			}
+            $current_id = json_decode(file_get_contents("php://input"),true);
+            $current_id = $current_id["current_id"];
 			$query="
                 SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by 
-                FROM videos v ORDER BY RAND() LIMIT 6;
+                FROM videos v WHERE v.video_id <> '$current_id' ORDER BY RAND() LIMIT 6;
             ";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
