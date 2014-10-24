@@ -70,8 +70,17 @@ function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
     
 }
 
+function randomIntRange(min,max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function countProperties(obj) { // Return number of properties an object has
     var count = 0; for(var key in obj) { if(!obj.hasOwnProperty(key)) { continue; } count++; } return count; 
+}
+// Return a random element from input array
+function pickInArray(array) { return array[Math.floor(Math.random()*array.length)]; }
+function pickInObject(object) { // Return a random property from input object (attach name)
+    var array = [];
+    for(var key in object) { if(object.hasOwnProperty(key)) {
+        var property = object[key]; property.key = key; array.push(property); } }
+    return pickInArray(array);
 }
 
 function flip() { return Math.random() > 0.5; } // Flip a coin
@@ -207,25 +216,21 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     
     var playVideo = function() { // Tally votes and pick the video with the most
         if(!$scope.auth || $scope.dj != username) return;
-        var winner = { index: 0, votes: 0 };
-        for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
-            if(countProperties($scope.videoSelection[i].votes) > winner.votes) {
-                winner.index =  i; winner.votes = countProperties($scope.videoSelection[i].votes);
-            } else if(countProperties($scope.videoSelection[i].votes) == winner.votes) {
-                winner.index = flip() ? i : winner.index;
-            }
-            
-        }
-        console.log('winner chosen:',winner);
-        var play = $scope.videoSelection[winner.index];
-        play.startTime = new Date().getTime();
-        fireRef.child('playing').set(angular.copy(play));
-        fireRef.child('selection').remove();
-        voting = false;
+        var winner = 0;
+        fireRef.child('votes').once('value', function(snap) {
+            winner = snap.val() ? pickInObject(snap.val()) : randomIntRange(0,$scope.videoSelection.length-1);
+            console.log('winner chosen:',winner);
+            var play = $scope.videoSelection[winner];
+            play.startTime = new Date().getTime();
+            fireRef.child('playing').set(angular.copy(play));
+            fireRef.child('selection').remove();
+            voting = false;
+        });
     };
     
     $scope.vote = function(index) {
         if(!$scope.auth) return;
+        fireRef.child('votes/'+username).set(index);
         for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
             fireRef.child('selection/'+i+'/votes/'+username).set(i == index ? true : null);
         }
