@@ -251,7 +251,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.forceVote = function() {
-        fireRef.child('playing/startTime').set(new Date().getTime() - ($scope.playing.duration.totalSec*1000 - 60000));
+        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 60000 : 0;
+        fireRef.child('playing/startTime').set(new Date().getTime() - offset);
     };
     
     var interval = function() {
