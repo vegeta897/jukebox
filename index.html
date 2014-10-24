@@ -61,7 +61,7 @@
                         <label for="url">*URL or video ID</label>
                         <input name="url" id="url" ng-model="add_url" ng-change="parseURL()" type="text" placeholder="TgoAgYR4584" size="46" ng-required="!enableBatch" ng-disabled="addingVideo" />
                         <span ng-hide="add_valid || !add_url" class="invalid">Invalid URL or ID</span>
-                        <span ng-show="add_valid && add_url.length > 0" class="valid" ng-bind="parsedIds[0]"></span>
+                        <span ng-show="add_valid && add_url.length > 0" class="valid" ng-bind="parsedIds"></span>
                     </div>
                     <!--<div class="field">-->
                         <!--<label for="name">Name</label>-->

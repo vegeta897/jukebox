@@ -80,10 +80,10 @@
                 }
                 $added_by = mysql_real_escape_string($video["added_by"]);
                 $pre = $array_index == 0 ? "" : ",";
-                $insert_values = $insert_values.$pre."(NULL,'".$value->id."','".$title."','".$artist."','".$track."','".$duration."',NOW(),'".$added_by."','".$embeddable."')";
+                $insert_values = $insert_values.$pre."('".$value->id."','".$title."','".$artist."','".$track."','".$duration."',NOW(),'".$added_by."','".$embeddable."')";
                 $array_index++;
             }
-            $query = "INSERT INTO videos(id,video_id,title,artist,track,duration,add_date,added_by,embeddable)
+            $query = "INSERT INTO videos(video_id,title,artist,track,duration,add_date,added_by,embeddable)
                   VALUES$insert_values;";
             if(!empty($video)){
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);

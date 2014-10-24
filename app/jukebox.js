@@ -269,7 +269,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             //if(player.isMuted()) player.unMute();
             //player.setVolume(player.getVolume() == 0 ? 100 : player.getVolume()); // Unmute
             //localStorageService.set('volume',parseInt(player.getVolume()));
-            if(!gettingVideos && $scope.dj == username) { // If already getting videos, don't try again
+            if(!gettingVideos && $scope.dj && $scope.dj == username) { // If already getting videos, don't try again
                 // DJ responsibilities
                 var elapsed = parseInt((new Date().getTime() - $scope.playing.startTime) / 1000);
                 if (elapsed + 60 > $scope.playing.duration.totalSec && !voting) {
@@ -289,11 +289,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 }
             }
         }
-        if($scope.dj == username && !$scope.playing && !$scope.videoSelection && !voting) {
+        if($scope.dj && $scope.dj == username && !$scope.playing && !$scope.videoSelection && !voting) {
             console.log('nothing playing, get list');
             getVideos(); // Get video list have none and nothing playing
         }
-        if($scope.dj == username && !$scope.playing && $scope.videoSelection && !voting) {
+        if($scope.dj && $scope.dj == username && !$scope.playing && $scope.videoSelection && !voting) {
             console.log('nothing playing, have list, voting ends in 10 seconds');
             $timeout(playVideo, 10000); // Voting for 10 seconds
             fireRef.child('voting').set(new Date().getTime()+10000);
