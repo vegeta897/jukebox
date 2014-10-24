@@ -43,5 +43,8 @@ p.message { text-align: center; margin-bottom: 0; }
 .add-video button { float: left; margin-left: 130px; }
 .add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
+.listeners { text-align: center; }
+.listener { padding: 4px 6px; display: inline-block; font-size: 0.8em; }
+.listener i { font-size: 1.4em; top: 2px; position: relative; }
 
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }

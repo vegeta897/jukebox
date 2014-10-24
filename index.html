@@ -5,6 +5,7 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'/>
     <link href="css/layout.css" media="screen" rel="stylesheet"/>
     <link href="css/theme.css" media="screen" rel="stylesheet"/>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body ng-cloak ng-controller="Main">
     <header>
@@ -95,7 +96,10 @@
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
-        <button ng-hide="username != 'vegeta897' || !auth" ng-click="forceVote()">Force Vote</button>
+        <div class="listeners">
+            <div class="listener" ng-repeat="(name,listener) in users" ng-show="listener.connections"><i class="fa fa-headphones"></i> {{ name }}</div>
+        </div>
+        <button ng-hide="username != dj || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
