@@ -34,9 +34,8 @@
                     <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>
                     <td ng-click="vote($index)">{{ video.duration.stamp }}</td>
                     <td class="title" ng-click="vote($index)">
-                        <span ng-show="video.artist && !video.title">{{ video.artist }} - </span>
-                        <span ng-show="video.track && !video.title">{{ video.track }}</span>
-                        <span ng-show="video.title">{{ video.title }}</span>
+                        <span ng-show="video.artist && video.track">{{ video.artist }} - {{ video.track }}</span>
+                        <span ng-show="!video.artist">{{ video.title }}</span>
                         <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
                     </td>
                     <td class="votes">
