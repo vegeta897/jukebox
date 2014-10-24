@@ -226,6 +226,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireRef.child('playing').set(angular.copy(play));
             fireRef.child('selection').remove();
             voting = false;
+            fireRef.child('votes').remove();
         });
     };
     
