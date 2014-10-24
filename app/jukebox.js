@@ -79,7 +79,7 @@ function pickInArray(array) { return array[Math.floor(Math.random()*array.length
 function pickInObject(object) { // Return a random property from input object (attach name)
     var array = [];
     for(var key in object) { if(object.hasOwnProperty(key)) {
-        var property = object[key]; property.key = key; array.push(property); } }
+        var property = object[key]; array.push(property); } }
     return pickInArray(array);
 }
 
