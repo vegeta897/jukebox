@@ -52,7 +52,7 @@
                 $this->response('',406);
             }
             $video = json_decode(file_get_contents("php://input"),true);
-            $added_by = mysql_real_escape_string($video["added_by"]);
+            $added_by = mysqli_real_escape_string($this->mysqli,$video["added_by"]);
             $video_ids = $video["video_ids"];
 
             $url = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatus&id=".$video_ids."&key=".DB::YT_API_KEY;
@@ -69,7 +69,7 @@
 
             foreach ($content->items as $value) {
                 $embeddable = $value->status->embeddable ? "true" : "false";
-                $title = mysql_real_escape_string($value->snippet->title);
+                $title = mysqli_real_escape_string($this->mysqli,$value->snippet->title);
                 $duration = $value->contentDetails->duration;
                 if(array_key_exists("artist",$video)) {
                     $artist = $video["artist"];
