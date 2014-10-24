@@ -52,14 +52,22 @@
                 $this->response('',406);
             }
             $video = json_decode(file_get_contents("php://input"),true);
+            $added_by = mysql_real_escape_string($video["added_by"]);
             $video_ids = $video["video_ids"];
-            $content = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatus&id=".$video_ids."&key=".DB::YT_API_KEY));
+
+            $url = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatus&id=".$video_ids."&key=".DB::YT_API_KEY;
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $data = curl_exec($ch);
+            curl_close($ch);
+            $content = json_decode($data);
             $insert_values = "";
-            $message = "";
             $array_index = 0;
 
             foreach ($content->items as $value) {
-                $message = $message."hello".$value->status->embeddable."end";
                 $embeddable = $value->status->embeddable ? "true" : "false";
                 $title = mysql_real_escape_string($value->snippet->title);
                 $duration = $value->contentDetails->duration;
@@ -75,7 +83,6 @@
                     $exploded = explode(" - ",$title,2);
                     $track = $exploded[1];
                 }
-                $added_by = mysql_real_escape_string($video["added_by"]);
                 $pre = $array_index == 0 ? "" : ",";
                 $insert_values = $insert_values.$pre."('".$value->id."','".$title."','".$artist."','".$track."','".$duration."',NOW(),'".$added_by."','".$embeddable."')";
                 $array_index++;
