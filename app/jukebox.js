@@ -110,7 +110,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var onVideoChange = function(snap) {
         if(snap.val() == null) { delete $scope.playing; return; }
         console.log('playing update',snap.val());
-        if(snap.val().video_id != $scope.playing.video_id) { // If video changed, load it
+        if(!$scope.playing || snap.val().video_id != $scope.playing.video_id) { // If video changed, load it
             console.log('video changed');
             player.loadVideoById(snap.val().video_id,0,'large');
         }
