@@ -234,6 +234,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
     };
     
+    $scope.forceVote = function() {
+        fireRef.child('playing/startTime').set(new Date().getTime() - 60000);
+    };
+    
     var interval = function() {
         if(!init && player && player.hasOwnProperty('loadVideoById')) {
             init = true;

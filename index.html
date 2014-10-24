@@ -95,6 +95,7 @@
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
+        <button ng-hide="username != 'vegeta897' || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
