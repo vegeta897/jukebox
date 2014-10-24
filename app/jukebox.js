@@ -218,7 +218,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.auth || $scope.dj != username) return;
         var winner = 0;
         fireRef.child('votes').once('value', function(snap) {
-            winner = snap.val() ? pickInObject(snap.val()) : randomIntRange(0,$scope.videoSelection.length-1);
+            var snapped = angular.copy(snap.val());
+            winner = snapped ? pickInObject(snapped) : randomIntRange(0,$scope.videoSelection.length-1);
             console.log('winner chosen:',winner);
             var play = $scope.videoSelection[winner];
             play.startTime = new Date().getTime();
