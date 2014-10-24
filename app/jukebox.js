@@ -190,12 +190,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.auth || $scope.dj != username) return;
         var winner = { index: 0, votes: 0 };
         for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
-            console.log('contender:',i,countProperties($scope.videoSelection[i].votes));
             if(countProperties($scope.videoSelection[i].votes) > winner.votes) {
-                console.log('contender overtook');
-                winner.index =  i; winner.votes = $scope.videoSelection[i].votes;
+                winner.index =  i; winner.votes = countProperties($scope.videoSelection[i].votes);
             } else if(countProperties($scope.videoSelection[i].votes) == winner.votes) {
-                console.log('contender tied');
                 winner.index = flip() ? i : winner.index;
             }
             
