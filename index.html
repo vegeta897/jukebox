@@ -24,7 +24,7 @@
         <div class="now-playing" ng-show="playing">
             <h3 class="muted">NOW PLAYING</h3>
             <h2 ng-bind="playing.title"></h2>
-            <h3 class="muted">{{ playing.added_by }}</h3>
+            <h3 class="muted">added by {{ playing.added_by }}</h3>
         </div>
         <div class="video-selection" ng-show="videoSelection">
             <h2 ng-show="auth">Pick a video</h2>

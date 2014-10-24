@@ -196,7 +196,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 console.log('video id already exists!');
                 $scope.message = { type: 'error', text: 'That video has already been added.' };
             } else {
-                $scope.message = { type: 'success', text: 'Video added successfully!' };
+                var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
+                if(results.data.data.items.length == 1) {
+                    
+                }
+                $scope.message = { type: 'success', text: justAdded + ' added successfully!' };
             }
         });
     };
