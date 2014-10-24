@@ -136,7 +136,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         passcode = $scope.passcode;
         console.log('Logging in',username);
         var auth = fireRef.getAuth();
-        if(auth.hasOwnProperty('expires') && auth.expires*1000 > new Date().getTime()) {
+        if(auth && auth.hasOwnProperty('expires') && auth.expires*1000 > new Date().getTime()) {
             console.log('Firebase authenticated!',auth);
             initUser();
         } else {
