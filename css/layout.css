@@ -31,6 +31,7 @@ header form button { float: left; width: 66px; height: 24px; }
 }
 .dj { margin: 16px; text-align: center; }
 p.message { text-align: center; margin-bottom: 0; }
+.message i { margin-right: 10px; cursor: pointer; }
 .add-video form { margin: 32px 0 32px 32px; }
 .add-video legend { text-align: center; margin-bottom: 10px; padding-right: 32px; font-size: 1.5em; }
 .field { height: 24px; margin-bottom: 6px; clear: both; }

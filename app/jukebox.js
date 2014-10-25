@@ -263,6 +263,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         fireRef.child('playing/startTime').set(new Date().getTime() - offset);
     };
     
+    $scope.closeMessage = function() { delete $scope.message; };
+    
     var interval = function() {
         if(!init && player && player.hasOwnProperty('loadVideoById')) {
             init = true;

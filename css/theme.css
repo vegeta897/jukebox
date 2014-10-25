@@ -36,6 +36,8 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .listener .volume { background: #212322; }
 .listener .volume div { background: #A0A399; }
 
+.message i { color: #858a71; }
+
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }
 ::-moz-placeholder { color: #999; }
