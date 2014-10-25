@@ -60,7 +60,7 @@
                 <div class="volume"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
-        <p class="message" ng-class="message.type"><i class="fa fa-close" ng-click="closeMessage()"></i>{{ message.text }}</p>
+        <p class="message" ng-show="message" ng-class="message.type"><i class="fa fa-close" ng-click="closeMessage()"></i>{{ message.text }}</p>
         <div class="add-video" ng-show="auth">
             <form ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">
