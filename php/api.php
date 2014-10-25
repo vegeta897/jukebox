@@ -35,7 +35,7 @@
 				$this->response('',406);
 			}
             $current_id = $this->_request['current_id'];
-			$query="SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by, v.last_played, v.play_count FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY DATEDIFF(NOW(),v.last_played) DESC, RAND() LIMIT 6";
+			$query="SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by, v.last_played, v.play_count FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY RAND() LIMIT 6";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
 			if($r->num_rows > 0){
