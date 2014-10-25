@@ -33,7 +33,7 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .listener { color: #DEFF7C; }
 .listener i { color: #D8DBCD; }
 .listener .volume { background: #2a2c2b; }
-.listener .volume div { background: #f2f5eb; }
+.listener .volume div { background: #A0A399; }
 
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }

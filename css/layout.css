@@ -48,6 +48,6 @@ p.message { text-align: center; margin-bottom: 0; }
 .listener { padding: 4px 6px; display: inline-block; font-size: 0.8em; }
 .listener i { font-size: 1.4em; top: 2px; position: relative; }
 .listener .volume { width: 64px; margin: 2px auto; height: 6px; }
-.listener .volume div { margin: 1px; }
+.listener .volume div { position: relative; height: 4px; top: 1px; left: 1px; }
 
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }
