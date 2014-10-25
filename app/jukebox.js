@@ -70,7 +70,7 @@ function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
 
 function randomIntRange(min,max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function countProperties(obj) { // Return number of properties an object has
-    var count = 0; for(var key in obj) { if(!obj.hasOwnProperty(key)) { continue; } count++; } return count; 
+    if(!obj) return 0; var count = 0; for(var key in obj) { if(!obj.hasOwnProperty(key)) { continue; } count++; } return count; 
 }
 // Return a random element from input array
 function pickInArray(array) { return array[Math.floor(Math.random()*array.length)]; }
@@ -88,8 +88,8 @@ Application.Services.factory("services", ['$http', function($http) {
     obj.getVideos = function(currentID){
         return $http.get(serviceBase + 'videos?current_id=' + currentID);
     };
-    obj.updateVideo = function(videoID){
-        return $http.post(serviceBase + 'updateVideo', {video_id: videoID});
+    obj.updateVideo = function(videoID,votes){
+        return $http.post(serviceBase + 'updateVideo', {video_id:videoID,votes:votes});
     };
     obj.addVideo = function (videoIds, artist, track, addedBy) {
         return $http.post(serviceBase + 'addVideo', {video_ids:videoIds,artist:artist,track:track,added_by:addedBy}).then(function (results) {
@@ -223,7 +223,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireRef.child('selection').remove();
             voting = false;
             fireRef.child('votes').remove();
-            services.updateVideo(play.video_id);
+            services.updateVideo(play.video_id,countProperties(play.votes));
         });
     };
     
