@@ -115,7 +115,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var volume = localStorageService.get('volume');
     $scope.username = username; $scope.passcode = passcode;
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
-    var init = false, gettingVideos = false, voting, voteEnd;
+    var init = false, gettingVideos = false, voting, voteEnd, muted;
     
     var onVideoChange = function(snap) {
         if(snap.val() == null) { delete $scope.playing; return; }
@@ -300,6 +300,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             //if(player.isMuted()) player.unMute();
             //player.setVolume(player.getVolume() == 0 ? 100 : player.getVolume()); // Unmute
             //localStorageService.set('volume',parseInt(player.getVolume()));
+            if(muted != player.isMuted()) {
+                muted = player.isMuted();
+                fireRef.child('users/'+username+'/muted').set(muted);
+            }
             if(parseInt(player.getVolume()) != volume) {
                 volume = parseInt(player.getVolume());
                 fireRef.child('users/'+username+'/volume').set(volume);

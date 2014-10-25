@@ -99,7 +99,7 @@
         <div ng-show="users" class="listeners">
             <h3 class="muted">Listeners</h3>
             <div class="listener" ng-repeat="(name,listener) in users" ng-show="listener.connections">
-                <div><i class="fa fa-headphones"></i> {{ name }}</div>
+                <div><i class="fa fa-headphones" ng-class="{muted: listener.muted}"></i> {{ name }}</div>
                 <div class="volume"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
