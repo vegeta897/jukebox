@@ -66,8 +66,6 @@ function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
         stamp = min + ':00';
         return { totalSec: (min*60 + sec), min: min, sec: sec, stamp: stamp };
     }
-    
-    
 }
 
 function randomIntRange(min,max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
@@ -89,6 +87,9 @@ Application.Services.factory("services", ['$http', function($http) {
     var serviceBase = 'php/', obj = {};
     obj.getVideos = function(currentID){
         return $http.get(serviceBase + 'videos?current_id=' + currentID);
+    };
+    obj.updateVideo = function(videoID){
+        return $http.post(serviceBase + 'updateVideo?video_id=' + videoID);
     };
     obj.addVideo = function (videoIds, artist, track, addedBy) {
         return $http.post(serviceBase + 'addVideo', {video_ids:videoIds,artist:artist,track:track,added_by:addedBy}).then(function (results) {
@@ -227,6 +228,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireRef.child('selection').remove();
             voting = false;
             fireRef.child('votes').remove();
+            services.updateVideo(play.video_id);
         });
     };
     
