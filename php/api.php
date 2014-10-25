@@ -35,7 +35,7 @@
 				$this->response('',406);
 			}
             $current_id = $this->_request['current_id'];
-			$query="SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY RAND() LIMIT 6;";
+			$query="SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by, v.last_played, v.play_count FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY DATEDIFF(NOW(),v.last_played) DESC, RAND() LIMIT 6";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
 			if($r->num_rows > 0){
@@ -51,9 +51,10 @@
             if($this->get_request_method() != "POST"){
                 $this->response('',406);
             }
-            $video_id = $this->_request['video_id'];
+            $video = json_decode(file_get_contents("php://input"),true);
+            $video_id = $video['video_id'];
             
-            $query = "UPDATE videos SET last_played = NOW(), play_count = play_count + 1 where video_id = '$video_id';";
+            $query = "UPDATE videos SET last_played = NOW(), play_count = play_count + 1 WHERE video_id = '$video_id';";
             $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             $success = array('status' => "Success", "msg" => "Video Updated Successfully.", "data" => $video_id);
             $this->response($this->json($success),200);

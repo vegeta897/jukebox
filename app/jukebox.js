@@ -89,7 +89,7 @@ Application.Services.factory("services", ['$http', function($http) {
         return $http.get(serviceBase + 'videos?current_id=' + currentID);
     };
     obj.updateVideo = function(videoID){
-        return $http.post(serviceBase + 'updateVideo?video_id=' + videoID);
+        return $http.post(serviceBase + 'updateVideo', {video_id: videoID});
     };
     obj.addVideo = function (videoIds, artist, track, addedBy) {
         return $http.post(serviceBase + 'addVideo', {video_ids:videoIds,artist:artist,track:track,added_by:addedBy}).then(function (results) {
@@ -130,7 +130,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var onSelectionChange = function(snap) {
         if(snap.val() == null) { delete $scope.videoSelection; return; }
         $scope.videoSelection = snap.val();
-        console.log('video selection updated');
     };
     
     var onVoteTimer = function(snap) {
@@ -189,7 +188,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             }
         }
         $scope.parsedIds = $scope.parsedIds.substring(0,$scope.parsedIds.length-1);
-        console.log($scope.parsedIds);
     };
     
     $scope.addVideo = function() {
