@@ -54,12 +54,9 @@
             $video_id = $this->_request['video_id'];
             
             $query = "UPDATE videos SET last_played = NOW(), play_count = play_count + 1 where video_id = $video_id";
-            if(!empty($video)){
-                $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
-                $success = array('status' => "Success", "msg" => "Video Updated Successfully.", "data" => $video_id);
-                $this->response($this->json($success),200);
-            }else
-                $this->response('',204);	//"No Content" status
+            $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
+            $success = array('status' => "Success", "msg" => "Video Updated Successfully.", "data" => $video_id);
+            $this->response($this->json($success),200);
         }
         private function addVideo(){
             if($this->get_request_method() != "POST"){
