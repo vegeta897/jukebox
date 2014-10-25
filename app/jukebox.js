@@ -58,7 +58,7 @@ function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
     } else if (utc.indexOf('S') >= 0 && utc.indexOf('M') < 0) { // Just S
         min = 0;
         sec = parseInt(utc.substring(utc.indexOf('T')+1,utc.indexOf('S')));
-        stamp = '0:' + (sec.length+'' == 1 ? '0'+sec : sec);
+        stamp = '0:' + ((sec+'').length == 1 ? '0'+sec : sec);
         return { totalSec: (min*60 + sec), min: min, sec: sec, stamp: stamp };
     } else { // Just M
         min = parseInt(utc.substring(2,utc.indexOf('M')));
