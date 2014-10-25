@@ -53,7 +53,7 @@
             }
             $video_id = $this->_request['video_id'];
             
-            $query = "UPDATE videos SET last_played = NOW(), play_count = play_count + 1 where video_id = $video_id";
+            $query = "UPDATE videos SET last_played = NOW(), play_count = play_count + 1 where video_id = '$video_id'";
             $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             $success = array('status' => "Success", "msg" => "Video Updated Successfully.", "data" => $video_id);
             $this->response($this->json($success),200);
