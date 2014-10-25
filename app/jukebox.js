@@ -262,7 +262,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.forceVote = function() {
-        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 60000 : 0;
+        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 90000 : 0;
         fireRef.child('playing/startTime').set(new Date().getTime() - offset);
     };
     
@@ -304,8 +304,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if (elapsed + 60 > $scope.playing.duration.totalSec && !voting) {
                     console.log('video close to ending or ended');
                     getVideos();
-                    $timeout(playVideo, 60000); // Voting for 60 seconds
-                    fireRef.child('voting').set(new Date().getTime() + 60000);
+                    $timeout(playVideo, 90000); // Voting for 90 seconds
+                    fireRef.child('voting').set(new Date().getTime() + 90000);
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
                     fireRef.child('selection').remove();
                 }
@@ -313,8 +313,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     console.log('video expired');
                     fireRef.child('playing').remove();
                     getVideos();
-                    $timeout(playVideo, 60000); // Voting for 60 seconds
-                    fireRef.child('voting').set(new Date().getTime() + 60000);
+                    $timeout(playVideo, 90000); // Voting for 90 seconds
+                    fireRef.child('voting').set(new Date().getTime() + 90000);
                 }
             }
         }
