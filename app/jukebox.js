@@ -302,7 +302,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             //localStorageService.set('volume',parseInt(player.getVolume()));
             if(parseInt(player.getVolume()) != volume) {
                 volume = parseInt(player.getVolume());
-                fireRef.child('users/'+username).set(volume);
+                fireRef.child('users/'+username+'/volume').set(volume);
                 localStorageService.set('volume',volume);
             }
             if(!gettingVideos && $scope.dj && $scope.dj == username) { // If already getting videos, don't try again
