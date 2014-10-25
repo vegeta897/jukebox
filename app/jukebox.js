@@ -303,7 +303,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(!gettingVideos && $scope.dj && $scope.dj == username) { // If already getting videos, don't try again
                 // DJ responsibilities
                 var elapsed = parseInt((new Date().getTime() - $scope.playing.startTime) / 1000);
-                if (elapsed + 60 > $scope.playing.duration.totalSec && !voting) {
+                if (elapsed + 90 > $scope.playing.duration.totalSec && !voting) {
                     console.log('video close to ending or ended');
                     getVideos();
                     $timeout(playVideo, 90000); // Voting for 90 seconds
