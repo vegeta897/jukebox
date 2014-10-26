@@ -245,6 +245,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     var getVideos = function() {
+        fireRef.child('votes').remove();
         voting = true;
         gettingVideos = true;
         // 30 seconds til end of video, get a new video list
@@ -303,11 +304,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             //localStorageService.set('volume',parseInt(player.getVolume()));
             if(muted != player.isMuted()) {
                 muted = player.isMuted();
-                fireRef.child('users/'+username+'/muted').set(muted);
+                if(username) fireRef.child('users/'+username+'/muted').set(muted);
             }
             if(parseInt(player.getVolume()) != volume) {
                 volume = parseInt(player.getVolume());
-                fireRef.child('users/'+username+'/volume').set(volume);
+                if(username) fireRef.child('users/'+username+'/volume').set(volume);
                 localStorageService.set('volume',volume);
             }
             if(!gettingVideos && $scope.dj && $scope.dj == username) { // If already getting videos, don't try again

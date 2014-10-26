@@ -26,9 +26,6 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .video-selection table tr td.control:hover a { color: #f2f5eb; }
 .video-selection table tr td.votes .vote-icon { background: #20aa22; }
 
-.field .valid, p.message.success { color: #20aa22; }
-.field .invalid, p.message.error { color: #c60a09; }
-
 .listeners h2 { color: #DEFF7C; }
 .listener { color: #DEFF7C; }
 .listener i { color: #D8DBCD; }
@@ -37,6 +34,9 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .listener .volume div { background: #A0A399; }
 
 .message i { color: #858a71; }
+
+.field .valid, p.message.success { color: #20aa22; }
+.field .invalid, p.message.error { color: #c60a09; }
 
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }
