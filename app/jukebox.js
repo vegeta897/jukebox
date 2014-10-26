@@ -25,8 +25,7 @@ function onYouTubeIframeAPIReady() {
 
 // 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-    //event.target.playVideo();
-    event.target.unMute();
+    
 }
 
 // 4. The API calls this function when the player's state changes.
