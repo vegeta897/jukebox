@@ -61,10 +61,11 @@
             </div>
         </div>
         <p class="message" ng-show="message" ng-class="message.type"><i class="fa fa-close" ng-click="closeMessage()"></i>{{ message.text }}</p>
-        <div class="add-video" ng-show="auth">
-            <form ng-submit="addVideo()">
+        <div class="add-video" ng-show="auth" ng-init="showAddForm = false">
+            <i class="fa fa-close hide-form" ng-click="showAddForm = false" ng-class="{show:showAddForm}"></i>
+            <button ng-click="showAddForm = !showAddForm" ng-class="{'header-style': showAddForm}">Add a video</button>
+            <form ng-show="showAddForm" ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">
-                    <legend>Add a video</legend>
                     <div class="field">
                         <label for="url">*URL or video ID</label>
                         <input name="url" id="url" ng-model="add_url" ng-change="parseURL()" type="text" placeholder="TgoAgYR4584" size="46" ng-required="!enableBatch" ng-disabled="addingVideo" />

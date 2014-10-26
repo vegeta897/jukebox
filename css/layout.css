@@ -38,7 +38,12 @@ header form button { float: left; width: 66px; height: 24px; }
 .listener .volume div { height: 4px; }
 p.message { text-align: center; margin-bottom: 0; }
 .message i { margin-right: 10px; cursor: pointer; }
-.add-video form { margin: 32px 0 32px 32px; }
+.add-video i.hide-form { float: left; font-size: 1.8em; position: relative; left: 240px; opacity: 0; }
+.add-video i.hide-form.show { opacity: 1; cursor: pointer; }
+.add-video > button { display: block; float: none; margin: 8px auto 0; position: relative; left: -10px; }
+.add-video > button.header-style { background: none; border: none; font-size: 1.3em; }
+.add-video > button:focus { outline-width: 0; }
+.add-video form { margin: 16px 0 32px 32px; }
 .add-video legend { text-align: center; margin-bottom: 10px; padding-right: 32px; font-size: 1.5em; }
 .field { height: 24px; margin-bottom: 6px; clear: both; }
 .field-large { height: 72px; }
@@ -47,7 +52,7 @@ p.message { text-align: center; margin-bottom: 0; }
 .add-video input { float: left; }
 .field .valid, .field .invalid, .field .hint { margin-left: 8px; line-height: 20px; }
 .field .valid, .field .invalid { font-weight: bold; }
-.add-video button { float: left; margin-left: 130px; }
+.add-video form button { float: left; margin-left: 130px; }
 .add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
 

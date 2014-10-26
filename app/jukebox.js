@@ -299,10 +299,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.voteTimeLeft = Math.max(0,parseInt((voteEnd - new Date().getTime())/1000));
         }
         if(init && playing && $scope.playing) {
-            //player.setVolume(volume);
-            //if(player.isMuted()) player.unMute();
-            //player.setVolume(player.getVolume() == 0 ? 100 : player.getVolume()); // Unmute
-            //localStorageService.set('volume',parseInt(player.getVolume()));
             if(muted != player.isMuted()) {
                 muted = player.isMuted();
                 if(username) fireRef.child('users/'+username+'/muted').set(muted);

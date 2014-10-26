@@ -38,6 +38,9 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .field .valid, p.message.success { color: #20aa22; }
 .field .invalid, p.message.error { color: #c60a09; }
 
+.add-video i.hide-form { color: #858a71; transition: all 0.3s; }
+.add-video i.hide-form:hover { color: #d3d9b9; }
+
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }
 ::-moz-placeholder { color: #999; }
