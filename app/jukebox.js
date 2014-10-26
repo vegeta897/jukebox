@@ -229,6 +229,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     
     $scope.vote = function(index) {
         if(!$scope.auth) return;
+        if(player.isMuted()) {
+            $scope.message = { type: 'error', text: 'You can\'t vote while muted!.' };
+            return;
+        }
         fireRef.child('votes/'+username).set(index);
         for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
             fireRef.child('selection/'+i+'/votes/'+username).set(i == index ? true : null);
@@ -313,7 +317,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     console.log('video close to ending or ended');
                     getVideos();
                     $timeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)); // Voting for 90 seconds
-                    console.log('vote time: ',Math.min($scope.playing.duration.totalSec*1000,90000));
                     fireRef.child('voting').set(new Date().getTime() + Math.min($scope.playing.duration.totalSec*1000,90000));
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
                     fireRef.child('selection').remove();
