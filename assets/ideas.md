@@ -1,0 +1,13 @@
+- Weighting video selection to encourage variety
+  - Have videos() select 100, then weight them in javascript
+  - Use play_count, vote_count, and last_played (and date_added?)
+  - System must not result in all the "bad" videos constantly coming up
+    - Consistently not voting for a bad video should decrease its chances
+    - Maybe add a 'rating' column to the DB
+- Idle games/activities embedded on the page
+  - Whiteboard or some way to mark up the video, maybe placing "stickers"
+  - Generated trivia/math/misc questions?
+    - 6 YT vid descriptions from the selection are stored
+    - When video starts, users have to guess which description belongs to it
+  - Points system, stored on firebase
+  - Activity log to show when users score points or do other things
