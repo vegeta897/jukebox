@@ -313,6 +313,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     console.log('video close to ending or ended');
                     getVideos();
                     $timeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)); // Voting for 90 seconds
+                    console.log('vote time: ',Math.min($scope.playing.duration.totalSec*1000,90000));
                     fireRef.child('voting').set(new Date().getTime() + Math.min($scope.playing.duration.totalSec*1000,90000));
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
                     fireRef.child('selection').remove();
