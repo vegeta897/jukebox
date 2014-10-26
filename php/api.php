@@ -55,7 +55,7 @@
             $video_id = $video['video_id'];
             $votes = $video['votes'];
             
-            $query = "UPDATE videos SET last_played = NOW(), play_count = play_count + 1, vote_count = vote_count + $votes WHERE video_id = '$video_id';";
+            $query = "UPDATE videos SET last_played = UTC_TIMESTAMP(), play_count = play_count + 1, vote_count = vote_count + $votes WHERE video_id = '$video_id';";
             $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             $success = array('status' => "Success", "msg" => "Video Updated Successfully.", "data" => $video_id);
             $this->response($this->json($success),200);
@@ -97,7 +97,7 @@
                     $track = $exploded[1];
                 }
                 $pre = $array_index == 0 ? "" : ",";
-                $insert_values = $insert_values.$pre."('".$value->id."','".$title."','".$artist."','".$track."','".$duration."',NOW(),'".$added_by."','".$embeddable."')";
+                $insert_values = $insert_values.$pre."('".$value->id."','".$title."','".$artist."','".$track."','".$duration."',UTC_TIMESTAMP(),'".$added_by."','".$embeddable."')";
                 $array_index++;
             }
             $query = "INSERT INTO videos(video_id,title,artist,track,duration,add_date,added_by,embeddable) VALUES$insert_values;";
