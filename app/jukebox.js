@@ -291,6 +291,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 fireRef.child('selection').on('value', onSelectionChange); // Listen for selection changes
                 fireRef.child('voting').on('value', onVoteTimer); // Listen for vote changes
                 fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); }); // Listen for user changes
+                fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
                 $timeout(function(){});
             });
         }
