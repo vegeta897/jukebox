@@ -197,6 +197,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.bountySelect = $scope.videoSelection[0];
         } else {
             $scope.videoSelection = snap.val();
+            $scope.bountySelect = $scope.videoSelection[$scope.bountySelect.index];
         }
         delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount;
     };
@@ -285,9 +286,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     
     $scope.titleGambleCalcMulti = function() {
         if(!$scope.titleGambleString) return;
-        $scope.titleGambleString = $scope.titleGambleString.split(' ').join('').split('-').join(''); // Remove spaces and dashes
+        $scope.titleGambleString = $scope.titleGambleString.trim(); // Remove leading and trailing spaces
         if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multis = [1.1, 1.5, 2, 3, 4, 5, 10, 20, 30, 50, 100, 200, 500, 1000];
+        var multis = [1.1, 1.5, 2, 3, 4, 5, 10, 20, 30, 50, 100, 200, 500, 1000, 2000, 3000, 5000, 10000];
         $scope.titleGambleMulti = multis[$scope.titleGambleString.length-2];
         $timeout(function(){});
     };
