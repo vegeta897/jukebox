@@ -104,7 +104,6 @@ Application.Services.factory("services", ['$http', function($http) {
     return obj;
 }]);
 
-
 Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService) {
     console.log('Main controller initialized');
     
@@ -117,8 +116,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.17; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
-    $scope.initializing = true; $scope.thetime = new Date().getTime();
+    $scope.version = 0.18; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'}];
@@ -143,7 +142,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.playing = snap.val();
         if(!$scope.auth) return;
         if(parseInt($scope.playing.index) === myVote) {
-            if(!$scope.playing.bounty || ($scope.bountySelect && $scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
+            if(!$scope.playing.bounty || ($scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
                 console.log('there was no bounty, or it was your own bounty');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + 2 : 2;
@@ -195,16 +194,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         } else {
             $scope.videoSelection = snap.val();
         }
+        $scope.bountySelect = $scope.videoSelection[0];
         delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount;
     };
     
     var sendEvent = function(text) {
-        fireRef.child('eventLog').once('value',function(snap) {
-            var eventLog = snap.val() || [];
-            eventLog.slice(0,21); // Truncate to 20 events
-            eventLog.push({ text: text, time: new Date().getTime() });
-            fireRef.child('eventLog').set(eventLog);
-        });
+        fireRef.child('eventLog').push({ text: text, time: new Date().getTime() });
     };
     
     $scope.login = function() {
@@ -415,7 +410,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 fireRef.child('voting').on('value', function(snap) { voteEnd = snap.val() || 0; }); // Listen for vote changes
                 fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); $scope.user = snap.val()[username]; }); // Listen for user changes
                 fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
-                fireRef.child('eventLog').on('value',function(snap) { $scope.eventLog = snap.val(); });
+                fireRef.child('eventLog').endAt().limit(1).on('child_added',function(snap) { $scope.eventLog.push(snap.val()); $scope.eventLog.slice(0,16); });
                 $timeout(function(){});
             });
         }
