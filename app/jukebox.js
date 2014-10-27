@@ -276,6 +276,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             } else {
                 var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
                 $scope.message = { type: 'success', text: justAdded + ' added successfully!' };
+                fireUser.child('kudos').transaction(function(userKudos) {
+                    var reward = parseInt(results.data.data.items.length * 5);
+                    return userKudos ? parseInt(userKudos) + reward : reward ;
+                });
             }
         });
     };
