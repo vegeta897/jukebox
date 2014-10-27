@@ -116,7 +116,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.18; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.19; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -182,7 +182,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+$scope.videoSelection[i].title+'</strong>"!',
                         kudos: gambleWinnings };
                     won = true;
-                    sendEvent('<strong>'+username+'</strong> just won <strong>'+gambleWinnings+'</strong> kudos by betting '+$scope.titleGambleAmount+
+                    sendEvent('<strong>'+username+'</strong> won <strong>'+gambleWinnings+'</strong> kudos by betting '+$scope.titleGambleAmount+
                     ' on "'+gambleString+'"!');
                     fireUser.child('kudos').transaction(function(userKudos) {
                         return userKudos ? parseInt(userKudos) + +gambleWinnings : +gambleWinnings;
@@ -277,6 +277,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
         $scope.controlTitleGamble = false;
         $scope.titleGambleSet = true;
+        sendEvent('<strong>'+username+'</strong> made a <strong>'+$scope.titleGambleAmount+'</strong> kudo title bet!');
     };
     
     $scope.titleGambleCalcMulti = function() {
@@ -410,7 +411,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 fireRef.child('voting').on('value', function(snap) { voteEnd = snap.val() || 0; }); // Listen for vote changes
                 fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); $scope.user = snap.val()[username]; }); // Listen for user changes
                 fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
-                fireRef.child('eventLog').endAt().limit(1).on('child_added',function(snap) { $scope.eventLog.push(snap.val()); $scope.eventLog.slice(0,16); });
+                fireRef.child('eventLog').endAt().limit(10).on('child_added',function(snap) { $scope.eventLog.push(snap.val()); $scope.eventLog.slice(0,16); });
                 $timeout(function(){});
             });
         }
