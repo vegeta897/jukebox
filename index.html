@@ -58,7 +58,7 @@
         </div>
         <div class="event-log">
             <table>
-                <tr ng-repeat="entry in eventLog" ng-show="theTime - entry.time < 180000" ng-style="{opacity: (180000 - (theTime - entry.time))/180000}">
+                <tr ng-repeat="entry in eventLog" ng-show="theTime - entry.time < 300000" ng-style="{opacity: (300000 - (theTime - entry.time))/300000}">
                     <td>{{ entry.time | date:'H:mm:ss' }}</td><td ng-bind-html="entry.text"></td>
                 </tr>
             </table>
