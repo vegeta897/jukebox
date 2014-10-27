@@ -87,7 +87,7 @@
                         <label for="titleGambleString">String</label>
                         <input type="text" id="titleGambleString" name="titleGambleString" ng-change="titleGambleCalcMulti()" ng-model="titleGambleString" size="5" maxlength="15"><span class="muted hint"></span>
                     </div>
-                    <p ng-style="{visible: titleGambleMulti}">Win multiplier: <strong>{{ titleGambleMulti }}</strong></p>
+                    <p>Win multiplier: <strong>{{ titleGambleMulti || 0 }}</strong></p>
                 </fieldset>
                 <button type="submit" ng-disabled="titleGambleAmount < 1 || !titleGambleString || titleGambleString.length < 2" >Place ya' bet!</button>
             </form>

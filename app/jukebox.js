@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.14; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.15; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true;
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -173,7 +173,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
             var won = false;
             var gambleString = $scope.titleGambleString+''; // Cast as string
-            var gambleWinnings = parseInt($scope.titleGambleAmount * $scope.titleGambleMulti);
+            var gambleWinnings = Math.floor($scope.titleGambleAmount * $scope.titleGambleMulti);
             for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
                 var theIndex = $scope.videoSelection[i].title.toUpperCase().indexOf(gambleString.toUpperCase());
                 if(theIndex >= 0) {
@@ -277,7 +277,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.titleGambleString) return;
         $scope.titleGambleString = $scope.titleGambleString.split(' ').join('').split('-').join(''); // Remove spaces and dashes
         if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multis = [1.5, 2, 2.5, 3, 4, 5, 10, 20, 30, 50, 100, 200, 500, 1000];
+        var multis = [1.1, 1.5, 2, 3, 4, 5, 10, 20, 30, 50, 100, 200, 500, 1000];
         $scope.titleGambleMulti = multis[$scope.titleGambleString.length-2];
         $timeout(function(){});
     };
