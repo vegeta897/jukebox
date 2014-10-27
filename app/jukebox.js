@@ -68,8 +68,8 @@ function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
 }
 
 function randomIntRange(min,max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function countProperties(obj) { // Return number of properties an object has
-    if(!obj) return 0; var count = 0; for(var key in obj) { if(!obj.hasOwnProperty(key)) { continue; } count++; } return count; 
+function countProperties(obj,exception) { // Return number of properties an object has
+    if(!obj) return 0; var count = 0; for(var key in obj) { if(!obj.hasOwnProperty(key) || key == exception) { continue; } count++; } return count; 
 }
 // Return a random element from input array
 function pickInArray(array) { return array[Math.floor(Math.random()*array.length)]; }
@@ -128,11 +128,16 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             player.loadVideoById(snap.val().video_id,0,'large');
         }
         $scope.playing = snap.val();
+        if(!$scope.auth) return;
         if($scope.playing.index === myVote) {
             console.log('the vid you voted for won!');
             if(!$scope.playing.bounty || $scope.bountySelect.index === $scope.playing.index) return;
             fireUser.child('kudos').transaction(function(userKudos) {
-                return parseInt(userKudos) + parseInt($scope.playing.bounty / countProperties($scope.playing.votes));
+                return parseInt(userKudos || 0) + parseInt($scope.playing.bounty / countProperties($scope.playing.votes,username) + 2);
+            });
+        } else if(myVote) {
+            fireUser.child('kudos').transaction(function(userKudos) {
+                return parseInt(userKudos || 0) + 1;
             });
         }
         delete $scope.bountyAmount; delete $scope.bountySelect;
@@ -282,7 +287,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireRef.child('selection').remove();
             voting = false;
             fireRef.child('votes').remove();
-            services.updateVideo(play.video_id,countProperties(play.votes));
+            services.updateVideo(play.video_id,countProperties(play.votes,''));
         });
     };
 
