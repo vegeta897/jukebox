@@ -140,7 +140,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             } else {
                 console.log('you won the bounty!');
                 fireUser.child('kudos').transaction(function(userKudos) {
-                    var reward = parseInt($scope.playing.bounty / countProperties($scope.playing.votes,username) + 2);
+                    var reward = parseInt($scope.playing.bounty / Math.max(1,countProperties($scope.playing.votes,username)) + 2);
                     return userKudos ? parseInt(userKudos) + reward : reward ;
                 });
             }
