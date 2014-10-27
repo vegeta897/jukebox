@@ -29,18 +29,24 @@ header form button { float: left; width: 66px; height: 24px; }
 .video-selection table tr td.bounty { font-size: 1.1em; }
 .video-selection table tr td.votes { padding: 0; }
 .video-selection table tr td.votes .vote-icon { 
-    width: 8px; height: 16px; background: white; border-radius: 4px; position: relative; top: 3px;
+    width: 8px; height: 17px; background: white; border-radius: 4px; position: relative; top: 2px;
     float: left; margin-right: 3px;
 }
 .dj { margin: 16px; text-align: center; }
+
+.event-log table { width: 100%; margin: 0 20px 16px; }
+.event-log table tr td { padding: 2px 6px; }
+.event-log table tr td:first-child { width: 50px; }
+
 .listeners { text-align: center; margin-bottom: 8px; }
 .listeners h3 { margin-bottom: 0; }
 .listener { padding: 4px 6px; display: inline-block; font-size: 0.8em; }
 .listener i { font-size: 1.4em; top: 2px; position: relative; }
 .listener .volume { width: 64px; margin: 4px auto; height: 4px; padding: 1px; }
 .listener .volume div { height: 4px; }
+.message { cursor: pointer; }
 p.message { text-align: center; margin-bottom: 4px; }
-.message i { margin-right: 10px; cursor: pointer; }
+.message i { margin-right: 10px; }
 
 .control-buttons { text-align: center; margin: 16px 0; }
 .control-buttons button { display: inline-block; margin: 0 4px; }

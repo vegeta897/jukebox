@@ -30,6 +30,9 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .video-selection table tr td.control:hover a { color: #f2f5eb; }
 .video-selection table tr td.votes .vote-icon { background: #20aa22; }
 
+.event-log table tr td strong { color: #DEFF7C; }
+.event-log table tr td:first-child { color: #858a71; }
+
 .listeners h2 { color: #DEFF7C; }
 .listener { color: #DEFF7C; }
 .listener i { color: #D8DBCD; }
