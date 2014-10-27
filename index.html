@@ -70,7 +70,8 @@
         <div class="add-bounty control-panel" ng-show="show=auth && controlAddBounty">
             <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
-            <form ng-submit="addBounty()" ng-show="videoSelection && user.kudos">
+            <p ng-show="bountySet">You can't place more than one bounty per round.</p>
+            <form ng-submit="addBounty()" ng-show="videoSelection && user.kudos && !bountySet">
                 <fieldset>
                     <legend>Add a bounty</legend>
                     <div class="field">

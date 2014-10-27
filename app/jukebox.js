@@ -131,16 +131,26 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.auth) return;
         if($scope.playing.index === myVote) {
             console.log('the vid you voted for won!');
-            if(!$scope.playing.bounty || $scope.bountySelect.index === $scope.playing.index) return;
-            fireUser.child('kudos').transaction(function(userKudos) {
-                return parseInt(userKudos || 0) + parseInt($scope.playing.bounty / countProperties($scope.playing.votes,username) + 2);
-            });
+            console.log($scope.bountySelect.index,$scope.playing.index,$scope.playing.bounty,countProperties($scope.playing.votes,username));
+            if(!$scope.playing.bounty || ($scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
+                console.log('there was no bounty, or it was your own bounty');
+                fireUser.child('kudos').transaction(function(userKudos) {
+                    return userKudos ? parseInt(userKudos) + 2 : 2;
+                });
+            } else {
+                console.log('you won the bounty!');
+                fireUser.child('kudos').transaction(function(userKudos) {
+                    var reward = parseInt($scope.playing.bounty / countProperties($scope.playing.votes,username) + 2);
+                    return userKudos ? parseInt(userKudos) + reward : reward ;
+                });
+            }
         } else if(myVote) {
+            console.log('you got a kudo for voting');
             fireUser.child('kudos').transaction(function(userKudos) {
-                return parseInt(userKudos || 0) + 1;
+                return userKudos ? parseInt(userKudos) + 1 : 1;
             });
         }
-        delete $scope.bountyAmount; delete $scope.bountySelect;
+        delete $scope.bountyAmount; delete $scope.bountySelect; delete $scope.bountySet;
         myVote = null;
     };
     
@@ -222,11 +232,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.user.kudos || $scope.bountyAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have '+$scope.user.kudos+' kudos!' }; return; }
         console.log('adding',$scope.bountyAmount,'kudos to video #',$scope.bountySelect.index+1);
         fireUser.child('kudos').transaction(function(userKudos) {
-            return userKudos-$scope.bountyAmount == 0 ? null : userKudos-$scope.bountyAmount; 
+            return userKudos ? 0 : userKudos-$scope.bountyAmount == 0 ? null : userKudos-$scope.bountyAmount; 
         });
         fireRef.child('selection/'+$scope.bountySelect.index+'/bounty').transaction(function(bounty) {
-            return parseInt(bounty || 0) + $scope.bountyAmount;
+            return bounty ? parseInt(bounty) + $scope.bountyAmount : $scope.bountyAmount;
         });
+        $scope.bountySet = true;
     };
 
     $scope.restrictNumber = function(input) { input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-',''); return input; };
