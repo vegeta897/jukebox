@@ -6,11 +6,13 @@ h1 { font-size: 3em; color: #d3d9b9; text-shadow: none; -webkit-text-fill-color:
     background: -webkit-linear-gradient(left top, #f2f5eb, #d3d9b9);
     background: -o-linear-gradient(transparent, transparent); -webkit-background-clip: text; }
 
-input[type="text"] { background: #ddd; }
+input[type="text"], select { background: #ddd; }
 button { background: #20aa22; color: white; border: none; transition: all 0.3s; padding: 3px 10px; }
 button:hover { background: #1e8020; }
+button[disabled] { background: #444; color: #777; cursor: default; }
 
 header p:last-child { color: #858a71; }
+header p:last-child span { color: #5ea25a; }
 
 h2, legend { color: #f2f5eb; }
 
@@ -23,6 +25,7 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .video-selection table tr { border-color: #222; transition: all 0.1s; }
 .video-selection table tr td { transition: all 0.1s; }
 .video-selection table tr:hover { background: #4e5150; color: white; }
+.video-selection table tr td.bounty { color: #DEFF7C; }
 .video-selection table tr td.control:hover a { color: #f2f5eb; }
 .video-selection table tr td.votes .vote-icon { background: #20aa22; }
 
@@ -35,11 +38,12 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 
 .message i { color: #858a71; }
 
+.control-buttons button { background: #282828; color: #fff; }
+.control-buttons button:hover { background: #2e2e2e; color: #ddd; }
+.control-buttons button.selected, .control-buttons button.selected:hover { background: #161616; color: #ccc; }
+
 .field .valid, p.message.success { color: #20aa22; }
 .field .invalid, p.message.error { color: #c60a09; }
-
-.add-video i.hide-form { color: #858a71; transition: all 0.3s; }
-.add-video i.hide-form:hover { color: #d3d9b9; }
 
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }

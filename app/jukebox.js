@@ -81,6 +81,7 @@ function pickInObject(object) { // Return a random property from input object (a
 }
 
 function flip() { return Math.random() > 0.5; } // Flip a coin
+function isInt(input) { return parseInt(input) === input; }
 
 Application.Services.factory("services", ['$http', function($http) {
     var serviceBase = 'php/', obj = {};
@@ -112,9 +113,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var username = localStorageService.get('username');
     var passcode = localStorageService.get('passcode');
     var volume = localStorageService.get('volume');
-    $scope.username = username; $scope.passcode = passcode;
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
-    var init = false, gettingVideos = false, voting, voteEnd, muted;
+    var fireUser;
+    var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
+    
+    $scope.username = username; $scope.passcode = passcode;
+    $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'}];
     
     var onVideoChange = function(snap) {
         if(snap.val() == null) { delete $scope.playing; return; }
@@ -124,15 +128,22 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             player.loadVideoById(snap.val().video_id,0,'large');
         }
         $scope.playing = snap.val();
+        if($scope.playing.index === myVote) {
+            console.log('the vid you voted for won!');
+            if(!$scope.playing.bounty || $scope.bountySelect.index === $scope.playing.index) return;
+            fireUser.child('kudos').transaction(function(userKudos) {
+                return parseInt(userKudos) + parseInt($scope.playing.bounty / countProperties($scope.playing.votes));
+            });
+        }
+        delete $scope.bountyAmount; delete $scope.bountySelect;
+        myVote = null;
     };
     
     var onSelectionChange = function(snap) {
         if(snap.val() == null) { delete $scope.videoSelection; return; }
         $scope.videoSelection = snap.val();
-    };
-    
-    var onVoteTimer = function(snap) {
-        voteEnd = snap.val() || 0;
+        $scope.bountySelect = $scope.videoSelection[0];
+        $scope.bountyAmount = 0;
     };
     
     $scope.login = function() {
@@ -141,7 +152,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.auth = auth;
             localStorageService.set('username',username);
             localStorageService.set('passcode',passcode);
-            var fireUser = fireRef.child('users/'+username);
+            fireUser = fireRef.child('users/'+username);
+            fireUser.once('value',function(snap){ $scope.user = snap.val(); });
             var lastOnlineRef = fireUser.child('lastOnline');
             var fireAuths = fireRef.child('auths');
             fireAuths.child(auth.uid).set({username:username,passcode:passcode});
@@ -170,6 +182,49 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             });
         }
     };
+
+    $scope.vote = function(index) {
+        if(!$scope.auth) return;
+        if(player.isMuted()) {
+            $scope.message = { type: 'error', text: 'You can\'t vote while muted!' };
+            return;
+        }
+        myVote = index;
+        fireRef.child('votes/'+username).set(index);
+        for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
+            fireRef.child('selection/'+i+'/votes/'+username).set(i == index ? true : null);
+        }
+    };
+
+    $scope.becomeDJ = function() {
+        $scope.dj = username;
+        fireRef.child('dj').set(username);
+    };
+    
+    $scope.closeMessage = function() { delete $scope.message; };
+    
+    $scope.showControl = function(control) {
+        if($scope[control]) { $scope[control] = false; return; }
+        for(var i = 0, il = $scope.controlList.length; i < il; i++) {
+            $scope[$scope.controlList[i].name] = control == $scope.controlList[i].name;
+        }
+    };
+    $scope.controlEnabled = function(control) { return $scope[control]; };
+    
+    $scope.addBounty = function() {
+        $scope.bountyAmount = parseInt($scope.bountyAmount);
+        if(!$scope.bountyAmount || $scope.bountyAmount < 0) { $scope.message = { type:'error',text:'That ain\'t no valid amount yo' }; return; }
+        if(!$scope.user.kudos || $scope.bountyAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have '+$scope.user.kudos+' kudos!' }; return; }
+        console.log('adding',$scope.bountyAmount,'kudos to video #',$scope.bountySelect.index+1);
+        fireUser.child('kudos').transaction(function(userKudos) {
+            return userKudos-$scope.bountyAmount == 0 ? null : userKudos-$scope.bountyAmount; 
+        });
+        fireRef.child('selection/'+$scope.bountySelect.index+'/bounty').transaction(function(bounty) {
+            return parseInt(bounty || 0) + $scope.bountyAmount;
+        });
+    };
+
+    $scope.restrictNumber = function(input) { input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-',''); return input; };
     
     $scope.parseURL = function() {
         if(!$scope.add_url && !$scope.batchList) { return; }
@@ -208,7 +263,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             }
         });
     };
-    
+
+    $scope.forceVote = function() {
+        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 90000 : 0;
+        fireRef.child('playing/startTime').set(new Date().getTime() - offset);
+    };
+
     var playVideo = function() { // Tally votes and pick the video with the most
         if(!$scope.auth || $scope.dj != username) return;
         var winner = 0;
@@ -225,23 +285,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             services.updateVideo(play.video_id,countProperties(play.votes));
         });
     };
-    
-    $scope.vote = function(index) {
-        if(!$scope.auth) return;
-        if(player.isMuted()) {
-            $scope.message = { type: 'error', text: 'You can\'t vote while muted!.' };
-            return;
-        }
-        fireRef.child('votes/'+username).set(index);
-        for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
-            fireRef.child('selection/'+i+'/votes/'+username).set(i == index ? true : null);
-        }
-    };
-    
-    $scope.becomeDJ = function() {
-        $scope.dj = username;
-        fireRef.child('dj').set(username);
-    };
 
     var getVideos = function() {
         fireRef.child('votes').remove();
@@ -254,6 +297,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(data.data.length != 6) { return; }
             for(var d = 0, dl = data.data.length; d < dl; d++) {
                 data.data[d].duration = parseUTCtime(data.data[d].duration);
+                data.data[d].index = d;
             }
             $scope.videoSelection = data.data;
             fireRef.child('selection').set(angular.copy($scope.videoSelection));
@@ -261,13 +305,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $timeout(function(){});
         });
     };
-    
-    $scope.forceVote = function() {
-        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 90000 : 0;
-        fireRef.child('playing/startTime').set(new Date().getTime() - offset);
-    };
-    
-    $scope.closeMessage = function() { delete $scope.message; };
     
     var interval = function() {
         if(!init && player && player.hasOwnProperty('loadVideoById')) {
@@ -288,8 +325,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 }
                 fireRef.child('playing').on('value', onVideoChange); // Listen for video changes
                 fireRef.child('selection').on('value', onSelectionChange); // Listen for selection changes
-                fireRef.child('voting').on('value', onVoteTimer); // Listen for vote changes
-                fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); }); // Listen for user changes
+                fireRef.child('voting').on('value', function(snap) { voteEnd = snap.val() || 0; }); // Listen for vote changes
+                fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); $scope.user = snap.val()[username]; }); // Listen for user changes
                 fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
                 $timeout(function(){});
             });
@@ -300,11 +337,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(init && playing && $scope.playing) {
             if(muted != player.isMuted()) {
                 muted = player.isMuted();
-                if(username) fireRef.child('users/'+username+'/muted').set(muted);
+                if($scope.auth) fireUser.child('muted').set(muted);
             }
             if(parseInt(player.getVolume()) != volume) {
                 volume = parseInt(player.getVolume());
-                if(username) fireRef.child('users/'+username+'/volume').set(volume);
+                if($scope.auth) fireUser.child('volume').set(volume);
                 localStorageService.set('volume',volume);
             }
             if(!gettingVideos && $scope.dj && $scope.dj == username) { // If already getting videos, don't try again

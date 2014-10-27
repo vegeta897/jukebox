@@ -7,6 +7,7 @@ h1 { padding: 10px 0; float: left; }
 button { cursor: pointer; }
 header h1 + p { float: left; margin: 30px 0 0 12px; }
 header p:last-child { float: right; margin-top: 30px; }
+header p:last-child span { margin-left: 10px; }
 h2 { text-align: center; margin-bottom: 10px; font-size: 1.5em; }
 h3 { text-align: center; margin-bottom: 6px; font-size: 1.1em; }
 dl dt { line-height: 1.2em; }
@@ -18,13 +19,14 @@ header form input[type="text"] { margin-right: 8px; height: 18px; }
 header form button { float: left; width: 66px; height: 24px; }
 #player { width: 100%; height: 390px; }
 .now-playing { padding: 20px 0 0; }
-.video-selection { margin: 28px 0; }
-.video-selection .vote-timer { text-align: center; }
+.video-selection { margin: 20px 0; }
+.video-selection .vote-timer { text-align: center; margin-bottom: 4px; }
 .video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; }
 .video-selection table tr td { padding: 10px 6px; }
 .video-selection table tr td:hover { cursor: pointer; }
 .video-selection table tr td.control { text-align: center; }
 .video-selection table tr td.control a { text-decoration: none; font-size: 0.8em; }
+.video-selection table tr td.bounty { font-size: 1.1em; }
 .video-selection table tr td.votes { padding: 0; }
 .video-selection table tr td.votes .vote-icon { 
     width: 8px; height: 16px; background: white; border-radius: 4px; position: relative; top: 3px;
@@ -39,22 +41,29 @@ header form button { float: left; width: 66px; height: 24px; }
 .listener .volume div { height: 4px; }
 p.message { text-align: center; margin-bottom: 0; }
 .message i { margin-right: 10px; cursor: pointer; }
-.add-video i.hide-form { float: left; font-size: 1.8em; position: relative; left: 240px; opacity: 0; }
-.add-video i.hide-form.show { opacity: 1; cursor: pointer; }
-.add-video > button { display: block; float: none; margin: 8px auto 0; position: relative; left: -10px; }
-.add-video > button.header-style { background: none; border: none; font-size: 1.3em; }
-.add-video > button:focus { outline-width: 0; }
-.add-video form { margin: 16px 0 32px 32px; }
-.add-video legend { text-align: center; margin-bottom: 10px; padding-right: 32px; font-size: 1.5em; }
+
+.control-buttons { text-align: center; margin: 16px 0; }
+.control-buttons button { display: inline-block; margin: 0 4px; }
+.control-buttons button.selected { }
+.control-buttons button:focus { outline-width: 0; }
+.control-panel { margin: 16px 32px 32px; }
+.control-panel h2, .control-panel legend { text-align: center; margin-bottom: 10px; font-size: 1.5em; }
+
 .field { height: 24px; margin-bottom: 6px; clear: both; }
+.field label { display: block; float: left; width: 120px; padding: 3px 10px 0 0; text-align: right; }
+.field input { float: left; }
+
+.add-bounty { text-align: center; }
+.add-bounty input { text-align: right; }
+.add-bounty select { float: left; width: 340px; margin-bottom: 12px; }
+.add-bounty .hint { float: left; }
+
 .field-large { height: 72px; }
 .add-video textarea { width: 349px; height: 64px; resize: none; }
-.add-video fieldset label { display: block; float: left; width: 120px; padding: 3px 10px 0 0; text-align: right; }
-.add-video input { float: left; }
 .field .valid, .field .invalid, .field .hint { margin-left: 8px; line-height: 20px; }
 .field .valid, .field .invalid { font-weight: bold; }
 .add-video form button { float: left; margin-left: 130px; }
-.add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; }
+.add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; float: left; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
 
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }
