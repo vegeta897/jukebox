@@ -34,7 +34,7 @@ header form button { float: left; width: 66px; height: 24px; }
 }
 .dj { margin: 16px; text-align: center; }
 
-.event-log table { width: 100%; margin: 0 20px 16px; }
+.event-log table { width: 600px; margin: 0 20px 16px; }
 .event-log table tr td { padding: 2px 6px; }
 .event-log table tr td:first-child { width: 50px; }
 

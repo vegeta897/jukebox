@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.16; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.17; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime();
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -183,7 +183,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+$scope.videoSelection[i].title+'</strong>"!',
                         kudos: gambleWinnings };
                     won = true;
-                    sendEvent('<strong>'+username+'</strong> just won <strong>'+gambleWinnings+'</strong> by betting '+$scope.titleGambleAmount+
+                    sendEvent('<strong>'+username+'</strong> just won <strong>'+gambleWinnings+'</strong> kudos by betting '+$scope.titleGambleAmount+
                     ' on "'+gambleString+'"!');
                     fireUser.child('kudos').transaction(function(userKudos) {
                         return userKudos ? parseInt(userKudos) + +gambleWinnings : +gambleWinnings;
@@ -204,7 +204,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             eventLog.slice(0,21); // Truncate to 20 events
             eventLog.push({ text: text, time: new Date().getTime() });
             fireRef.child('eventLog').set(eventLog);
-            $scope.eventLog = eventLog;
         });
     };
     
@@ -416,7 +415,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 fireRef.child('voting').on('value', function(snap) { voteEnd = snap.val() || 0; }); // Listen for vote changes
                 fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); $scope.user = snap.val()[username]; }); // Listen for user changes
                 fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
-                fireRef.child('eventLog').once('value',function(snap) { $scope.eventLog = snap.val(); });
+                fireRef.child('eventLog').on('value',function(snap) { $scope.eventLog = snap.val(); });
                 $timeout(function(){});
             });
         }
