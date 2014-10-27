@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.11; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.12; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true;
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'}];
@@ -142,13 +142,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.playing = snap.val();
         if(!$scope.auth) return;
         if(parseInt($scope.playing.index) === myVote) {
-            console.log('the vid you voted for won!');
-            console.log('my vote index',myVote);
-            console.log('bounty placed index:',$scope.bountySelect.index);
-            console.log('playing index:',$scope.playing.index);
-            console.log('bounty amount:',$scope.playing.bounty);
-            console.log('non-self voters:',countProperties($scope.playing.votes,username));
-            if(!$scope.playing.bounty || ($scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
+            if(!$scope.playing.bounty || !$scope.bountySelect || ($scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
                 console.log('there was no bounty, or it was your own bounty');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + 2 : 2;
@@ -289,7 +283,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type: 'error', text: 'That video has already been added.' };
             } else {
                 var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
-                $scope.message = { type: 'success', text: justAdded + ' added successfully!' };
+                $scope.message = { type: 'success', text: justAdded + ' added successfully!', kudos: parseInt(results.data.data.items.length * 5) };
                 fireUser.child('kudos').transaction(function(userKudos) {
                     var reward = parseInt(results.data.data.items.length * 5);
                     return userKudos ? parseInt(userKudos) + reward : reward ;

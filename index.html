@@ -64,7 +64,10 @@
                 <div class="volume"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
-        <p class="message" ng-show="message" ng-class="message.type"><i class="fa fa-close" ng-click="closeMessage()"></i>{{ message.text }}</p>
+        <div ng-show="message">
+            <p class="message" ng-class="message.type"><i class="fa fa-close" ng-click="closeMessage()"></i>{{ message.text }}</p>
+            <p class="message" ng-show="message.kudos">You gained <strong>{{ message.kudos }}</strong> kudos!</p>
+        </div>
         <div class="control-buttons" ng-show="auth">
             <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}">{{ control.title }}</button>
         </div>
@@ -98,10 +101,6 @@
                         <span ng-hide="add_valid || !add_url" class="invalid">Invalid URL or ID</span>
                         <span ng-show="add_valid && add_url.length > 0" class="valid" ng-bind="parsedIds"></span>
                     </div>
-                    <!--<div class="field">-->
-                        <!--<label for="name">Name</label>-->
-                        <!--<input name="name" id="name" ng-model="add_name" type="text" placeholder="Plaid - Two Rooms" size="46" maxlength="120" ng-disabled="addingVideo" ng-change="parseTitle()" />-->
-                    <!--</div>-->
                     <div class="field">
                         <label for="artist">Artist</label>
                         <input name="artist" id="artist" ng-model="add_artist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />
@@ -119,12 +118,6 @@
                         <span ng-hide="add_valid || !batchList" class="invalid">Invalid URL or ID</span>
                         <span ng-show="add_valid && batchList.length > 0" class="valid">List validated</span>
                     </div>
-                    <!-- Not bothering with this because video title will be retrieved when adding each video -->
-                    <!--<div class="field">-->
-                        <!--<label for="batch_artist">Artist</label>-->
-                        <!--<input name="batch_artist" id="batch_artist" ng-model="batchArtist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />-->
-                        <!--<span class="hint muted">If applicable</span>-->
-                    <!--</div>-->
                 </fieldset>
                 <button type="submit" ng-disabled="addingVideo || (!batchList && !add_url)">Add Video</button>
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
