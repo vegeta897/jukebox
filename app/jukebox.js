@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.12; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.13; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true;
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'}];
@@ -142,7 +142,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.playing = snap.val();
         if(!$scope.auth) return;
         if(parseInt($scope.playing.index) === myVote) {
-            if(!$scope.playing.bounty || !$scope.bountySelect || ($scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
+            if(!$scope.playing.bounty || ($scope.bountySelect && $scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
                 console.log('there was no bounty, or it was your own bounty');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + 2 : 2;
