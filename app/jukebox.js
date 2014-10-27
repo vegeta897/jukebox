@@ -289,7 +289,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.titleGambleString) return;
         $scope.titleGambleString = $scope.titleGambleString.trim(); // Remove leading and trailing spaces
         if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multis = [1.1, 1.5, 2, 3, 4, 5, 8, 10, 15, 20, 30, 50, 100, 200, 500, 1000, 2000, 3000, 5000, 10000];
+        var multis = [1.1, 1.3, 1.5, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 7500];
         $scope.titleGambleMulti = multis[$scope.titleGambleString.length-2];
         $timeout(function(){});
     };
