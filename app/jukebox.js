@@ -232,7 +232,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.user.kudos || $scope.bountyAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have '+$scope.user.kudos+' kudos!' }; return; }
         console.log('adding',$scope.bountyAmount,'kudos to video #',$scope.bountySelect.index+1);
         fireUser.child('kudos').transaction(function(userKudos) {
-            return userKudos ? 0 : userKudos-$scope.bountyAmount == 0 ? null : userKudos-$scope.bountyAmount; 
+            return !userKudos ? 0 : userKudos-$scope.bountyAmount == 0 ? null : userKudos-$scope.bountyAmount; 
         });
         fireRef.child('selection/'+$scope.bountySelect.index+'/bounty').transaction(function(bounty) {
             return bounty ? parseInt(bounty) + $scope.bountyAmount : $scope.bountyAmount;
