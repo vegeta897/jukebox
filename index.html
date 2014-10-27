@@ -10,17 +10,18 @@
 <body ng-cloak ng-controller="Main">
     <header>
         <h1>Jukebox</h1>
-        <p>Sup yall.</p>
-        <form ng-submit="login()" ng-hide="auth">
+        <p><strong>v{{ version }}</strong> - <span class="muted">{{ versionName }}</span></p>
+        <form ng-submit="login()" ng-hide="auth || initializing || needUpdate">
             <fieldset>
                 <input type="text" name="username" id="username" ng-model="username" size="10" placeholder="username" />
                 <input type="text" name="passcode" id="passcode" ng-model="passcode" size="10" placeholder="passcode" />
             </fieldset>
             <button type="submit"><span>Log In</span></button>
         </form>
-        <p ng-show="auth">{{ username }}<span><strong>{{ user.kudos }} </strong>kudos</span></p>
+        <p ng-show="auth">{{ username }}<span><strong>{{ user.kudos || 0 }} </strong>kudos</span></p>
     </header>
-    <section>
+    <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Ctrl+F5</strong> to get the latest version.</p>
+    <section ng-hide="initializing || needUpdate">
         <div id="player"></div>
         <div class="now-playing" ng-show="playing">
             <h3 class="muted">NOW PLAYING</h3>

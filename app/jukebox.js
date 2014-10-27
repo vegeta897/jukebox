@@ -116,9 +116,21 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
-    
+
+    $scope.version = 0.1; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.initializing = true;
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'}];
+
+    fireRef.parent().child('version').once('value', function(snap) {
+        $scope.initializing = false;
+        if($scope.version < snap.val()) {
+            $scope.needUpdate = true;
+        } else {
+            setInterval(interval,500);
+        }
+        $timeout();
+    });
     
     var onVideoChange = function(snap) {
         if(snap.val() == null) { delete $scope.playing; return; }
@@ -396,7 +408,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
         $timeout(function(){});
     };
-    setInterval(interval,500);
 });
 
 Application.Filters.filter('capitalize', function() {
