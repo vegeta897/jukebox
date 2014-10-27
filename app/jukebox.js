@@ -114,7 +114,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var volume = localStorageService.get('volume');
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
     var fireUser;
-    var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
+    var init = false, gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
     $scope.version = 0.19; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
@@ -142,7 +142,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.playing = snap.val();
         if(!$scope.auth) return;
         if(parseInt($scope.playing.index) === myVote) {
-            if(!$scope.playing.bounty || ($scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
+            if(!$scope.playing.bounty || (bountyIndex === $scope.playing.index && $scope.bountySet)) {
                 console.log('there was no bounty, or it was your own bounty');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + 2 : 2;
@@ -160,7 +160,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 return userKudos ? parseInt(userKudos) + 1 : 1;
             });
         }
-        delete $scope.bountyAmount; delete $scope.bountySelect; delete $scope.bountySet;
+        delete $scope.bountyAmount; delete $scope.bountySelect; delete $scope.bountySet; bountyIndex = 0;
         myVote = null;
     };
     
@@ -195,9 +195,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 sendEvent('<strong>'+username+'</strong> lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
             }
             $scope.bountySelect = $scope.videoSelection[0];
+            bountyIndex = 0;
         } else {
             $scope.videoSelection = snap.val();
-            $scope.bountySelect = $scope.videoSelection[$scope.bountySelect.index];
+            $scope.bountySelect = $scope.videoSelection[bountyIndex];
         }
         delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount;
     };
@@ -288,7 +289,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.titleGambleString) return;
         $scope.titleGambleString = $scope.titleGambleString.trim(); // Remove leading and trailing spaces
         if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multis = [1.1, 1.5, 2, 3, 4, 5, 10, 20, 30, 50, 100, 200, 500, 1000, 2000, 3000, 5000, 10000];
+        var multis = [1.1, 1.5, 2, 3, 4, 5, 8, 10, 15, 20, 30, 50, 100, 200, 500, 1000, 2000, 3000, 5000, 10000];
         $scope.titleGambleMulti = multis[$scope.titleGambleString.length-2];
         $timeout(function(){});
     };
@@ -305,7 +306,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             return bounty ? parseInt(bounty) + $scope.bountyAmount : $scope.bountyAmount;
         });
         $scope.controlAddBounty = false;
-        $scope.bountySet = true;
+        $scope.bountySet = true; bountyIndex = $scope.bountySelect.index;
     };
 
     $scope.restrictNumber = function(input) { input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-',''); return input; };
