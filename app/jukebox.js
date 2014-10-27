@@ -190,7 +190,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     break;
                 }
             }
-            if(!won) { $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' }; }
+            if(!won) { 
+                $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' };
+                sendEvent('<strong>'+username+'</strong> lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
+            }
             $scope.bountySelect = $scope.videoSelection[0];
         } else {
             $scope.videoSelection = snap.val();
