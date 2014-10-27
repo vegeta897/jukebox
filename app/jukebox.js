@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.1; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.11; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true;
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'}];
@@ -141,9 +141,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
         $scope.playing = snap.val();
         if(!$scope.auth) return;
-        if($scope.playing.index === myVote) {
+        if(parseInt($scope.playing.index) === myVote) {
             console.log('the vid you voted for won!');
-            console.log($scope.bountySelect.index,$scope.playing.index,$scope.playing.bounty,countProperties($scope.playing.votes,username));
+            console.log('my vote index',myVote);
+            console.log('bounty placed index:',$scope.bountySelect.index);
+            console.log('playing index:',$scope.playing.index);
+            console.log('bounty amount:',$scope.playing.bounty);
+            console.log('non-self voters:',countProperties($scope.playing.votes,username));
             if(!$scope.playing.bounty || ($scope.bountySelect.index === $scope.playing.index && $scope.bountySet)) {
                 console.log('there was no bounty, or it was your own bounty');
                 fireUser.child('kudos').transaction(function(userKudos) {
@@ -169,8 +173,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var onSelectionChange = function(snap) {
         if(snap.val() == null) { delete $scope.videoSelection; return; }
         $scope.videoSelection = snap.val();
-        $scope.bountySelect = $scope.videoSelection[0];
-        $scope.bountyAmount = 0;
     };
     
     $scope.login = function() {
@@ -216,7 +218,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.message = { type: 'error', text: 'You can\'t vote while muted!' };
             return;
         }
-        myVote = index;
+        myVote = parseInt(index);
         fireRef.child('votes/'+username).set(index);
         for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
             fireRef.child('selection/'+i+'/votes/'+username).set(i == index ? true : null);
