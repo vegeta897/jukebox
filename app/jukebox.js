@@ -191,10 +191,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 }
             }
             if(!won) { $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' }; }
+            $scope.bountySelect = $scope.videoSelection[0];
         } else {
             $scope.videoSelection = snap.val();
         }
-        $scope.bountySelect = $scope.videoSelection[0];
         delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount;
     };
     

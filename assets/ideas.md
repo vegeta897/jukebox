@@ -7,7 +7,3 @@
 - Idle games/activities embedded on the page
   - Whiteboard or some way to mark up the video, maybe placing "stickers"
   - Generated trivia/math/misc questions?
-    - 6 YT vid descriptions from the selection are stored
-    - When video starts, users have to guess which description belongs to it
-  - Points system, stored on firebase
-  - Activity log to show when users score points or do other things
