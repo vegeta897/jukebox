@@ -39,7 +39,7 @@ header form button { float: left; width: 66px; height: 24px; }
 .listener i { font-size: 1.4em; top: 2px; position: relative; }
 .listener .volume { width: 64px; margin: 4px auto; height: 4px; padding: 1px; }
 .listener .volume div { height: 4px; }
-p.message { text-align: center; margin-bottom: 0; }
+p.message { text-align: center; margin-bottom: 4px; }
 .message i { margin-right: 10px; cursor: pointer; }
 
 .control-buttons { text-align: center; margin: 16px 0; }
@@ -53,10 +53,13 @@ p.message { text-align: center; margin-bottom: 0; }
 .field label { display: block; float: left; width: 120px; padding: 3px 10px 0 0; text-align: right; }
 .field input { float: left; }
 
-.add-bounty { text-align: center; }
-.add-bounty input { text-align: right; }
+.add-bounty, .title-gamble { text-align: center; }
+.add-bounty input, .title-gamble .field:first-child input { text-align: right; }
+.title-gamble .field:last-child input { text-align: center }
+.title-gamble .field label { width: 240px; }
+.title-gamble form p { margin-bottom: 0.5em; }
 .add-bounty select { float: left; width: 340px; margin-bottom: 12px; }
-.add-bounty .hint { float: left; }
+.add-bounty .hint, .title-gamble .hint { float: left; }
 
 .field-large { height: 72px; }
 .add-video textarea { width: 349px; height: 64px; resize: none; }

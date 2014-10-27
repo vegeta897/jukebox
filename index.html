@@ -37,8 +37,7 @@
                     <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>
                     <td ng-click="vote($index)">{{ video.duration.stamp }}</td>
                     <td class="title" ng-click="vote($index)">
-                        <span ng-show="video.artist && video.track">{{ video.artist }} - {{ video.track }}</span>
-                        <span ng-show="!video.track">{{ video.title }}</span>
+                        <span ng-bind-html="video.title"></span>
                         <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
                     </td>
                     <td class="bounty">
@@ -65,13 +64,35 @@
             </div>
         </div>
         <div ng-show="message">
-            <p class="message" ng-class="message.type"><i class="fa fa-close" ng-click="closeMessage()"></i>{{ message.text }}</p>
+            <p class="message" ng-class="message.type"><i class="fa fa-close" ng-click="closeMessage()"></i><span ng-bind-html="message.text"></span></p>
             <p class="message" ng-show="message.kudos">You gained <strong>{{ message.kudos }}</strong> kudos!</p>
         </div>
         <div class="control-buttons" ng-show="auth">
             <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}">{{ control.title }}</button>
         </div>
-        <div class="add-bounty control-panel" ng-show="show=auth && controlAddBounty">
+        <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
+            <p ng-show="videoSelection">You can't bet on the titles yet!</p>
+            <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
+            <p ng-show="titleGambleSet">You can't place more than one title bet per round.</p>
+            <form ng-submit="titleGamble()" ng-show="!videoSelection && user.kudos && !titleGambleSet">
+                <fieldset>
+                    <legend>Bet on the titles in the voting pool</legend>
+                    <p>Type some letters or a word, and if that string appears in one of the video titles, you win!</p>
+                    <p>The longer your string, the more you win.</p>
+                    <div class="field">
+                        <label for="titleGambleAmount">Amount</label>
+                        <input type="text" id="titleGambleAmount" name="titleGambleAmount" ng-change="titleGambleAmount = restrictNumber(titleGambleAmount)" ng-model="titleGambleAmount" size="3"><span class="muted hint">kudos</span>
+                    </div>
+                    <div class="field">
+                        <label for="titleGambleString">String</label>
+                        <input type="text" id="titleGambleString" name="titleGambleString" ng-change="titleGambleCalcMulti()" ng-model="titleGambleString" size="5" maxlength="15"><span class="muted hint"></span>
+                    </div>
+                    <p ng-style="{visible: titleGambleMulti}">Win multiplier: <strong>{{ titleGambleMulti }}</strong></p>
+                </fieldset>
+                <button type="submit" ng-disabled="titleGambleAmount < 1 || !titleGambleString || titleGambleString.length < 2" >Place ya' bet!</button>
+            </form>
+        </div>
+        <div class="add-bounty control-panel" ng-show="auth && controlAddBounty">
             <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
             <p ng-show="bountySet">You can't place more than one bounty per round.</p>
@@ -127,6 +148,7 @@
     </section>
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+    <script src="js/vendor/angular-sanitize.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="js/vendor/localStorageModule.js"></script>
     <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script> <!-- Firebase -->

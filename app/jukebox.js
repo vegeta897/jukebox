@@ -117,10 +117,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.13; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.14; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true;
     $scope.username = username; $scope.passcode = passcode;
-    $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'}];
+    $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
+        {name:'controlTitleGamble',title:'Title Gamble'}];
 
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
@@ -129,7 +130,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         } else {
             setInterval(interval,500);
         }
-        $timeout();
+        $timeout(function(){});
     });
     
     var onVideoChange = function(snap) {
@@ -166,7 +167,33 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     
     var onSelectionChange = function(snap) {
         if(snap.val() == null) { delete $scope.videoSelection; return; }
-        $scope.videoSelection = snap.val();
+        if(!$scope.videoSelection) { // If first video selection (not a vote or bounty change)
+            console.log('new video list');
+            $scope.videoSelection = snap.val();
+            if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
+            var won = false;
+            var gambleString = $scope.titleGambleString+''; // Cast as string
+            var gambleWinnings = parseInt($scope.titleGambleAmount * $scope.titleGambleMulti);
+            for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
+                var theIndex = $scope.videoSelection[i].title.toUpperCase().indexOf(gambleString.toUpperCase());
+                if(theIndex >= 0) {
+                    $scope.videoSelection[i].title = $scope.videoSelection[i].title.substring(0,theIndex) + '<strong>' + 
+                    $scope.videoSelection[i].title.substring(theIndex,theIndex+gambleString.length) + '</strong>' +
+                    $scope.videoSelection[i].title.substring(theIndex+gambleString.length,$scope.videoSelection[i].title.length);
+                    $scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+$scope.videoSelection[i].title+'</strong>"!',
+                        kudos: gambleWinnings };
+                    won = true;
+                    fireUser.child('kudos').transaction(function(userKudos) {
+                        return userKudos ? parseInt(userKudos) + +gambleWinnings : +gambleWinnings;
+                    });
+                    break;
+                }
+            }
+            if(!won) { $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' }; }
+        } else {
+            $scope.videoSelection = snap.val();
+        }
+        delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount;
     };
     
     $scope.login = function() {
@@ -234,10 +261,31 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     $scope.controlEnabled = function(control) { return $scope[control]; };
     
+    $scope.titleGamble = function() {
+        $scope.titleGambleAmount = parseInt($scope.titleGambleAmount);
+        if(!$scope.titleGambleAmount || $scope.titleGambleAmount < 0) { $scope.message = { type:'error',text:'That ain\'t no valid amount yo' }; return; }
+        if(!$scope.user.kudos || $scope.titleGambleAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have <strong>'+$scope.user.kudos+'</strong> kudos!' }; return; }
+        console.log('betting',$scope.titleGambleAmount,'kudos on title to include string "'+$scope.titleGambleString+'"');
+        fireUser.child('kudos').transaction(function(userKudos) {
+            return !userKudos ? 0 : userKudos-$scope.titleGambleAmount == 0 ? null : userKudos-$scope.titleGambleAmount;
+        });
+        $scope.controlTitleGamble = false;
+        $scope.titleGambleSet = true;
+    };
+    
+    $scope.titleGambleCalcMulti = function() {
+        if(!$scope.titleGambleString) return;
+        $scope.titleGambleString = $scope.titleGambleString.split(' ').join('').split('-').join(''); // Remove spaces and dashes
+        if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
+        var multis = [1.5, 2, 2.5, 3, 4, 5, 10, 20, 30, 50, 100, 200, 500, 1000];
+        $scope.titleGambleMulti = multis[$scope.titleGambleString.length-2];
+        $timeout(function(){});
+    };
+    
     $scope.addBounty = function() {
         $scope.bountyAmount = parseInt($scope.bountyAmount);
         if(!$scope.bountyAmount || $scope.bountyAmount < 0) { $scope.message = { type:'error',text:'That ain\'t no valid amount yo' }; return; }
-        if(!$scope.user.kudos || $scope.bountyAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have '+$scope.user.kudos+' kudos!' }; return; }
+        if(!$scope.user.kudos || $scope.bountyAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have <strong>'+$scope.user.kudos+'</strong> kudos!' }; return; }
         console.log('adding',$scope.bountyAmount,'kudos to video #',$scope.bountySelect.index+1);
         fireUser.child('kudos').transaction(function(userKudos) {
             return !userKudos ? 0 : userKudos-$scope.bountyAmount == 0 ? null : userKudos-$scope.bountyAmount; 
@@ -245,6 +293,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         fireRef.child('selection/'+$scope.bountySelect.index+'/bounty').transaction(function(bounty) {
             return bounty ? parseInt(bounty) + $scope.bountyAmount : $scope.bountyAmount;
         });
+        $scope.controlAddBounty = false;
         $scope.bountySet = true;
     };
 
@@ -283,7 +332,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type: 'error', text: 'That video has already been added.' };
             } else {
                 var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
-                $scope.message = { type: 'success', text: justAdded + ' added successfully!', kudos: parseInt(results.data.data.items.length * 5) };
+                $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: parseInt(results.data.data.items.length * 5) };
                 fireUser.child('kudos').transaction(function(userKudos) {
                     var reward = parseInt(results.data.data.items.length * 5);
                     return userKudos ? parseInt(userKudos) + reward : reward ;
@@ -327,8 +376,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 data.data[d].duration = parseUTCtime(data.data[d].duration);
                 data.data[d].index = d;
             }
-            $scope.videoSelection = data.data;
-            fireRef.child('selection').set(angular.copy($scope.videoSelection));
+            fireRef.child('selection').set(angular.copy(data.data));
             gettingVideos = false;
             $timeout(function(){});
         });
