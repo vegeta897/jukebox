@@ -122,9 +122,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'}];
-    
-    
-    $scope.addMessage = function() { sendEvent('<strong>test</strong> message!') };
 
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
