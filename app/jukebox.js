@@ -113,7 +113,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.261; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.262; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -273,7 +273,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
 
     $scope.becomeDJ = function() {
         $scope.dj = username;
-        var djRef = fireRef.child('dj').set(username);
+        var djRef = new Firebase('https://jukebox897.firebaseio.com/box1/dj');
+        djRef.set(username);
         djRef.onDisconnect().remove();
     };
     
