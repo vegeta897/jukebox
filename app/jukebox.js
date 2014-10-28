@@ -113,7 +113,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.243; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.244; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -158,7 +158,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 console.log('you won the bounty!');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     var reward = parseInt($scope.playing.bounty / Math.max(1,countProperties($scope.playing.votes,username)) + 2);
-                    return userKudos ? parseInt(userKudos) + reward : reward ;
+                    return userKudos ? parseInt(userKudos) + +reward : +reward ;
                 });
             }
         } else if(myVote) {
@@ -166,6 +166,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireUser.child('kudos').transaction(function(userKudos) {
                 return userKudos ? parseInt(userKudos) + 1 : 1;
             });
+        }
+        if(parseInt($scope.playing.index) !== bountyIndex && $scope.bountySet) { // Your bounty didn't win, refunded
+            var refundAmount = $scope.bountyAmount;
+            fireUser.child('kudos').transaction(function(userKudos) {
+                return userKudos ? parseInt(userKudos) + +refundAmount : +refundAmount;
+            });
+            $scope.message = { type: 'default', text: 'Your bounty has been refunded.' };
         }
         delete $scope.bountyAmount; delete $scope.bountySelect; delete $scope.bountySet; bountyIndex = 0;
         myVote = null;
