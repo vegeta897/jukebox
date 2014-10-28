@@ -113,7 +113,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.242; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.243; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -388,6 +388,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         gettingVideos = true;
         // 30 seconds til end of video, get a new video list
         var currentID = $scope.playing ? $scope.playing.video_id : '';
+        console.log('retrieving videos');
         services.getVideos(currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
             if(data && data.data && data.data.length != 6) { return; }
@@ -445,7 +446,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if (elapsed + 90 > $scope.playing.duration.totalSec && !voting) {
                     console.log('video close to ending or ended');
                     getVideos();
-                    $timeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)); // Voting for 90 seconds
+                    $timeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)-1000); // Voting for 89 seconds
                     fireRef.child('voting').set(getServerTime() + Math.min($scope.playing.duration.totalSec*1000,90000));
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
                     fireRef.child('selection').remove();
@@ -455,7 +456,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     fireRef.child('playing').remove();
                     getVideos();
                     $timeout(playVideo, 15000); // Voting for 15 seconds
-                    fireRef.child('voting').set(getServerTime() + 90000);
+                    fireRef.child('voting').set(getServerTime() + 15000);
                 }
             }
         }
