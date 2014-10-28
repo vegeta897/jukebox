@@ -110,10 +110,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var passcode = localStorageService.get('passcode');
     var volume = localStorageService.get('volume');
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
+    var djRef = fireRef.child('dj');
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.262; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.263; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -273,7 +274,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
 
     $scope.becomeDJ = function() {
         $scope.dj = username;
-        var djRef = new Firebase('https://jukebox897.firebaseio.com/box1/dj');
         djRef.set(username);
         djRef.onDisconnect().remove();
     };
@@ -305,7 +305,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.titleGambleString) return;
         $scope.titleGambleString = $scope.titleGambleString.trim(); // Remove leading and trailing spaces
         if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multis = [1.1, 1.3, 1.5, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 7500];
+        var multis = [1.1, 1.3, 1.5, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 2000];
         $scope.titleGambleMulti = multis[$scope.titleGambleString.length-2];
         $timeout(function(){});
     };
