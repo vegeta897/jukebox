@@ -111,8 +111,9 @@
                         <input type="text" id="bountyAmount" name="bountyAmount" ng-change="bountyAmount = restrictNumber(bountyAmount)" ng-model="bountyAmount" size="3"><span class="muted hint">kudos</span>
                     </div>
                     <div class="field">
-                        <label for="bountySelect">Video number</label>
-                        <select ng-model="bountySelect" id="bountySelect" name="bountySelect" size="6" ng-options="(option.index+1 + '. ' + option.title) for option in videoSelection">
+                        <label for="bountySelect">Video</label>
+                        <select ng-model="bountyIndex" id="bountySelect" name="bountySelect" size="6" >
+                            <option ng-repeat="option in videoSelection" value="{{ $index }}">1. {{ option.title }}</option>
                         </select>
                     </div>
                 </fieldset>

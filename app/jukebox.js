@@ -111,13 +111,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var volume = localStorageService.get('volume');
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
     var init = false, localTimeOffset;
-    var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
+    var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.244; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.25; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'}];
+    $scope.bountyIndex = 0;
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
@@ -149,7 +150,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.playing = snap.val();
         if(!$scope.auth) return;
         if(parseInt($scope.playing.index) === myVote) {
-            if(!$scope.playing.bounty || (bountyIndex === $scope.playing.index && $scope.bountySet)) {
+            if(!$scope.playing.bounty || (+$scope.bountyIndex === +$scope.playing.index && $scope.bountySet)) {
                 console.log('there was no bounty, or it was your own bounty');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + 2 : 2;
@@ -167,14 +168,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 return userKudos ? parseInt(userKudos) + 1 : 1;
             });
         }
-        if(parseInt($scope.playing.index) !== bountyIndex && $scope.bountySet) { // Your bounty didn't win, refunded
+        if(+$scope.playing.index != +$scope.bountyIndex && $scope.bountySet) { // Your bounty didn't win, refunded
             var refundAmount = $scope.bountyAmount;
             fireUser.child('kudos').transaction(function(userKudos) {
                 return userKudos ? parseInt(userKudos) + +refundAmount : +refundAmount;
             });
             $scope.message = { type: 'default', text: 'Your bounty has been refunded.' };
         }
-        delete $scope.bountyAmount; delete $scope.bountySelect; delete $scope.bountySet; bountyIndex = 0;
+        delete $scope.bountyAmount; $scope.bountyIndex = 0; delete $scope.bountySet;
         myVote = null;
     };
     
@@ -208,11 +209,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' };
                 sendEvent('<strong>'+username+'</strong> lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
             }
-            $scope.bountySelect = $scope.videoSelection[0];
-            bountyIndex = 0;
+            $scope.bountyIndex = 0;
         } else {
             $scope.videoSelection = snap.val();
-            $scope.bountySelect = $scope.videoSelection[bountyIndex];
         }
         delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount;
     };
@@ -312,15 +311,15 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.bountyAmount = parseInt($scope.bountyAmount);
         if(!$scope.bountyAmount || $scope.bountyAmount < 0) { $scope.message = { type:'error',text:'That ain\'t no valid amount yo' }; return; }
         if(!$scope.user.kudos || $scope.bountyAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have <strong>'+$scope.user.kudos+'</strong> kudos!' }; return; }
-        console.log('adding',$scope.bountyAmount,'kudos to video #',$scope.bountySelect.index+1);
+        console.log('adding',$scope.bountyAmount,'kudos to video #',$scope.videoSelection[+$scope.bountyIndex]);
         fireUser.child('kudos').transaction(function(userKudos) {
             return !userKudos ? 0 : userKudos-$scope.bountyAmount == 0 ? null : userKudos-$scope.bountyAmount; 
         });
-        fireRef.child('selection/'+$scope.bountySelect.index+'/bounty').transaction(function(bounty) {
+        fireRef.child('selection/'+(+$scope.bountyIndex)+'/bounty').transaction(function(bounty) {
             return bounty ? parseInt(bounty) + $scope.bountyAmount : $scope.bountyAmount;
         });
-        $scope.controlAddBounty = false;
-        $scope.bountySet = true; bountyIndex = $scope.bountySelect.index;
+        sendEvent('<strong>'+username+'</strong> placed a <strong>'+$scope.bountyAmount+'</strong> kudo bounty on "'+$scope.videoSelection[+$scope.bountyIndex].title+'"!');
+        $scope.controlAddBounty = false; $scope.bountySet = true;
     };
 
     $scope.restrictNumber = function(input) { input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-',''); return input; };
