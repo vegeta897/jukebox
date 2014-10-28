@@ -113,7 +113,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.241; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.242; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -221,6 +221,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             localStorageService.set('username',username);
             localStorageService.set('passcode',passcode);
             fireUser = fireRef.child('users/'+username);
+            fireUser.child('version').set($scope.version);
             fireUser.once('value',function(snap){ $scope.user = snap.val(); });
             var lastOnlineRef = fireUser.child('lastOnline');
             var fireAuths = fireRef.child('auths');
@@ -235,8 +236,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 }
             });
         };
-        username = $scope.username;
-        passcode = $scope.passcode;
+        username = $scope.username; passcode = $scope.passcode;
         console.log('Logging in',username);
         var auth = fireRef.getAuth();
         if(auth && auth.hasOwnProperty('expires') && auth.expires*1000 > getServerTime()) {
@@ -390,7 +390,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         var currentID = $scope.playing ? $scope.playing.video_id : '';
         services.getVideos(currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
-            if(data.data.length != 6) { return; }
+            if(data && data.data && data.data.length != 6) { return; }
             for(var d = 0, dl = data.data.length; d < dl; d++) {
                 data.data[d].duration = parseUTCtime(data.data[d].duration);
                 data.data[d].index = d;
