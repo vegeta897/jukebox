@@ -116,7 +116,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireUser;
     var init = false, gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.19; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.191; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -425,7 +425,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
         if(init && playing && $scope.playing) {
             if(muted != player.isMuted()) {
-                muted = player.isMuted();
+                muted = player.isMuted() ? true : false;
                 if($scope.auth) fireUser.child('muted').set(muted);
             }
             if(parseInt(player.getVolume()) != volume) {
