@@ -11,7 +11,6 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
-    console.log('player ready');
     player = new YT.Player('player', {
         height: '390',
         width: '640',
@@ -114,7 +113,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.24; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.241; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -129,7 +128,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         } else {
             var localTimeRef = new Date().getTime();
             var timeStampID = 'stamp'+parseInt(Math.random()*10000);
-            fireRef.child('timeStampTests/'+timeStampID).set(getServerTime(),function(){
+            fireRef.child('timeStampTests/'+timeStampID).set(Firebase.ServerValue.TIMESTAMP,function(){
                 fireRef.child('timeStampTests/'+timeStampID).once('value',function(snap){
                     localTimeOffset = snap.val() - localTimeRef;
                     console.log('local time offset:',localTimeOffset);

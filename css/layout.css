@@ -13,7 +13,7 @@ h3 { text-align: center; margin-bottom: 6px; font-size: 1.1em; }
 dl dt { line-height: 1.2em; }
 p { margin-bottom: 1em; }
 form input[type="text"] { padding-left: 4px; }
-header form { padding-left: 340px; padding-top: 24px; }
+header form { padding-left: 375px; padding-top: 24px; }
 header form fieldset { float: left; }
 header form input[type="text"] { margin-right: 8px; height: 18px; }
 header form button { float: left; width: 66px; height: 24px; }
