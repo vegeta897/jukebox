@@ -112,15 +112,25 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var username = localStorageService.get('username');
     var passcode = localStorageService.get('passcode');
     var volume = localStorageService.get('volume');
-    var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1');
-    var fireUser;
-    var init = false, gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
+    var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
+    var init = false, localTimeOffset;
+    var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.191; $scope.versionName = 'The Juker'; $scope.needUpdate = false;
+    $scope.version = 0.2; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'}];
+    
+    var localTimeRef = new Date().getTime();
+    fireRef.child('timestamptest').set(Firebase.ServerValue.TIMESTAMP,function(){
+        fireRef.child('timestamptest').once('value',function(snap){
+            localTimeOffset = snap.val() - localTimeRef;
+            console.log('local time offset:',localTimeOffset);
+        })
+    });
+    
+    var getTime = new function() { return new Date().getTime() + localTimeOffset; };
 
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
@@ -204,7 +214,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     var sendEvent = function(text) {
-        fireRef.child('eventLog').push({ text: text, time: new Date().getTime() });
+        fireRef.child('eventLog').push({ text: text, time: Firebase.ServerValue.TIMESTAMP });
     };
     
     $scope.login = function() {
@@ -232,7 +242,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         passcode = $scope.passcode;
         console.log('Logging in',username);
         var auth = fireRef.getAuth();
-        if(auth && auth.hasOwnProperty('expires') && auth.expires*1000 > new Date().getTime()) {
+        if(auth && auth.hasOwnProperty('expires') && auth.expires*1000 > getTime()) {
             console.log('Firebase authenticated!',auth);
             initUser();
         } else {
@@ -355,7 +365,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
 
     $scope.forceVote = function() {
         var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 90000 : 0;
-        fireRef.child('playing/startTime').set(new Date().getTime() - offset);
+        fireRef.child('playing/startTime').set(Firebase.ServerValue.TIMESTAMP - offset);
     };
 
     var playVideo = function() { // Tally votes and pick the video with the most
@@ -366,7 +376,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             winner = snapped ? pickInObject(snapped) : randomIntRange(0,$scope.videoSelection.length-1);
             console.log('winner chosen:',winner);
             var play = $scope.videoSelection[winner];
-            play.startTime = new Date().getTime();
+            play.startTime = getTime();
             fireRef.child('playing').set(angular.copy(play));
             fireRef.child('selection').remove();
             voting = false;
@@ -395,7 +405,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     var interval = function() {
-        if(!init && player && player.hasOwnProperty('loadVideoById')) {
+        if(!init && player && player.hasOwnProperty('loadVideoById') && localTimeOffset) {
             init = true;
             console.log('Player initialized');
             fireRef.once('value', function(snap) {
@@ -403,10 +413,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.videoSelection = snap.val().selection;
                 $scope.playing = snap.val().playing;
                 if($scope.playing) {
-                    var startTime = parseInt((new Date().getTime()-$scope.playing.startTime)/1000);
+                    var startTime = parseInt((getTime()-$scope.playing.startTime)/1000);
                     console.log('starting video',startTime,'seconds in');
                     startTime = Math.max(0,startTime > $scope.playing.duration.totalSec ? 0 : startTime);
-                    player.loadVideoById($scope.playing.video_id,startTime+3,'large'); // 3 sec head-start
+                    player.loadVideoById($scope.playing.video_id,startTime+2,'large'); // 2 sec head-start
                 }
                 if($scope.dj && !snap.val().users[$scope.dj].hasOwnProperty('connections')) {
                     $scope.dj = ''; fireRef.child('dj').remove();
@@ -421,7 +431,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             });
         }
         if($scope.videoSelection) {
-            $scope.voteTimeLeft = Math.max(0,parseInt((voteEnd - new Date().getTime())/1000));
+            $scope.voteTimeLeft = Math.max(0,parseInt((voteEnd - getTime())/1000));
         }
         if(init && playing && $scope.playing) {
             if(muted != player.isMuted()) {
@@ -429,18 +439,18 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if($scope.auth) fireUser.child('muted').set(muted);
             }
             if(parseInt(player.getVolume()) != volume) {
-                volume = parseInt(player.getVolume());
+                volume = parseInt(player.getVolume()) || 50;
                 if($scope.auth) fireUser.child('volume').set(volume);
                 localStorageService.set('volume',volume);
             }
             if(!gettingVideos && $scope.dj && $scope.dj == username) { // If already getting videos, don't try again
                 // DJ responsibilities
-                var elapsed = parseInt((new Date().getTime() - $scope.playing.startTime) / 1000);
+                var elapsed = parseInt((Firebase.ServerValue.TIMESTAMP - $scope.playing.startTime) / 1000);
                 if (elapsed + 90 > $scope.playing.duration.totalSec && !voting) {
                     console.log('video close to ending or ended');
                     getVideos();
                     $timeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)); // Voting for 90 seconds
-                    fireRef.child('voting').set(new Date().getTime() + Math.min($scope.playing.duration.totalSec*1000,90000));
+                    fireRef.child('voting').set(Firebase.ServerValue.TIMESTAMP + Math.min($scope.playing.duration.totalSec*1000,90000));
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
                     fireRef.child('selection').remove();
                 }
@@ -449,7 +459,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     fireRef.child('playing').remove();
                     getVideos();
                     $timeout(playVideo, 15000); // Voting for 15 seconds
-                    fireRef.child('voting').set(new Date().getTime() + 90000);
+                    fireRef.child('voting').set(Firebase.ServerValue.TIMESTAMP + 90000);
                 }
             }
         }
@@ -460,10 +470,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if($scope.dj && $scope.dj == username && !$scope.playing && $scope.videoSelection && !voting) {
             console.log('nothing playing, have list, voting ends in 10 seconds');
             $timeout(playVideo, 10000); // Voting for 10 seconds
-            fireRef.child('voting').set(new Date().getTime()+10000);
+            fireRef.child('voting').set(Firebase.ServerValue.TIMESTAMP + 10000);
             voting = true;
         }
-        $scope.theTime = new Date().getTime();
+        $scope.theTime = getTime();
         $timeout(function(){});
     };
 });
