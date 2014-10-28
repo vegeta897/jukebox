@@ -107,8 +107,6 @@ Application.Services.factory("services", ['$http', function($http) {
 Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService) {
     console.log('Main controller initialized');
     
-    // TODO: Sync time against firebase server time (remember to set a server time then grab it it)
-    
     var username = localStorageService.get('username');
     var passcode = localStorageService.get('passcode');
     var volume = localStorageService.get('volume');
@@ -116,20 +114,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.23; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.24; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'}];
-    
-    var localTimeRef = new Date().getTime();
-    var timeStampID = 'stamp'+parseInt(Math.random()*10000);
-    fireRef.child('timeStampTests/'+timeStampID).set(getServerTime(),function(){
-        fireRef.child('timeStampTests/'+timeStampID).once('value',function(snap){
-            localTimeOffset = snap.val() - localTimeRef;
-            console.log('local time offset:',localTimeOffset);
-        })
-    });
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
@@ -138,7 +127,15 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if($scope.version < snap.val()) {
             $scope.needUpdate = true;
         } else {
-            setInterval(interval,500);
+            var localTimeRef = new Date().getTime();
+            var timeStampID = 'stamp'+parseInt(Math.random()*10000);
+            fireRef.child('timeStampTests/'+timeStampID).set(getServerTime(),function(){
+                fireRef.child('timeStampTests/'+timeStampID).once('value',function(snap){
+                    localTimeOffset = snap.val() - localTimeRef;
+                    console.log('local time offset:',localTimeOffset);
+                    setInterval(interval,500);
+                })
+            });
         }
         $timeout(function(){});
     });
@@ -406,9 +403,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     var interval = function() {
-        if(!init && player && player.hasOwnProperty('loadVideoById') && localTimeOffset) {
-            init = true;
-            console.log('Player initialized');
+        if(!init && player && player.hasOwnProperty('loadVideoById')) {
+            init = true; console.log('Jukebox initializing...');
             fireRef.once('value', function(snap) {
                 $scope.dj = snap.val().dj;
                 $scope.videoSelection = snap.val().selection;
