@@ -116,7 +116,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, bountyIndex;
 
-    $scope.version = 0.2; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.21; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -130,7 +130,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         })
     });
     
-    var getTime = new function() { return new Date().getTime() + localTimeOffset; };
+    var getServerTime = new function() { return new Date().getTime() + localTimeOffset; };
 
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
@@ -242,7 +242,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         passcode = $scope.passcode;
         console.log('Logging in',username);
         var auth = fireRef.getAuth();
-        if(auth && auth.hasOwnProperty('expires') && auth.expires*1000 > getTime()) {
+        if(auth && auth.hasOwnProperty('expires') && auth.expires*1000 > getServerTime()) {
             console.log('Firebase authenticated!',auth);
             initUser();
         } else {
@@ -376,7 +376,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             winner = snapped ? pickInObject(snapped) : randomIntRange(0,$scope.videoSelection.length-1);
             console.log('winner chosen:',winner);
             var play = $scope.videoSelection[winner];
-            play.startTime = getTime();
+            play.startTime = getServerTime();
             fireRef.child('playing').set(angular.copy(play));
             fireRef.child('selection').remove();
             voting = false;
@@ -413,7 +413,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.videoSelection = snap.val().selection;
                 $scope.playing = snap.val().playing;
                 if($scope.playing) {
-                    var startTime = parseInt((getTime()-$scope.playing.startTime)/1000);
+                    var startTime = parseInt((getServerTime()-$scope.playing.startTime)/1000);
                     console.log('starting video',startTime,'seconds in');
                     startTime = Math.max(0,startTime > $scope.playing.duration.totalSec ? 0 : startTime);
                     player.loadVideoById($scope.playing.video_id,startTime+2,'large'); // 2 sec head-start
@@ -431,7 +431,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             });
         }
         if($scope.videoSelection) {
-            $scope.voteTimeLeft = Math.max(0,parseInt((voteEnd - getTime())/1000));
+            $scope.voteTimeLeft = Math.max(0,parseInt((voteEnd - getServerTime())/1000));
         }
         if(init && playing && $scope.playing) {
             if(muted != player.isMuted()) {
@@ -473,7 +473,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireRef.child('voting').set(Firebase.ServerValue.TIMESTAMP + 10000);
             voting = true;
         }
-        $scope.theTime = getTime();
+        $scope.theTime = getServerTime();
         $timeout(function(){});
     };
 });
