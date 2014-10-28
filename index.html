@@ -20,7 +20,7 @@
         </form>
         <p ng-show="auth">{{ username }}<span><strong>{{ user.kudos || 0 }} </strong>kudos</span></p>
     </header>
-    <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Ctrl+F5</strong> to get the latest version.</p>
+    <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="initializing || needUpdate">
         <div id="player"></div>
         <div class="now-playing" ng-show="playing">
