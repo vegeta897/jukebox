@@ -113,7 +113,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.25; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.26; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -127,6 +127,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if($scope.version < snap.val()) {
             $scope.needUpdate = true;
         } else {
+            fireRef.parent().child('version').on('value',function(snap){ $scope.needUpdate = snap.val() > $scope.version; });
             var localTimeRef = new Date().getTime();
             var timeStampID = 'stamp'+parseInt(Math.random()*10000);
             fireRef.child('timeStampTests/'+timeStampID).set(Firebase.ServerValue.TIMESTAMP,function(){
@@ -258,7 +259,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     $scope.vote = function(index) {
-        if(!$scope.auth) return;
+        if(!$scope.auth || !$scope.videoSelection) return;
         if(player.isMuted()) {
             $scope.message = { type: 'error', text: 'You can\'t vote while muted!' };
             return;
