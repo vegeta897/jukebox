@@ -35,7 +35,7 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 
 .listeners h2 { color: #DEFF7C; }
 .listener { color: #DEFF7C; }
-.listener i { color: #D8DBCD; }
+.listener i { color: #D8DBCD; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
 .listener i.muted { color: #A8554A; }
 .listener .volume { background: #212322; }
 .listener .volume div { background: #A0A399; }
@@ -50,6 +50,18 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .field .valid strong, p.message.success strong { color: #33cb16; }
 .field .invalid, p.message.error { color: #c60a09; }
 .field .invalid strong, p.message.error strong { color: #e90000; }
+
+.avatar-shop * { transition: all 0.1s; }
+.avatar-shop .name { color: #d3d9b9; }
+.avatar-shop > div > div > i { color: #ecffd3; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+.avatar-shop .price { color: #DEFF7C; }
+.avatar-shop > div > div:hover, .avatar-shop > div > div:hover > i, .avatar-shop > div > div:hover .price { 
+    color: white; text-shadow: 1px 1px 3px rgba(255,255,255,0.4); }
+.avatar-shop > div > div.owned, .avatar-shop > div > div.owned > i { color: #98ab5b; }
+.avatar-shop > div > div.equipped > i { color: #95d431; }
+.avatar-shop > div > div.equipped .name { text-decoration: underline; color: #95d431; } 
+.avatar-shop .cant-buy { color: #c9513e; }
+.avatar-shop .owned .price {  color: #646d4b; }
 
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }

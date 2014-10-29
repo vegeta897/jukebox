@@ -1,35 +1,20 @@
 'use strict';
 
-// 1. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
-
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// 2. This function creates an <iframe> (and YouTube player)
-//    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
-        height: '390',
-        width: '640',
-        //videoId: 'M7lc1UVf-VE',
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
+        height: '390', width: '640', events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
     });
 }
 
-// 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
     
 }
-
-// 4. The API calls this function when the player's state changes.
-//    The function indicates that when playing a video (state=1),
-//    the player should play for six seconds and then stop.
 var playing = false;
 function onPlayerStateChange(event) {
     if(event.data == YT.PlayerState.PAUSED && playing) {
@@ -40,9 +25,27 @@ function onPlayerStateChange(event) {
         playing = true;
     }
 }
-function stopVideo() {
-    player.stopVideo();
-}
+function stopVideo() { player.stopVideo(); }
+
+var avatars = {
+    headphones: ['Headphones',0], wheelchair: ['Wheelchair',6000], 'plus-square': ['Medkit',5000], ambulance: ['Ambulance',8000], windows: ['Windows',3000],
+    twitter: ['Twitter',6000], twitch: ['Twitch',6000], 'steam-square': ['Steam',10000], soundcloud: ['SoundCloud',8000],
+    reddit: ['Reddit',8000], linux: ['Linux',10000], 'github-alt': ['GitHub Cat',15000], 'facebook-square': ['Facebook', 3000],
+    apple: ['Apple',5000], android: ['Android',8000], backward: ['Rewind',8000], eject: ['Eject',12000], forward: ['Forward',8000],
+    pause: ['Pause',15000], play: ['Play',20000], 'play-circle': ['Play Circle',20000], 'youtube-play': ['YouTube',10000],
+    'hand-o-right': ['Pointer',15000], 'chevron-right': ['Chevron',10000], 'chevron-circle-right': ['Chevron Circle',10000],
+    arrows: ['Arrows',8000], 'arrow-right': ['Arrow',15000], undo: ['Undo',10000], repeat: ['Repeat',10000], th: ['Grid',8000],
+    scissors: ['Scissors',8000], save: ['Floppy',15000], font: ['A',8000], jpy: ['Yen',15000], usd: ['Dollar',15000],
+    gbp: ['Pounds',15000], 'circle-o': ['Circle',8000], 'dot-circle-o': ['Dot Circle',9000], cog: ['Gear',15000], 
+    refresh: ['Refresh',15000], 'volume-up': ['Speaker',20000], wrench: ['Wrench',4000], warning: ['Warning',10000],
+    'unlock-alt': ['Lock',5000], umbrella: ['Umbrella',6000], truck: ['Truck',10000], trophy: ['Trophy',8000], 
+    'thumbs-o-up': ['Thumbs Up',10000], star: ['Star',18000], 'soccer-ball-o': ['Soccer Ball',8000], 'smile-o': ['Smile',18000],
+    sliders: ['Sliders',18000], signal: ['Signal',12000], shield: ['Shield',8000], search: ['Magnifying',5000], 
+    rss: ['RSS',3000], rocket: ['Rocket',4000], 'power-off': ['Power',15000], paw: ['Paw',15000], music: ['Music',20000],
+    'moon-o': ['Moon',5000], 'meh-o': ['Meh',8000], heart: ['Heart',12000], 'frown-o': ['Frown',8000], flask: ['Flask',6000],
+    bolt: ['Lightning',8000], eye: ['Eye',15000], cube: ['Cube',8000], child: ['Child',18000], check: ['Check',5000],
+    camera: ['Camera',10000], bug: ['Bug',15000]
+};
 
 function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
     if(!utc || utc.hasOwnProperty('stamp')) return utc;
@@ -114,12 +117,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.27; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.28; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
-        {name:'controlTitleGamble',title:'Title Gamble'},{name:'controlChangelog',title:'Changelog'}];
-    $scope.bountyIndex = 0;
+        {name:'controlTitleGamble',title:'Title Gamble'},{name:'controlAvatarShop',title:'Avatar Shop'},
+        {name:'controlChangelog',title:'Changelog'}];
+    $scope.bountyIndex = 0; $scope.avatars = avatars;
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
@@ -199,8 +203,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+$scope.videoSelection[i].title+'</strong>"!',
                         kudos: gambleWinnings };
                     won = true;
-                    sendEvent('<strong>'+username+'</strong> won <strong>'+(gambleWinnings-$scope.titleGambleAmount)+'</strong> kudos by betting '+$scope.titleGambleAmount+
-                    ' on "'+gambleString+'"!');
+                    sendEvent('<strong>'+username+'</strong> won <strong>'+(gambleWinnings-$scope.titleGambleAmount)+'</strong> kudos by betting '+$scope.titleGambleAmount+' on "'+gambleString+'"!');
                     fireUser.child('kudos').transaction(function(userKudos) {
                         return userKudos ? +userKudos + +gambleWinnings : +gambleWinnings;
                     });
@@ -298,6 +301,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         djRef.onDisconnect().remove();
     };
     
+    $scope.listenerClasses = function(listener) { return 'fa fa-' + (listener.avatar ? listener.avatar : 'headphones') + (listener.muted ? ' muted' : ''); };
+    
     $scope.closeMessage = function() { delete $scope.message; };
     
     $scope.showControl = function(control) {
@@ -388,12 +393,32 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             } else {
                 var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
                 $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: parseInt(results.data.data.items.length * 5) };
+                var reward = parseInt(results.data.data.items.length * 5);
                 fireUser.child('kudos').transaction(function(userKudos) {
-                    var reward = parseInt(results.data.data.items.length * 5);
-                    return userKudos ? parseInt(userKudos) + reward : reward ;
+                    return userKudos ? parseInt(userKudos) + reward : reward;
                 });
             }
         });
+    };
+    
+    $scope.hasAvatar = function(avatar) { 
+        return avatar == 'headphones' ? true : $scope.user && $scope.user.avatars ? $scope.user.avatars.hasOwnProperty(avatar) : false; 
+    };
+    
+    $scope.buyEquipAvatar = function(avatar) {
+        if(avatar == 'headphones' && !$scope.user.avatar) { return; }
+        if(avatar == 'headphones' && $scope.user.avatar) { fireUser.child('avatar').remove(); return; }
+        if((avatar == 'headphones' && $scope.user.avatar) || ($scope.user.avatars && $scope.user.avatars[avatar] && avatar != $scope.user.avatar)) {
+            fireUser.child('avatar').set(avatar); return;
+        }
+        var cost = $scope.avatars[avatar][1];
+        if(!$scope.user.kudos || $scope.user.kudos < cost) { return; }
+        fireUser.child('kudos').transaction(function(userKudos) {
+            return userKudos ? parseInt(userKudos) - cost : -cost;
+        });
+        fireUser.child('avatars/'+avatar).set(true);
+        fireUser.child('avatar').set(avatar);
+        sendEvent('<strong>'+username+'</strong> just bought the <strong>'+$scope.user.avatars[avatar][0]+'</strong> avatar!');
     };
 
     $scope.forceVote = function() {
@@ -473,7 +498,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if($scope.auth) fireUser.child('muted').set(muted);
             }
             if(parseInt(player.getVolume()) != volume) {
-                volume = parseInt(player.getVolume()) || 50;
+                volume = parseInt(player.getVolume()) || 0;
                 if($scope.auth) fireUser.child('volume').set(volume);
                 localStorageService.set('volume',volume);
             }

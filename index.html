@@ -66,7 +66,7 @@
         <div ng-show="users" class="listeners">
             <h3 class="muted">Listeners</h3>
             <div class="listener" ng-repeat="(name,listener) in users" ng-show="listener.connections">
-                <div><i class="fa fa-headphones" ng-class="{muted: listener.muted}"></i> {{ name }}</div>
+                <div><i class="fa" ng-class="listenerClasses(listener)"></i> {{ name }}</div>
                 <div class="volume"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
@@ -154,6 +154,14 @@
                 <button type="submit" ng-disabled="addingVideo || (!batchList && !add_url)">Add Video</button>
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
+        </div>
+        <div class="avatar-shop control-panel" ng-show="auth && controlAvatarShop">
+            <p>Click an avatar to purchase and/or equip it</p>
+            <div>
+                <div ng-repeat="(avatarID, avatar) in avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !user.avatar) || user.avatar == avatarID}" ng-click="buyEquipAvatar(avatarID)">
+                    <i class="fa" ng-class="'fa-'+avatarID"></i><span class="price" ng-class="{'cant-buy': !user.kudos || avatar[1] > user.kudos}">{{ avatar[1] }}</span> - <span class="name">{{ avatar[0] }}</span>
+                </div>
+            </div>
         </div>
         <div class="changelog control-panel" ng-show="auth && controlChangelog">
             <table><tr ng-repeat="commit in commits">

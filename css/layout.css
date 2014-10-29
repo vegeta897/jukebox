@@ -40,9 +40,9 @@ header form button { float: left; width: 66px; height: 24px; }
 
 .listeners { text-align: center; margin-bottom: 8px; }
 .listeners h3 { margin-bottom: 0; }
-.listener { padding: 4px 6px; display: inline-block; font-size: 0.8em; }
-.listener i { font-size: 1.4em; top: 2px; position: relative; }
-.listener .volume { width: 64px; margin: 4px auto; height: 4px; padding: 1px; }
+.listener { padding: 4px 6px; display: inline-block; font-size: 0.9em; }
+.listener i { font-size: 1.5em; top: 2px; position: relative; margin-right: 3px; }
+.listener .volume { width: 72px; margin: 5px auto 4px; height: 4px; padding: 1px; }
 .listener .volume div { height: 4px; }
 .message { cursor: pointer; }
 p.message { text-align: center; margin-bottom: 4px; }
@@ -74,6 +74,11 @@ p.message { text-align: center; margin-bottom: 4px; }
 .add-video form button { float: left; margin-left: 130px; }
 .add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; float: left; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
+
+.avatar-shop p { text-align: center; }
+.avatar-shop > div > div { width: 192px; height: 22px; float: left; cursor: pointer; }
+.avatar-shop > div > div > i { display: inline-block; width: 30px; font-size: 1.1em; text-align: center; }
+.avatar-shop .price { display: inline-block; width: 40px; text-align: right; }
 
 .changelog table tr td { padding: 4px 0; }
 .changelog table tr td:first-child { width: 110px; }
