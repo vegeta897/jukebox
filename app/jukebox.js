@@ -114,7 +114,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.263; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.264; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -189,7 +189,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
             var won = false;
             var gambleString = $scope.titleGambleString+''; // Cast as string
-            var gambleWinnings = Math.floor($scope.titleGambleAmount * $scope.titleGambleMulti);
+            var gambleReduction = $scope.titleGambleWins.hasOwnProperty(gambleString) ? 1/$scope.titleGambleWins[gambleString] : 1;
+            var gambleWinnings = Math.floor($scope.titleGambleAmount * $scope.titleGambleMulti * gambleReduction);
             for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
                 var theIndex = $scope.videoSelection[i].title.toUpperCase().indexOf(gambleString.toUpperCase());
                 if(theIndex >= 0) {
@@ -202,7 +203,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     sendEvent('<strong>'+username+'</strong> won <strong>'+gambleWinnings+'</strong> kudos by betting '+$scope.titleGambleAmount+
                     ' on "'+gambleString+'"!');
                     fireUser.child('kudos').transaction(function(userKudos) {
-                        return userKudos ? parseInt(userKudos) + +gambleWinnings : +gambleWinnings;
+                        return userKudos ? +userKudos + +gambleWinnings : +gambleWinnings;
+                    });
+                    fireUser.child('titleGamble/wins/'+gambleString).transaction(function(winCount) {
+                        return winCount ? +winCount + 1 : 1;
                     });
                     break;
                 }
@@ -285,6 +289,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         for(var i = 0, il = $scope.controlList.length; i < il; i++) {
             $scope[$scope.controlList[i].name] = control == $scope.controlList[i].name;
         }
+        if(control == "controlTitleGamble") {
+            fireUser.child('titleGamble/wins').once('value',function(snap) {
+                $scope.titleGambleWins = snap.val() ? snap.val() : {};
+            });
+        }
     };
     $scope.controlEnabled = function(control) { return $scope[control]; };
     
@@ -305,8 +314,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.titleGambleString) return;
         $scope.titleGambleString = $scope.titleGambleString.trim(); // Remove leading and trailing spaces
         if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multis = [1.1, 1.3, 1.5, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 2000];
-        $scope.titleGambleMulti = multis[$scope.titleGambleString.length-2];
+        var multi = [1.5, 2, 2.5, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 2000, 2500, 3000];
+        var gambleReduction = $scope.titleGambleWins.hasOwnProperty($scope.titleGambleString) ? 1/$scope.titleGambleWins[$scope.titleGambleString] : 1;
+        $scope.titleGambleMulti = multi[$scope.titleGambleString.length-2] * gambleReduction;
         $timeout(function(){});
     };
     
