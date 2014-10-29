@@ -57,7 +57,7 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .avatar-shop .price { color: #DEFF7C; }
 .avatar-shop > div > div:hover, .avatar-shop > div > div:hover > i, .avatar-shop > div > div:hover .price { 
     color: white; text-shadow: 1px 1px 3px rgba(255,255,255,0.4); }
-.avatar-shop > div > div.owned, .avatar-shop > div > div.owned > i { color: #98ab5b; }
+.avatar-shop > div > div.owned .name, .avatar-shop > div > div.owned > i { color: #98ab5b; }
 .avatar-shop > div > div.equipped > i { color: #95d431; }
 .avatar-shop > div > div.equipped .name { text-decoration: underline; color: #95d431; } 
 .avatar-shop .cant-buy { color: #c9513e; }
