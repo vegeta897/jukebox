@@ -397,7 +397,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     $scope.forceVote = function() {
-        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 90000 : 0;
+        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 30000 : 0;
         fireRef.child('playing/startTime').set(getServerTime() - offset);
     };
 
