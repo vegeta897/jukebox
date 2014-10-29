@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.28; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.281; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -418,7 +418,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
         fireUser.child('avatars/'+avatar).set(true);
         fireUser.child('avatar').set(avatar);
-        sendEvent('<strong>'+username+'</strong> just bought the <strong>'+$scope.user.avatars[avatar][0]+'</strong> avatar!');
+        sendEvent('<strong>'+username+'</strong> just bought the <strong>'+$scope.avatars[avatar][0]+'</strong> avatar!');
     };
 
     $scope.forceVote = function() {
