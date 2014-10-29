@@ -114,7 +114,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.264; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.265; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -205,7 +205,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     fireUser.child('kudos').transaction(function(userKudos) {
                         return userKudos ? +userKudos + +gambleWinnings : +gambleWinnings;
                     });
-                    fireUser.child('titleGamble/wins/'+gambleString).transaction(function(winCount) {
+                    fireRef.child('titleGamble/wins/'+gambleString).transaction(function(winCount) {
                         return winCount ? +winCount + 1 : 1;
                     });
                     break;
@@ -290,8 +290,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope[$scope.controlList[i].name] = control == $scope.controlList[i].name;
         }
         if(control == "controlTitleGamble") {
-            fireUser.child('titleGamble/wins').once('value',function(snap) {
+            fireRef.child('titleGamble/wins').once('value',function(snap) {
                 $scope.titleGambleWins = snap.val() ? snap.val() : {};
+                console.log('titleGamble wins:',$scope.titleGambleWins);
             });
         }
     };
