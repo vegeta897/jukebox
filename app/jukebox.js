@@ -114,7 +114,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.266; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.267; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -189,7 +189,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
             var won = false;
             var gambleString = $scope.titleGambleString+''; // Cast as string
-            var gambleWinnings = Math.floor($scope.titleGambleAmount * $scope.titleGambleMulti);
+            var gambleWinnings = Math.floor($scope.titleGambleAmount + $scope.titleGambleAmount * $scope.titleGambleMulti);
             for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
                 var theIndex = $scope.videoSelection[i].title.toUpperCase().indexOf(gambleString.toUpperCase());
                 if(theIndex >= 0) {
@@ -218,7 +218,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         } else {
             $scope.videoSelection = snap.val();
         }
-        delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount;
+        delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount; $scope.controlTitleGamble = false;
     };
     
     var sendEvent = function(text) {
@@ -288,7 +288,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         for(var i = 0, il = $scope.controlList.length; i < il; i++) {
             $scope[$scope.controlList[i].name] = control == $scope.controlList[i].name;
         }
-        if(control == "controlTitleGamble") {
+        if(control == "controlTitleGamble" && !$scope.titleGambleSet) {
             fireRef.child('titleGamble/wins').once('value',function(snap) {
                 $scope.titleGambleWins = snap.val() ? snap.val() : {};
                 console.log('titleGamble wins:',$scope.titleGambleWins);
@@ -314,7 +314,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.titleGambleString) return;
         $scope.titleGambleString = $scope.titleGambleString.trim(); // Remove leading and trailing spaces
         if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multi = [1.5, 2, 2.5, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 2000, 2500, 3000];
+        var multi = [0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 2000, 2500];
         var gambleReduction = $scope.titleGambleWins.hasOwnProperty($scope.titleGambleString) ? 1/($scope.titleGambleWins[$scope.titleGambleString]+1) : 1;
         $scope.titleGambleMulti = multi[$scope.titleGambleString.length-2] * gambleReduction;
         $timeout(function(){});
