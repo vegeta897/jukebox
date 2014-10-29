@@ -114,11 +114,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.267; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.268; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
-        {name:'controlTitleGamble',title:'Title Gamble'}];
+        {name:'controlTitleGamble',title:'Title Gamble'},{name:'controlChangelog',title:'Changelog'}];
     $scope.bountyIndex = 0;
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
@@ -244,6 +244,20 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     conRef.onDisconnect().remove();
                     fireUser.child('uid').set(auth.uid);
                     lastOnlineRef.onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
+                }
+            });
+            jQuery.ajax({ // Get last 8 commits from github
+                url: 'https://api.github.com/repos/vegeta897/jukebox/commits',
+                dataType: 'jsonp',
+                success: function(results) {
+                    $scope.commits = [];
+                    for(var i = 0; i < results.data.length; i++) {
+                        $scope.commits.push({
+                            message:results.data[i].commit.message,date:Date.parse(results.data[i].commit.committer.date)
+                        });
+                        if($scope.commits.length > 9) { break; }
+                    }
+                    console.log($scope.commits);
                 }
             });
         };
@@ -504,4 +518,28 @@ Application.Filters.filter('capitalize', function() {
         }
         return result;
     }
-});
+})
+    .filter('timeUnits', function() {
+    return function(input,exact) {
+        if(!input) { return 0; }
+        var now = new Date().getTime();
+        var seconds = Math.floor((now-input)/1000);
+        if(seconds < 60 && exact) { return seconds; } // seconds
+        if(seconds < 60) { return 0; } // less than a min
+        if(seconds < 3600) { return Math.floor(seconds/60); } // minutes
+        if(seconds < 86400) { return Math.floor(seconds/3600); } // hours
+        else { return Math.floor(seconds/86400); } // days
+    }
+})
+    .filter('timeUnitsLabel', function() {
+        return function(input,exact) {
+            if(!input) { return ''; }
+            var now = new Date().getTime();
+            var seconds = Math.floor((now-input)/1000);
+            if(seconds < 60 && exact) { return seconds > 1 ? 'seconds' : 'second'; } // seconds
+            if(seconds < 60) { return 'minutes'; } // less than a min
+            if(seconds < 3600) { return seconds > 119 ? 'minutes' : 'minute'; } // minutes
+            if(seconds < 86400) { return seconds > 7199 ? 'hours' : 'hour'; } // hours
+            else { return seconds > 172799 ? 'days' : 'day'; } // days
+        }
+    });

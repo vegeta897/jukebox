@@ -152,6 +152,12 @@
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
+        <div class="changelog control-panel" ng-show="auth && controlChangelog">
+            <table><tr ng-repeat="commit in commits">
+                <td class="muted">{{ commit.date | timeUnits }} {{ commit.date | timeUnitsLabel }} ago</td>
+                <td>{{ commit.message }}</td>
+            </tr></table>
+        </div>
         <button ng-hide="username != dj || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->
