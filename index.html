@@ -74,6 +74,9 @@
             <p class="message" ng-class="message.type"><i class="fa fa-close"></i><span ng-bind-html="message.text"></span></p>
             <p class="message" ng-show="message.kudos">You gained <strong>{{ message.kudos }}</strong> kudos!</p>
         </div>
+        <p ng-show="jackpot" style="text-align: center;">
+            <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (1+(jackpot/5000))+'em'}">{{ jackpot }}</strong>
+        </p>
         <div class="control-buttons" ng-show="auth">
             <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}">{{ control.title }}</button>
         </div>

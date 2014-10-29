@@ -114,7 +114,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.268; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.27; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -213,6 +213,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(!won) { 
                 $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' };
                 sendEvent('<strong>'+username+'</strong> lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
+                fireRef.child('jackpot').transaction(function(jack) {
+                    return jack ? +jack + $scope.titleGambleAmount : $scope.titleGambleAmount;
+                });
             }
             $scope.bountyIndex = 0;
         } else {
@@ -456,6 +459,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 fireRef.child('voting').on('value', function(snap) { voteEnd = snap.val() || 0; }); // Listen for vote changes
                 fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); $scope.user = snap.val()[username]; }); // Listen for user changes
                 fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
+                fireRef.child('jackpot').on('value', function(snap) { $scope.jackpot = snap.val(); }); // Listen for jackpot changes
                 fireRef.child('eventLog').endAt().limit(10).on('child_added',function(snap) { $scope.eventLog.push(snap.val()); $scope.eventLog.slice(0,16); });
                 $timeout(function(){});
             });
