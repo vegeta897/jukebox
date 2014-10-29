@@ -199,7 +199,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+$scope.videoSelection[i].title+'</strong>"!',
                         kudos: gambleWinnings };
                     won = true;
-                    sendEvent('<strong>'+username+'</strong> won <strong>'+gambleWinnings+'</strong> kudos by betting '+$scope.titleGambleAmount+
+                    sendEvent('<strong>'+username+'</strong> won <strong>'+(gambleWinnings-$scope.titleGambleAmount)+'</strong> kudos by betting '+$scope.titleGambleAmount+
                     ' on "'+gambleString+'"!');
                     fireUser.child('kudos').transaction(function(userKudos) {
                         return userKudos ? +userKudos + +gambleWinnings : +gambleWinnings;
