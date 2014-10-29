@@ -81,10 +81,11 @@
             <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}">{{ control.title }}</button>
         </div>
         <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
+            <p ng-hide="dj">You can't place any bets without a DJ.</p>
             <p ng-show="videoSelection">You can't bet on the titles yet!</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
             <p ng-show="titleGambleSet">You can't place more than one title bet per round.</p>
-            <form ng-submit="titleGamble()" ng-show="!videoSelection && user.kudos && !titleGambleSet">
+            <form ng-submit="titleGamble()" ng-show="!videoSelection && user.kudos && !titleGambleSet && dj">
                 <fieldset>
                     <legend>Bet on the titles in the voting pool</legend>
                     <p>Type some letters or a word, and if that string appears in one of the video titles, you win!</p>
@@ -103,10 +104,11 @@
             </form>
         </div>
         <div class="add-bounty control-panel" ng-show="auth && controlAddBounty">
+            <p ng-hide="dj">You can't place a bounty without a DJ.</p>
             <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
             <p ng-show="bountySet">You can't place more than one bounty per round.</p>
-            <form ng-submit="addBounty()" ng-show="videoSelection && user.kudos && !bountySet">
+            <form ng-submit="addBounty()" ng-show="videoSelection && user.kudos && !bountySet && dj">
                 <fieldset>
                     <legend>Add a bounty</legend>
                     <div class="field">
