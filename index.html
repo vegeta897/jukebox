@@ -18,7 +18,7 @@
             </fieldset>
             <button type="submit"><span>Log In</span></button>
         </form>
-        <p ng-show="auth">{{ username }}<span><strong>{{ user.kudos || 0 }} </strong>kudos</span></p>
+        <p ng-show="auth">{{ username }}<span><strong>{{ user.kudos || 0 | number }} </strong>kudos</span></p>
     </header>
     <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="initializing || needUpdate">
@@ -75,7 +75,7 @@
             <p class="message" ng-show="message.kudos">You gained <strong>{{ message.kudos }}</strong> kudos!</p>
         </div>
         <p ng-show="jackpot" style="text-align: center;">
-            <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (1+(jackpot/5000))+'em'}">{{ jackpot }}</strong>
+            <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(jackpot/10000))+'px'}">{{ jackpot | number }}</strong>
         </p>
         <div class="control-buttons" ng-show="auth">
             <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}">{{ control.title }}</button>
