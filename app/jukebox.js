@@ -422,8 +422,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     $scope.forceVote = function() {
-        var offset = $scope.playing ? $scope.playing.duration.totalSec*1000 - 30000 : 0;
-        fireRef.child('playing/startTime').set(getServerTime() - offset);
+        getVideos();
+        $timeout(playVideo, 15000); // Voting for 15 seconds
+        fireRef.child('voting').set(getServerTime() + 15000);
     };
 
     var playVideo = function() { // Tally votes and pick the video with the most
