@@ -392,8 +392,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type: 'error', text: 'That video has already been added.' };
             } else {
                 var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
-                $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: parseInt(results.data.data.items.length * 5) };
-                var reward = parseInt(results.data.data.items.length * 10);
+                $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: parseInt(results.data.data.items.length * 25) };
+                var reward = parseInt(results.data.data.items.length * 25);
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + reward : reward;
                 });
