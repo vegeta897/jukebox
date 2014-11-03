@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.281; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.282; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -392,8 +392,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type: 'error', text: 'That video has already been added.' };
             } else {
                 var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
-                $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: parseInt(results.data.data.items.length * 25) };
                 var reward = parseInt(results.data.data.items.length * 25);
+                $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward };
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + reward : reward;
                 });
@@ -428,7 +428,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     var playVideo = function() { // Tally votes and pick the video with the most
-        if(!$scope.auth || $scope.dj != username) return;
+        if(!$scope.auth || $scope.dj != username || !$scope.videoSelection) return;
         var winner = 0;
         fireRef.child('votes').once('value', function(snap) {
             var snapped = angular.copy(snap.val());
@@ -453,7 +453,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         console.log('retrieving videos');
         services.getVideos(currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
-            if(data && data.data && data.data.length != 6) { return; }
+            if(data && data.data && data.data.length != 6) { 
+                $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return; 
+            }
             for(var d = 0, dl = data.data.length; d < dl; d++) {
                 data.data[d].duration = parseUTCtime(data.data[d].duration);
                 data.data[d].index = d;
