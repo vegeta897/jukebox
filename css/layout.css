@@ -22,16 +22,16 @@ header form button { float: left; width: 66px; height: 24px; }
 .video-selection { margin: 20px 0; }
 .video-selection .vote-timer { text-align: center; margin-bottom: 4px; }
 .video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; }
-.video-selection table tr td { padding: 8px 6px; }
+.video-selection table tr td { padding: 8px 6px; vertical-align: middle; }
+.video-selection table tr td:first-child { width: 12px; }
+.video-selection table tr td:first-child + td { width: 32px; text-align: right; padding-left: 0; }
+.video-selection table tr td:first-child + td + td {  }
 .video-selection table tr td:hover { cursor: pointer; }
-.video-selection table tr td.control { text-align: center; }
+.video-selection table tr td.control { text-align: center; width: 10px; }
 .video-selection table tr td.control a { text-decoration: none; font-size: 0.8em; }
+.video-selection table tr td.control a i { top: -2px; position: relative; }
 .video-selection table tr td.bounty { font-size: 1.1em; }
-.video-selection table tr td.votes { padding: 0; }
-.video-selection table tr td.votes .vote-icon { 
-    width: 8px; height: 17px; background: white; border-radius: 4px; position: relative; top: 2px;
-    float: left; margin-right: 3px;
-}
+.video-selection table tr td.votes { padding: 0 4px 0 0; }
 .dj { margin: 16px; text-align: center; }
 
 .event-log table { width: 600px; margin: 0 20px 16px; }

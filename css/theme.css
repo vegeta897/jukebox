@@ -24,11 +24,21 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 
 .video-selection table tr { border-color: #222; transition: all 0.1s; }
 .video-selection table tr td { transition: all 0.1s; }
+.video-selection table tr.has-1-votes { background: rgba(222, 255, 124, 0.06); }
+.video-selection table tr.has-2-votes { background: rgba(222, 255, 124, 0.1); }
+.video-selection table tr.has-3-votes { background: rgba(222, 255, 124, 0.15); }
+.video-selection table tr.has-4-votes { background: rgba(222, 255, 124, 0.2); }
+.video-selection table tr.has-5-votes { background: rgba(222, 255, 124, 0.25); }
+.video-selection table tr.has-6-votes { background: rgba(222, 255, 124, 0.3); }
+.video-selection table tr.has-7-votes { background: rgba(222, 255, 124, 0.35); }
+.video-selection table tr.has-8-votes { background: rgba(222, 255, 124, 0.4); }
 .video-selection table tr:hover { background: #4e5150; color: white; }
-.video-selection table tr td strong { color: #DEFF7C; }
 .video-selection table tr td.bounty { color: #DEFF7C; }
+.video-selection table tr td:first-child + td + td { color: #D7EDA9; }
+.video-selection table tr:hover td:first-child + td + td { color: white; }
+.video-selection table tr td.control a { color: #d3d9b9; }
 .video-selection table tr td.control:hover a { color: #f2f5eb; }
-.video-selection table tr td.votes .vote-icon { background: #20aa22; }
+.video-selection table tr td.votes { color: #70cb1b; }
 
 .event-log table tr td strong { color: #DEFF7C; }
 .event-log table tr td:first-child { color: #858a71; }

@@ -34,21 +34,16 @@
             <span class="muted" ng-hide="videoSelection">loading videos...</span>
             <div class="vote-timer"><span class="muted">Time Left:</span> {{ voteTimeLeft }}</div>
             <table>
-                <tr ng-repeat="video in videoSelection">
+                <tr ng-repeat="video in videoSelection" ng-class="'has-'+countProperties(video.votes,false)+'-votes'">
                     <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>
                     <td ng-click="vote($index)">{{ video.duration.stamp }}</td>
                     <td class="title" ng-click="vote($index)">
                         <span ng-bind-html="video.title"></span>
                         <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
                     </td>
-                    <td class="bounty">
-                        {{ video.bounty }}
-                    </td>
-                    <td class="votes">
-                        <div class="vote-icon" ng-repeat="vote in video.votes"></div>
-                    </td>
+                    <td class="bounty">{{ video.bounty }}</td>
                     <td class="control">
-                        <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank">Open</a>
+                        <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a>
                     </td>
                 </tr>
             </table>
