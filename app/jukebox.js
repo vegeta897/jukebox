@@ -120,7 +120,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.293; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.294; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -161,7 +161,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         var refundAmount = 0;
         if(parseInt($scope.playing.index) === myVote) {
             if(!$scope.playing.bounty || (+$scope.bountyIndex === +$scope.playing.index && $scope.bountySet)) {
-                refundAmount = countProperties($scope.playing.votes,false) == 1 ? $scope.bountyAmount : 0;
+                refundAmount = countProperties($scope.playing.votes,false) == 1 && $scope.bountySet ? $scope.bountyAmount : 0;
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? +userKudos + 2 + +refundAmount : 2 + +refundAmount;
                 });
@@ -176,8 +176,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 return userKudos ? +userKudos + 1 : 1;
             });
         }
-        if(+$scope.playing.index != +$scope.bountyIndex && $scope.bountySet) { // Your bounty didn't win, refunded
-            refundAmount = $scope.bountyAmount;
+        if(+$scope.playing.index != +$scope.bountyIndex && $scope.bountySet) {
+            refundAmount = $scope.bountySet ? $scope.bountyAmount : 0;
             fireUser.child('kudos').transaction(function(userKudos) {
                 return userKudos ? +userKudos + +refundAmount : +refundAmount;
             });

@@ -151,12 +151,12 @@
                     <legend>Add a list of videos</legend>
                     <div class="field field-large">
                         <label for="url-batch">URL or ID list</label>
-                        <textarea name="url-batch" id="url-batch" ng-model="batchList" ng-change="parseURL()" ng-disabled="addingVideo" ng-required="enableBatch"></textarea>
+                        <textarea name="url-batch" id="url-batch" ng-model="batchList" ng-change="parseURL()" ng-disabled="addingVideo" ng-required="enableBatch"></textarea><br />
                         <span ng-hide="add_valid || !batchList" class="invalid">Invalid URL or ID</span>
                         <span ng-show="add_valid && batchList.length > 0" class="valid">List validated</span>
                     </div>
                 </fieldset>
-                <button type="submit" ng-disabled="addingVideo || (!batchList && !add_url)">Add Video</button>
+                <button type="submit" ng-disabled="addingVideo || (!batchList && !add_url)">Add Video{{ enableBatch ? 's' : '' }}</button>
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
