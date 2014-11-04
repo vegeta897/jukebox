@@ -47,6 +47,9 @@ var avatars = {
     camera: ['Camera',10000], bug: ['Bug',15000]
 };
 
+var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan'];
+var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble'];
+
 function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
     if(!utc || utc.hasOwnProperty('stamp')) return utc;
     var sec, min, stamp;
@@ -117,7 +120,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.292; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.293; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -394,11 +397,16 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 console.log('video id already exists!');
                 $scope.message = { type: 'error', text: 'That video has already been added.' };
             } else {
+                if(!results.data || !results.data.data) {
+                    $scope.message = { type: 'error', text: 'Sorry, there was a server error. Tell Vegeta about it.' }; return;
+                }
                 var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
                 var reward = parseInt(results.data.data.items.length * 25);
                 $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward };
+                var addQuantity = results.data.data.items.length == 1 ? 'a video' : results.data.data.items.length + ' videos';
+                sendEvent('<strong>'+username+'</strong> just added ' + addQuantity + '! What a ' + pickInArray(adjectives) + ' ' + pickInArray(nouns) + '!');
                 fireUser.child('kudos').transaction(function(userKudos) {
-                    return userKudos ? parseInt(userKudos) + reward : reward;
+                    return userKudos ? +userKudos + +reward : reward;
                 });
             }
         });
