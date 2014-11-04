@@ -40,8 +40,8 @@
                     <td class="title" ng-click="vote($index)">
                         <span ng-bind-html="video.title"></span>
                         <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
+                        <div><span class="bounty">{{ video.bounty }}</span><i class="fa fa-star" ng-repeat="vote in video.votes"></i></div>
                     </td>
-                    <td class="bounty">{{ video.bounty }}</td>
                     <td class="control">
                         <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a>
                     </td>

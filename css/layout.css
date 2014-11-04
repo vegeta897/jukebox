@@ -25,13 +25,15 @@ header form button { float: left; width: 66px; height: 24px; }
 .video-selection table tr td { padding: 8px 6px; vertical-align: middle; }
 .video-selection table tr td:first-child { width: 12px; }
 .video-selection table tr td:first-child + td { width: 32px; text-align: right; padding-left: 0; }
-.video-selection table tr td:first-child + td + td {  }
+.video-selection table tr td:first-child + td + td { position: relative; }
+.video-selection table tr td:first-child + td + td div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.video-selection table tr td:first-child + td + td div i { float: right; margin-left: 12px; font-size: 1.7em; margin-top: 3px;
+    color: rgba(222, 255, 124, 0.3); }
 .video-selection table tr td:hover { cursor: pointer; }
 .video-selection table tr td.control { text-align: center; width: 10px; }
 .video-selection table tr td.control a { text-decoration: none; font-size: 0.8em; }
 .video-selection table tr td.control a i { top: -2px; position: relative; }
-.video-selection table tr td.bounty { font-size: 1.1em; }
-.video-selection table tr td.votes { padding: 0 4px 0 0; }
+.video-selection table tr td .bounty { font-size: 1.1em; float: right; margin: 7px 12px 0 16px; }
 .dj { margin: 16px; text-align: center; }
 
 .event-log table { width: 600px; margin: 0 20px 16px; }
