@@ -55,15 +55,18 @@ p.message { text-align: center; margin-bottom: 4px; }
 .control-panel { margin: 16px 32px 32px; }
 .control-panel h2, .control-panel legend { text-align: center; margin-bottom: 10px; font-size: 1.5em; }
 
-.field { height: 24px; margin-bottom: 6px; clear: both; }
+.field { height: 32px; margin-bottom: 6px; clear: both; }
 .field label { display: block; float: left; width: 120px; padding: 3px 10px 0 0; text-align: right; }
 .field input { float: left; }
 
 .add-bounty, .title-gamble { text-align: center; }
-.add-bounty input, .title-gamble .field:first-child input { text-align: right; }
-.title-gamble .field:last-child input { text-align: center }
+.add-bounty input, .title-gamble .field:first-of-type input { text-align: right; }
+.title-gamble .field:first-of-type, .add-bounty .field:first-of-type { height: 56px; }
+.title-gamble .field:last-of-type input { text-align: center; }
 .title-gamble .field label { width: 240px; }
 .title-gamble form p { margin-bottom: 0.5em; }
+.title-gamble slider, .add-bounty slider { width: 300px; }
+.add-bounty slider { top: -6px; }
 .add-bounty select { float: left; width: 340px; margin-bottom: 12px; }
 .add-bounty .hint, .title-gamble .hint { float: left; }
 

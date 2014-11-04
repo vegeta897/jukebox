@@ -117,13 +117,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.29; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.291; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'},{name:'controlAvatarShop',title:'Avatar Shop'},
         {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'}];
-    $scope.bountyIndex = 0; $scope.avatars = avatars;
+    $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; $scope.avatars = avatars;
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
@@ -157,19 +157,16 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!$scope.auth) return;
         if(parseInt($scope.playing.index) === myVote) {
             if(!$scope.playing.bounty || (+$scope.bountyIndex === +$scope.playing.index && $scope.bountySet)) {
-                console.log('there was no bounty, or it was your own bounty');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? parseInt(userKudos) + 2 : 2;
                 });
             } else {
-                console.log('you won the bounty!');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     var reward = parseInt($scope.playing.bounty / Math.max(1,countProperties($scope.playing.votes,username)) + 2);
                     return userKudos ? parseInt(userKudos) + +reward : +reward ;
                 });
             }
         } else if(myVote) {
-            console.log('you got a kudo for voting');
             fireUser.child('kudos').transaction(function(userKudos) {
                 return userKudos ? parseInt(userKudos) + 1 : 1;
             });
@@ -181,7 +178,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             });
             $scope.message = { type: 'default', text: 'Your bounty has been refunded.' };
         }
-        delete $scope.bountyAmount; $scope.bountyIndex = 0; delete $scope.bountySet;
+        $scope.bountyAmount = 1; $scope.bountyIndex = 0; delete $scope.bountySet;
         myVote = null;
     };
     
@@ -217,14 +214,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' };
                 sendEvent('<strong>'+username+'</strong> lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
                 fireRef.child('jackpot').transaction(function(jack) {
-                    return jack ? +jack + $scope.titleGambleAmount : $scope.titleGambleAmount;
+                    return jack ? +jack + +$scope.titleGambleAmount : +$scope.titleGambleAmount;
                 });
             }
             $scope.bountyIndex = 0;
         } else {
             $scope.videoSelection = snap.val();
         }
-        delete $scope.titleGambleSet; delete $scope.titleGambleString; delete $scope.titleGambleAmount; $scope.controlTitleGamble = false;
+        delete $scope.titleGambleSet; delete $scope.titleGambleString; $scope.titleGambleAmount = 1; $scope.controlTitleGamble = false;
     };
     
     var sendEvent = function(text) {
@@ -315,7 +312,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(control == "controlTitleGamble" && !$scope.titleGambleSet) {
             fireRef.child('titleGamble/wins').once('value',function(snap) {
                 $scope.titleGambleWins = snap.val() ? snap.val() : {};
-                console.log('titleGamble wins:',$scope.titleGambleWins);
             });
         }
     };
@@ -359,7 +355,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.controlAddBounty = false; $scope.bountySet = true;
     };
 
-    $scope.restrictNumber = function(input) { input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-',''); return input; };
+    $scope.restrictNumber = function(input,min,max) { 
+        input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-',''); 
+        return input > max ? max : input < min ? min : input; 
+    };
     
     $scope.parseURL = function() {
         if(!$scope.add_url && !$scope.batchList) { return; }
@@ -587,14 +586,14 @@ Application.Filters.filter('capitalize', function() {
     }
 })
     .filter('timeUnitsLabel', function() {
-        return function(input,exact) {
-            if(!input) { return ''; }
-            var now = new Date().getTime();
-            var seconds = Math.floor((now-input)/1000);
-            if(seconds < 60 && exact) { return seconds > 1 ? 'seconds' : 'second'; } // seconds
-            if(seconds < 60) { return 'minutes'; } // less than a min
-            if(seconds < 3600) { return seconds > 119 ? 'minutes' : 'minute'; } // minutes
-            if(seconds < 86400) { return seconds > 7199 ? 'hours' : 'hour'; } // hours
-            else { return seconds > 172799 ? 'days' : 'day'; } // days
-        }
-    });
+    return function(input,exact) {
+        if(!input) { return ''; }
+        var now = new Date().getTime();
+        var seconds = Math.floor((now-input)/1000);
+        if(seconds < 60 && exact) { return seconds > 1 ? 'seconds' : 'second'; } // seconds
+        if(seconds < 60) { return 'minutes'; } // less than a min
+        if(seconds < 3600) { return seconds > 119 ? 'minutes' : 'minute'; } // minutes
+        if(seconds < 86400) { return seconds > 7199 ? 'hours' : 'hour'; } // hours
+        else { return seconds > 172799 ? 'days' : 'day'; } // days
+    }
+});

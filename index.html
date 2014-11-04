@@ -3,6 +3,7 @@
 <head>
     <title>Jukebox</title>
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'/>
+    <link href="js/vendor/angular-slider.css" media="screen" rel="stylesheet"/>
     <link href="css/layout.css" media="screen" rel="stylesheet"/>
     <link href="css/theme.css" media="screen" rel="stylesheet"/>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -92,7 +93,8 @@
                     <p>The longer your string, the more you win.</p>
                     <div class="field">
                         <label for="titleGambleAmount">Amount</label>
-                        <input type="text" id="titleGambleAmount" name="titleGambleAmount" ng-change="titleGambleAmount = restrictNumber(titleGambleAmount)" ng-model="titleGambleAmount" size="3"><span class="muted hint">kudos</span>
+                        <input type="text" id="titleGambleAmount" name="titleGambleAmount" ng-change="titleGambleAmount = restrictNumber(titleGambleAmount,1,user.kudos)" ng-model="titleGambleAmount" size="3"><span class="muted hint">kudos</span>
+                        <slider floor="1" ceiling="{{user.kudos}}" step="1" precision="0" ng-model="titleGambleAmount"></slider>
                     </div>
                     <div class="field">
                         <label for="titleGambleString">String</label>
@@ -113,7 +115,8 @@
                     <legend>Add a bounty</legend>
                     <div class="field">
                         <label for="bountyAmount">Amount</label>
-                        <input type="text" id="bountyAmount" name="bountyAmount" ng-change="bountyAmount = restrictNumber(bountyAmount)" ng-model="bountyAmount" size="3"><span class="muted hint">kudos</span>
+                        <input type="text" id="bountyAmount" name="bountyAmount" ng-change="bountyAmount = restrictNumber(bountyAmount,1,user.kudos)" ng-model="bountyAmount" size="3"><span class="muted hint">kudos</span>
+                        <slider floor="1" ceiling="{{user.kudos}}" step="1" precision="0" ng-model="bountyAmount"></slider>
                     </div>
                     <div class="field">
                         <label for="bountySelect">Video</label>
@@ -186,9 +189,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
     <script src="js/vendor/angular-sanitize.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="js/vendor/angular-slider.min.js"></script>
     <script src="js/vendor/localStorageModule.js"></script>
-    <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script> <!-- Firebase -->
-    <script src="app/app.js"></script>
+    <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script>
+    <script src="app/app.js"></script> <!-- My Stuff -->
     <script src="app/jukebox.js"></script>
     <script src="js/vendor/seedrandom.js"></script>
     <!-- Error Reporting -->
