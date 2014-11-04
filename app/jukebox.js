@@ -117,7 +117,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.291; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.292; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -155,29 +155,31 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
         $scope.playing = snap.val();
         if(!$scope.auth) return;
+        var refundAmount = 0;
         if(parseInt($scope.playing.index) === myVote) {
             if(!$scope.playing.bounty || (+$scope.bountyIndex === +$scope.playing.index && $scope.bountySet)) {
+                refundAmount = countProperties($scope.playing.votes,false) == 1 ? $scope.bountyAmount : 0;
                 fireUser.child('kudos').transaction(function(userKudos) {
-                    return userKudos ? parseInt(userKudos) + 2 : 2;
+                    return userKudos ? +userKudos + 2 + +refundAmount : 2 + +refundAmount;
                 });
             } else {
                 fireUser.child('kudos').transaction(function(userKudos) {
                     var reward = parseInt($scope.playing.bounty / Math.max(1,countProperties($scope.playing.votes,username)) + 2);
-                    return userKudos ? parseInt(userKudos) + +reward : +reward ;
+                    return userKudos ? +userKudos + +reward : +reward ;
                 });
             }
         } else if(myVote) {
             fireUser.child('kudos').transaction(function(userKudos) {
-                return userKudos ? parseInt(userKudos) + 1 : 1;
+                return userKudos ? +userKudos + 1 : 1;
             });
         }
         if(+$scope.playing.index != +$scope.bountyIndex && $scope.bountySet) { // Your bounty didn't win, refunded
-            var refundAmount = $scope.bountyAmount;
+            refundAmount = $scope.bountyAmount;
             fireUser.child('kudos').transaction(function(userKudos) {
-                return userKudos ? parseInt(userKudos) + +refundAmount : +refundAmount;
+                return userKudos ? +userKudos + +refundAmount : +refundAmount;
             });
-            $scope.message = { type: 'default', text: 'Your bounty has been refunded.' };
         }
+        $scope.message = refundAmount > 0 ? { type: 'default', text: 'Your bounty has been refunded.' } : $scope.message;
         $scope.bountyAmount = 1; $scope.bountyIndex = 0; delete $scope.bountySet;
         myVote = null;
     };
@@ -441,7 +443,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireRef.child('selection').remove();
             voting = false;
             fireRef.child('votes').remove();
-            services.updateVideo(play.video_id,countProperties(play.votes,''));
+            services.updateVideo(play.video_id,countProperties(play.votes,false));
         });
     };
 
