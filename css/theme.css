@@ -36,7 +36,8 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .video-selection table tr td .bounty { color: #DEFF7C; }
 .video-selection table tr td:first-child + td + td { color: #D7EDA9; }
 .video-selection table tr:hover td:first-child + td + td { color: white; }
-.video-selection table tr td:first-child + td + td div i { color: rgba(222, 255, 124, 0.3); }
+.video-selection table tr td:first-child + td + td div i { color: rgba(245, 255, 216, 0.3); }
+.video-selection table tr td:first-child + td + td div i.mine { color: rgba(222, 255, 124, 0.45); }
 .video-selection table tr td.control a { color: #d3d9b9; }
 .video-selection table tr td.control:hover a { color: #f2f5eb; }
 .video-selection table tr td.votes { color: #70cb1b; }

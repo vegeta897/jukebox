@@ -40,7 +40,10 @@
                     <td class="title" ng-click="vote($index)">
                         <span ng-bind-html="video.title"></span>
                         <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
-                        <div><span class="bounty">{{ video.bounty }}</span><i class="fa fa-star" ng-repeat="vote in video.votes"></i></div>
+                        <div>
+                            <span class="bounty">{{ video.bounty }}</span>
+                            <i class="fa fa-star" ng-repeat="(voter, value) in video.votes" ng-class="{mine: voter == username}"></i>
+                        </div>
                     </td>
                     <td class="control">
                         <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a>
@@ -116,7 +119,7 @@
                     <div class="field">
                         <label for="bountySelect">Video</label>
                         <select ng-model="bountyIndex" id="bountySelect" name="bountySelect" size="6" >
-                            <option ng-repeat="option in videoSelection" value="{{ $index }}">1. {{ option.title }}</option>
+                            <option ng-repeat="option in videoSelection" value="{{ $index }}">{{ $index + 1 }}. {{ option.title }}</option>
                         </select>
                     </div>
                 </fieldset>
@@ -156,7 +159,7 @@
             </form>
         </div>
         <div class="avatar-shop control-panel" ng-show="auth && controlAvatarShop">
-            <p>Click an avatar to purchase and/or equip it</p>
+            <p>Click an avatar to purchase and/or wear it</p>
             <div>
                 <div ng-repeat="(avatarID, avatar) in avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !user.avatar) || user.avatar == avatarID}" ng-click="buyEquipAvatar(avatarID)">
                     <i class="fa" ng-class="'fa-'+avatarID"></i><span class="price" ng-class="{'cant-buy': !user.kudos || avatar[1] > user.kudos}">{{ avatar[1] }}</span> - <span class="name">{{ avatar[0] }}</span>
