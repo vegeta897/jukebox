@@ -83,4 +83,9 @@ p.message { text-align: center; margin-bottom: 4px; }
 .changelog table tr td { padding: 4px 0; }
 .changelog table tr td:first-child { width: 110px; }
 
+.mumble > ul > li { padding: 4px; }
+.mumble > ul > li h3 { float: left; margin-right: 40px; font-size: 1.2em; }
+.mumble ul li ul { float: left; margin-top: 2px; }
+.mumble ul li ul li { float: left; padding-right: 32px; }
+
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }

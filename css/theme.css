@@ -63,6 +63,8 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .avatar-shop .cant-buy { color: #c9513e; }
 .avatar-shop .owned .price {  color: #646d4b; }
 
+.mumble ul li ul li { color: #DEFF7C; }
+
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }
 ::-moz-placeholder { color: #999; }

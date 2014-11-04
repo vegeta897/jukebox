@@ -171,6 +171,15 @@
                 <td>{{ commit.message }}</td>
             </tr></table>
         </div>
+        <div class="mumble control-panel" ng-show="auth && controlMumble">
+            <p class="muted" ng-show="mumble.empty">Nobody's in the mumble server :(</p>
+            <ul ng-hide="mumble.empty">
+                <li ng-repeat="(channelName, users) in mumble" ng-show="users">
+                    <h3>{{ channelName }}</h3>
+                    <ul><li ng-repeat="user in users">{{ user.name }}</li></ul>
+                </li>
+            </ul>
+        </div>
         <button ng-hide="username != dj || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->

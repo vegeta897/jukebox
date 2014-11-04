@@ -117,12 +117,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.282; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.29; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'},{name:'controlAvatarShop',title:'Avatar Shop'},
-        {name:'controlChangelog',title:'Changelog'}];
+        {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'}];
     $scope.bountyIndex = 0; $scope.avatars = avatars;
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
@@ -257,13 +257,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 dataType: 'jsonp',
                 success: function(results) {
                     $scope.commits = [];
+                    if(!results.data) { return; }
                     for(var i = 0; i < results.data.length; i++) {
                         $scope.commits.push({
                             message:results.data[i].commit.message,date:Date.parse(results.data[i].commit.committer.date)
                         });
                         if($scope.commits.length > 9) { break; }
                     }
-                    console.log($scope.commits);
                 }
             });
         };
@@ -310,6 +310,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         for(var i = 0, il = $scope.controlList.length; i < il; i++) {
             $scope[$scope.controlList[i].name] = control == $scope.controlList[i].name;
         }
+        $timeout(function(){ window.scrollTo(0,document.body.scrollHeight); }); // Scroll to bottom
+        
         if(control == "controlTitleGamble" && !$scope.titleGambleSet) {
             fireRef.child('titleGamble/wins').once('value',function(snap) {
                 $scope.titleGambleWins = snap.val() ? snap.val() : {};
@@ -466,6 +468,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
     };
     
+    var everyThirtySeconds = 30;
     var interval = function() {
         if(!init && player && player.hasOwnProperty('loadVideoById')) {
             init = true; console.log('Jukebox initializing...');
@@ -536,6 +539,26 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             voting = true;
         }
         $scope.theTime = getServerTime();
+        everyThirtySeconds += 0.5;
+        if(everyThirtySeconds >= 30) {
+            everyThirtySeconds = 0;
+            jQuery.ajax({ 
+                url: 'http://api.commandchannel.com/cvp.json?email=vegeta897@gmail.com&apiKey=4BC693B4-11FD-4E9E-8BA5-E3B39D5A04B9&callback=?',
+                dataType: 'jsonp',
+                success: function(results) {
+                    if(results.name) {
+                        $scope.mumble = { empty: true };
+                        for(var i = 0, il = results.root.channels.length; i < il; i++) {
+                            var channel = results.root.channels[i];
+                            if(channel.users.length == 0) { continue; }
+                            $scope.mumble.empty = false;
+                            $scope.mumble[channel.name] = channel.users;
+                        }
+                    }
+                }
+            });
+            
+        }
         $timeout(function(){});
     };
 });
