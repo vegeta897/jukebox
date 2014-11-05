@@ -120,7 +120,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.297; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.298; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -196,7 +196,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
             var won = false;
             var gambleString = $scope.titleGambleString+''; // Cast as string
-            var gambleWinnings = Math.floor($scope.titleGambleAmount + $scope.titleGambleAmount * $scope.titleGambleMulti);
+            var gambleWinnings = Math.floor($scope.titleGambleAmount + +$scope.titleGambleAmount * $scope.titleGambleMulti);
             for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
                 var theIndex = $scope.videoSelection[i].title.toUpperCase().indexOf(gambleString.toUpperCase());
                 if(theIndex >= 0) {
