@@ -42,7 +42,7 @@
                         <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
                         <div>
                             <span class="bounty">{{ video.bounty }}</span>
-                            <i class="fa fa-star" ng-repeat="(voter, value) in video.votes" ng-class="{mine: voter == username}"></i>
+                            <i class="fa fa-heart" ng-repeat="(voter, value) in video.votes" ng-class="{mine: voter == username}"></i>
                         </div>
                     </td>
                     <td class="control">
