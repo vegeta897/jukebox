@@ -47,8 +47,13 @@ var avatars = {
     camera: ['Camera',10000], bug: ['Bug',15000]
 };
 
-var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan'];
-var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble'];
+var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan','buddy',
+'pal','submitter','giver','contributor','philanthropist','giver','patron','guest','supporter'];
+var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish'];
+function buildSubject() {
+    var adj = pickInArray(adjectives);
+    return 'a' + (jQuery.inArray(adj[0],['a','e','i','o','u']) >= 0 ? 'n ' : ' ') + adj + pickInArray(nouns);
+}
 
 function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
     if(!utc || utc.hasOwnProperty('stamp')) return utc;
@@ -405,7 +410,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 var reward = parseInt(results.data.data.items.length * 25);
                 $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward };
                 var addQuantity = results.data.data.items.length == 1 ? 'a video' : results.data.data.items.length + ' videos';
-                sendEvent('<strong>'+username+'</strong> just added ' + addQuantity + '! What a ' + pickInArray(adjectives) + ' ' + pickInArray(nouns) + '!');
+                sendEvent('<strong>'+username+'</strong> just added ' + addQuantity + '! What ' + buildSubject() + '!');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? +userKudos + +reward : reward;
                 });

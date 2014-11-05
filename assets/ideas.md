@@ -7,4 +7,5 @@
 - Idle games/activities embedded on the page
   - Whiteboard or some way to mark up the video, maybe placing "stickers"
   - Generated trivia/math/misc questions?
-  - Jackpot won by guessing the exact number of seconds that the total playtime of the selection is
+  - Jackpot won by guessing the exact number of seconds that the total playtime of the selection is?
+  - Kudo bank to gain interest?
