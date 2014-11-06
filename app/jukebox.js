@@ -52,7 +52,7 @@ var nouns = ['person','dude','bro','civilian','player','individual','guy','troop
 var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish'];
 function buildSubject() {
     var adj = pickInArray(adjectives);
-    return 'a' + (jQuery.inArray(adj[0],['a','e','i','o','u']) >= 0 ? 'n ' : ' ') + adj + pickInArray(nouns);
+    return 'a' + (jQuery.inArray(adj[0],['a','e','i','o','u']) >= 0 ? 'n ' : ' ') + adj + ' ' + pickInArray(nouns);
 }
 
 function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
@@ -125,7 +125,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.299; $scope.versionName = 'Knock Knock Juke'; $scope.needUpdate = false;
+    $scope.version = 0.3; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -229,14 +229,27 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 });
             }
             $scope.bountyIndex = 0;
-        } else {
-            $scope.videoSelection = snap.val();
+        } else { // Vote or bounty change
+            for(var j = 0, jl = $scope.videoSelection.length; j < jl; j++) {
+                $scope.videoSelection[j].bounty = snap.val()[j].bounty;
+                $scope.videoSelection[j].votes = snap.val()[j].votes;
+            }
         }
+        $timeout(function(){});
         delete $scope.titleGambleSet; delete $scope.titleGambleString; $scope.titleGambleAmount = 1; $scope.controlTitleGamble = false;
     };
     
     var sendEvent = function(text) {
         fireRef.child('eventLog').push({ text: text, time: getServerTime() });
+    };
+    var purgeEventLog = function() {
+        for(var il = $scope.eventLog.length-1, i = il; i >= 0; i--) { // Age and remove old events (locally)
+            $scope.eventLog[i].age = getServerTime() - $scope.eventLog[i].time;
+            if($scope.eventLog[i].age > 300000) {
+                $scope.eventLog.splice(i,1);
+            }
+        }
+        $timeout(function(){});
     };
     
     $scope.login = function() {
@@ -307,6 +320,15 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.dj = username;
         djRef.set(username);
         djRef.onDisconnect().remove();
+        fireRef.child('timeStampTests').remove(); // Cleanup
+        fireRef.child('eventLog').once('value',function(snap) { 
+            if(!snap.val()) return;
+            var purged = snap.val();
+            console.log(purged);
+            for(var key in purged) { if(!purged.hasOwnProperty(key)) continue;
+                if(purged[key].time < getServerTime() - 3600000) fireRef.child('eventLog/'+key).remove();
+            }
+        });
     };
     
     $scope.listenerClasses = function(listener) { return 'fa fa-' + (listener.avatar ? listener.avatar : 'headphones') + (listener.muted ? ' muted' : ''); };
@@ -488,8 +510,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(!init && player && player.hasOwnProperty('loadVideoById')) {
             init = true; console.log('Jukebox initializing...');
             fireRef.once('value', function(snap) {
-                $scope.dj = snap.val().dj;
-                $scope.videoSelection = snap.val().selection;
                 $scope.playing = snap.val().playing;
                 if($scope.playing) {
                     var startTime = parseInt((getServerTime()-$scope.playing.startTime)/1000);
@@ -506,7 +526,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); $scope.user = snap.val()[username]; }); // Listen for user changes
                 fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
                 fireRef.child('jackpot').on('value', function(snap) { $scope.jackpot = snap.val(); }); // Listen for jackpot changes
-                fireRef.child('eventLog').endAt().limit(10).on('child_added',function(snap) { $scope.eventLog.push(snap.val()); $scope.eventLog.slice(0,16); });
+                fireRef.child('eventLog').endAt().limit(15).on('child_added',function(snap) { $scope.eventLog.push(snap.val()); $scope.eventLog = $scope.eventLog.slice(Math.max($scope.eventLog.length - 15, 0)); purgeEventLog(); });
                 $timeout(function(){});
             });
         }
@@ -554,6 +574,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             voting = true;
         }
         $scope.theTime = getServerTime();
+        purgeEventLog();
         everyThirtySeconds += 0.5;
         if(everyThirtySeconds >= 30) {
             everyThirtySeconds = 0;

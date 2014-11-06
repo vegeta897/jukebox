@@ -29,9 +29,8 @@
             <h2 ng-bind="playing.title"></h2>
             <h3 class="muted">added by {{ playing.added_by }}</h3>
         </div>
-        <div class="video-selection" ng-show="videoSelection">
+        <div class="video-selection animate-selection" ng-show="videoSelection">
             <h2 ng-show="auth">Pick a video</h2>
-            <span class="muted" ng-hide="videoSelection">loading videos...</span>
             <div class="vote-timer"><span class="muted">Time Left:</span> {{ voteTimeLeft }}</div>
             <table>
                 <tr ng-repeat="video in videoSelection" ng-class="'has-'+countProperties(video.votes,false)+'-votes'">
@@ -56,11 +55,9 @@
             <button ng-hide="dj || !auth" ng-click="becomeDJ()">Become DJ</button>
         </div>
         <div class="event-log">
-            <table>
-                <tr ng-repeat="entry in eventLog" ng-show="theTime - entry.time < 300000" ng-style="{opacity: (300000 - (theTime - entry.time))/300000}">
-                    <td>{{ entry.time | date:'H:mm:ss' }}</td><td ng-bind-html="entry.text"></td>
-                </tr>
-            </table>
+            <ul><li ng-repeat="entry in eventLog" class="animate-repeat">
+                <span ng-style="{opacity: (300000 - entry.age)/300000}">{{ entry.time | date:'H:mm:ss' }}</span><span ng-bind-html="entry.text" ng-style="{opacity: (300000 - entry.age)/300000}"></span>
+            </li></ul>
         </div>
         <div ng-show="users" class="listeners">
             <h3 class="muted">Listeners</h3>
@@ -79,7 +76,7 @@
         <div class="control-buttons" ng-show="auth">
             <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}">{{ control.title }}</button>
         </div>
-        <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
+        <div class="title-gamble control-panel animate-show" ng-show="auth && controlTitleGamble">
             <p ng-hide="dj">You can't place any bets without a DJ.</p>
             <p ng-show="videoSelection">You can't bet on the titles yet!</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
@@ -103,7 +100,7 @@
                 <button type="submit" ng-disabled="titleGambleAmount < 1 || !titleGambleString || titleGambleString.length < 2" >Place ya' bet!</button>
             </form>
         </div>
-        <div class="add-bounty control-panel" ng-show="auth && controlAddBounty">
+        <div class="add-bounty control-panel animate-show" ng-show="auth && controlAddBounty">
             <p ng-hide="dj">You can't place a bounty without a DJ.</p>
             <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
@@ -126,7 +123,7 @@
                 <button type="submit" ng-disabled="bountyAmount < 1" >Add it!</button>
             </form>
         </div>
-        <div class="add-video control-panel" ng-show="auth && controlAddVideo">
+        <div class="add-video control-panel animate-show" ng-show="auth && controlAddVideo">
             <form ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">
                     <legend>Add a video</legend>
@@ -158,7 +155,7 @@
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
-        <div class="avatar-shop control-panel" ng-show="auth && controlAvatarShop">
+        <div class="avatar-shop control-panel animate-show" ng-show="auth && controlAvatarShop">
             <p>Click an avatar to purchase and/or wear it</p>
             <div>
                 <div ng-repeat="(avatarID, avatar) in avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !user.avatar) || user.avatar == avatarID}" ng-click="buyEquipAvatar(avatarID)">
@@ -166,13 +163,13 @@
                 </div>
             </div>
         </div>
-        <div class="changelog control-panel" ng-show="auth && controlChangelog">
+        <div class="changelog control-panel animate-show" ng-show="auth && controlChangelog">
             <table><tr ng-repeat="commit in commits">
                 <td class="muted">{{ commit.date | timeUnits }} {{ commit.date | timeUnitsLabel }} ago</td>
                 <td>{{ commit.message }}</td>
             </tr></table>
         </div>
-        <div class="mumble control-panel" ng-show="auth && controlMumble">
+        <div class="mumble control-panel animate-show" ng-show="auth && controlMumble">
             <p class="muted" ng-show="mumble.empty">Nobody's in the mumble server :(</p>
             <ul ng-hide="mumble.empty">
                 <li ng-repeat="(channelName, users) in mumble" ng-show="users">
@@ -184,7 +181,8 @@
         <button ng-hide="username != dj || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.1/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.1/angular-animate.min.js"></script>
     <script src="js/vendor/angular-sanitize.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="js/vendor/angular-slider.min.js"></script>
