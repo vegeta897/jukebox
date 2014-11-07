@@ -125,7 +125,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.302; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.303; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -231,8 +231,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.bountyIndex = 0;
         } else { // Vote or bounty change
             for(var j = 0, jl = $scope.videoSelection.length; j < jl; j++) {
-                if(snap.val()[j].bounty) $scope.videoSelection[j].bounty = snap.val()[j].bounty;
-                if(snap.val()[j].votes) $scope.videoSelection[j].votes = snap.val()[j].votes;
+                if(snap.val()[j].bounty) { $scope.videoSelection[j].bounty = snap.val()[j].bounty; } else {
+                    delete $scope.videoSelection[j].bounty;
+                }
+                if(snap.val()[j].votes) { $scope.videoSelection[j].votes = snap.val()[j].votes; } else {
+                    delete $scope.videoSelection[j].votes;
+                }
             }
         }
         $timeout(function(){});
