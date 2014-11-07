@@ -125,7 +125,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote;
 
-    $scope.version = 0.303; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.304; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
@@ -480,6 +480,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             var play = $scope.videoSelection[winner];
             play.startTime = getServerTime();
             fireRef.child('playing').set(angular.copy(play));
+            fireRef.child('users/'+play.added_by+'/kudos').transaction(function(userKudos) { // Give submitter 5 kudos
+                return userKudos ? +userKudos + 5 : 5;
+            });
             fireRef.child('selection').remove();
             voting = false;
             fireRef.child('votes').remove();

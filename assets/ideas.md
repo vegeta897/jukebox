@@ -9,3 +9,4 @@
   - Generated trivia/math/misc questions?
   - Jackpot won by guessing the exact number of seconds that the total playtime of the selection is?
   - Kudo bank to gain interest?
+- Gain money from people voting on your songs
