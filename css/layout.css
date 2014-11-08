@@ -37,13 +37,13 @@ header form button { float: left; width: 66px; height: 24px; }
 .dj { margin: 16px; text-align: center; }
 
 .event-log ul { width: 600px; margin: 0 20px 12px; }
-.event-log ul li { position: relative; }
-.event-log ul li span { display: inline-block; padding: 2px 6px; }
-.event-log ul li span:first-child { width: 56px; }
+.event-log ul li { position: relative; margin-bottom: 2px; }
+.event-log ul li span { padding: 2px 0; line-height: 1.2em; }
+.event-log ul li span:first-child { width: 56px; padding-right: 12px; }
 
 .listeners { text-align: center; margin-bottom: 8px; }
 .listeners h3 { margin-bottom: 0; }
-.listener { padding: 4px 6px; display: inline-block; font-size: 0.9em; }
+.listener { padding: 4px 6px; display: inline-block; font-size: 0.9em; position: relative; }
 .listener i { font-size: 1.5em; top: 2px; position: relative; margin-right: 3px; }
 .listener .volume { width: 72px; margin: 5px auto 4px; height: 4px; padding: 1px; }
 .listener .volume div { height: 4px; }
@@ -90,6 +90,7 @@ p.message { text-align: center; margin-bottom: 4px; }
 .changelog table tr td { padding: 4px 0; }
 .changelog table tr td:first-child { width: 110px; }
 
+.mumble p { text-align: center; }
 .mumble > ul > li { padding: 4px; }
 .mumble > ul > li h3 { float: left; margin-right: 40px; font-size: 1.2em; }
 .mumble ul li ul { float: left; margin-top: 3px; }
@@ -100,30 +101,30 @@ p.message { text-align: center; margin-bottom: 4px; }
 .animate-selection { opacity: 1; max-height: 318px; }
 
 .animate-selection.ng-hide-add.ng-hide-add-active {
-    -webkit-transition: all 2s cubic-bezier(0.435, 0.360, 0.730, -0.315);
-    transition: all 2s cubic-bezier(0.435, 0.360, 0.730, -0.315);
+    -webkit-transition: all 1s cubic-bezier(0.435, 0.360, 0.730, -0.315);
+    transition: all 1s cubic-bezier(0.435, 0.360, 0.730, -0.315);
     -webkit-transition-timing-function: cubic-bezier(0.435, 0.360, 0.730, -0.315);
     transition-timing-function: cubic-bezier(0.435, 0.360, 0.730, -0.315);
 }
 
-/*.animate-selection.ng-hide-remove.ng-hide-remove-active {*/
-    /*-webkit-transition: all 2s cubic-bezier(0.310, 1.275, 0.610, 0.590);*/
-    /*transition: all 2s cubic-bezier(0.310, 1.275, 0.610, 0.590);*/
-    /*-webkit-transition-timing-function: cubic-bezier(0.310, 1.275, 0.610, 0.590);*/
-    /*transition-timing-function: cubic-bezier(0.310, 1.275, 0.610, 0.590);*/
-/*}*/
+.animate-selection.ng-hide-remove.ng-hide-remove-active {
+    -webkit-transition: all 0.5s cubic-bezier(0.310, 1.275, 0.610, 0.590);
+    transition: all 0.5s cubic-bezier(0.310, 1.275, 0.610, 0.590);
+    -webkit-transition-timing-function: cubic-bezier(0.310, 1.275, 0.610, 0.590);
+    transition-timing-function: cubic-bezier(0.310, 1.275, 0.610, 0.590);
+}
 
 .animate-selection.ng-hide { opacity: 0; max-height: 0; }
 
 .animate-repeat.ng-enter {
-    -webkit-transition: all 1s cubic-bezier(0.250, 0.460, 0.450, 0.940);
+    -webkit-transition: all 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940);
     transition: all 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940);
     -webkit-transition-timing-function: cubic-bezier(0.250, 0.460, 0.450, 0.940);
     transition-timing-function: cubic-bezier(0.250, 0.460, 0.450, 0.940);
 }
 
 .animate-repeat.ng-leave {
-    -webkit-transition: all 1s cubic-bezier(0.550, 0.085, 0.680, 0.530);
+    -webkit-transition: all 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530);
     transition: all 0.5s cubic-bezier(0.550, 0.085, 0.680, 0.530);
     -webkit-transition-timing-function: cubic-bezier(0.550, 0.085, 0.680, 0.530);
     transition-timing-function: cubic-bezier(0.550, 0.085, 0.680, 0.530);

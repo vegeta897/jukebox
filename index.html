@@ -74,7 +74,7 @@
             <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(jackpot/10000))+'px'}">{{ jackpot | number }}</strong>
         </p>
         <div class="control-buttons" ng-show="auth">
-            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}">{{ control.title }}</button>
+            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && username != 'vegeta897'">{{ control.title }}</button>
         </div>
         <div class="title-gamble control-panel animate-show" ng-show="auth && controlTitleGamble">
             <p ng-hide="dj">You can't place any bets without a DJ.</p>
@@ -177,6 +177,9 @@
                     <ul><li ng-repeat="user in users">{{ user.name }}</li></ul>
                 </li>
             </ul>
+        </div>
+        <div class="control-panel" ng-show="auth && controlAdmin">
+            <button ng-click="requireVersion()">Require Version</button>
         </div>
         <button ng-hide="username != dj || !auth" ng-click="forceVote()">Force Vote</button>
     </section>

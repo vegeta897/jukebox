@@ -47,9 +47,8 @@ var avatars = {
     camera: ['Camera',10000], bug: ['Bug',15000]
 };
 
-var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan','buddy',
-'pal','submitter','giver','contributor','philanthropist','giver','patron','guest','supporter'];
-var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish'];
+var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan','buddy','hero','pal','submitter','giver','contributor','philanthropist','giver','patron','guest','supporter'];
+var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish','elegant','glamorous'];
 function buildSubject() {
     var adj = pickInArray(adjectives);
     return 'a' + (jQuery.inArray(adj[0],['a','e','i','o','u']) >= 0 ? 'n ' : ' ') + adj + ' ' + pickInArray(nouns);
@@ -123,14 +122,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
     var djRef = fireRef.child('dj');
     var init = false, localTimeOffset;
-    var gettingVideos = false, voting, voteEnd, muted, myVote;
+    var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.304; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.305; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
         {name:'controlTitleGamble',title:'Title Gamble'},{name:'controlAvatarShop',title:'Avatar Shop'},
-        {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'}];
+        {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},{name:'controlAdmin',title:'Admin'}];
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; $scope.avatars = avatars;
     $scope.countProperties = countProperties;
 
@@ -174,6 +173,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             } else {
                 fireUser.child('kudos').transaction(function(userKudos) {
                     var reward = parseInt($scope.playing.bounty / Math.max(1,countProperties($scope.playing.votes,username)) + 2);
+                    $scope.message = { type: 'success', text: 'The bounty was awarded to you!', kudos: reward };
                     return userKudos ? +userKudos + +reward : +reward ;
                 });
             }
@@ -194,8 +194,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     var onSelectionChange = function(snap) {
-        if(snap.val() == null) { delete $scope.videoSelection; return; }
-        if(!$scope.videoSelection) { // If first video selection (not a vote or bounty change)
+        if(snap.val() == null) { delete $scope.videoSelection; $timeout(function(){}); return; }
+        // If first video selection, or new video selection (not a vote or bounty change)
+        if(!$scope.videoSelection || $scope.videoSelection[0].video_id != snap.val()[0].video_id) { 
             console.log('new video list');
             $scope.videoSelection = snap.val();
             if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
@@ -466,9 +467,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
 
     $scope.forceVote = function() {
         getVideos();
-        $timeout(playVideo, 15000); // Voting for 15 seconds
+        videoTimeout = setTimeout(playVideo, 15000); // Voting for 15 seconds
         fireRef.child('voting').set(getServerTime() + 15000);
     };
+    
+    $scope.requireVersion = function() { fireRef.parent().child('version').set($scope.version); }; // Set firebase version
 
     var playVideo = function() { // Tally votes and pick the video with the most
         if(!$scope.auth || $scope.dj != username || !$scope.videoSelection) return;
@@ -556,7 +559,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if (elapsed + 90 > $scope.playing.duration.totalSec && !voting) {
                     console.log('video close to ending or ended');
                     getVideos();
-                    $timeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)-1000); // Voting for 89 seconds
+                    videoTimeout = setTimeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)-1000); // Voting for 89 seconds
                     fireRef.child('voting').set(getServerTime() + Math.min($scope.playing.duration.totalSec*1000,90000));
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
                     fireRef.child('selection').remove();
@@ -565,7 +568,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     console.log('video expired');
                     fireRef.child('playing').remove();
                     getVideos();
-                    $timeout(playVideo, 15000); // Voting for 15 seconds
+                    videoTimeout = setTimeout(playVideo, 15000); // Voting for 15 seconds
                     fireRef.child('voting').set(getServerTime() + 15000);
                 }
             }
@@ -576,7 +579,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
         if($scope.dj && $scope.dj == username && !$scope.playing && $scope.videoSelection && !voting) {
             console.log('nothing playing, have list, voting ends in 10 seconds');
-            $timeout(playVideo, 10000); // Voting for 10 seconds
+            videoTimeout = setTimeout(playVideo, 10000); // Voting for 10 seconds
             fireRef.child('voting').set(getServerTime() + 10000);
             voting = true;
         }
