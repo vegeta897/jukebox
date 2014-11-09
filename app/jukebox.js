@@ -124,13 +124,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.312; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.313; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
         {name:'controlAddBounty',title:'Add Bounty'},{name:'controlTitleGamble',title:'Title Gamble'},
-        {name:'controlAvatarShop',title:'Avatar Shop'},{name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},
-        {name:'controlAdmin',title:'Admin'}];
+        {name:'controlAvatarShop',title:'Avatar Shop'},{name:'controlMumble',title:'Mumble'},
+        {name:'controlChangelog',title:'Changelog'},{name:'controlAdmin',title:'Admin'}];
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; $scope.avatars = avatars;
     $scope.countProperties = countProperties;
 
@@ -476,7 +476,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             for(var videoID in snap.val()) { if(!snap.val().hasOwnProperty(videoID)) continue;
                 locked.push("'"+videoID+"'");
             }
-            locked = locked.join(',');
+            locked = locked.length == 0 ? "''" : locked.join(',');
+            console.log(locked);
             services.pullUncurated(locked).then(function(data) {
                 console.log('Videos retrieved to be curated',data.data);
                 if(!data || !data.data || data.data.length != 5) {
