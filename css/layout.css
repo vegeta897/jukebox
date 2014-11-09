@@ -51,8 +51,8 @@ header form button { float: left; width: 66px; height: 24px; }
 p.message { text-align: center; margin-bottom: 4px; }
 .message i { margin-right: 10px; }
 
-.control-buttons { text-align: center; margin: 16px 0; }
-.control-buttons button { display: inline-block; margin: 0 4px; }
+.control-buttons { text-align: center; margin: 10px 0; }
+.control-buttons button { display: inline-block; margin: 3px 4px; }
 .control-buttons button.selected { }
 .control-buttons button:focus { outline-width: 0; }
 .control-panel { margin: 16px 32px 32px; }
