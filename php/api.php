@@ -136,7 +136,7 @@
                 $artist = mysqli_real_escape_string($this->mysqli,$video->artist);
                 $track = mysqli_real_escape_string($this->mysqli,$video->track);
                 $query = "UPDATE videos SET artist = '$artist', track = '$track', curated_by = '$username' WHERE video_id = '$video->video_id';";
-                $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
+                $video->result = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             }
             
             $success = array('status' => "Success", "msg" => "Videos Updated Successfully.", "data" => $videos);
