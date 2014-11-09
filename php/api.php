@@ -135,7 +135,8 @@
             foreach ($videos as $video) {
                 $artist = mysqli_real_escape_string($this->mysqli,$video->artist);
                 $track = mysqli_real_escape_string($this->mysqli,$video->track);
-                $query = "UPDATE videos SET artist = '$artist', track = '$track', curated_by = '$username' WHERE video_id = '$video->video_id';";
+                $video_id = mysqli_real_escape_string($this->mysqli,$video->video_id);
+                $query = "UPDATE videos SET artist = '$artist', track = '$track', curated_by = '$username' WHERE video_id = '$video_id';";
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             }
             
