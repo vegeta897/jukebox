@@ -159,7 +159,7 @@
             <p ng-hide="curateList && curateList.length > 0">Add or correct the artist and track names in the database!</p>
             <p ng-show="curateList && curateList.length > 0">If you don't know how a video should be tagged, click the X button.</p>
             <p ng-show="curateList && curateList.length > 0">If a video is already correct, don't click the X or it will not be marked as curated.</p>
-            <button ng-click="beginCurator()" ng-hide="curateList" ng-disabled="gettingUncurated">Pull up some videos</button>
+            <button ng-click="beginCurator()" ng-hide="curateList && curateList.length > 0" ng-disabled="gettingUncurated">Pull up some videos</button>
             <ul ng-show="curateList && curateList.length > 0">
                 <li ng-repeat="video in curateList">
                     <button class="close" ng-click="removeFromCurator($index)" ng-disabled="savingCurated"><i class="fa fa-close"></i></button>
