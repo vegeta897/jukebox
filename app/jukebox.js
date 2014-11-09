@@ -104,8 +104,8 @@ Application.Services.factory("services", ['$http', function($http) {
             return status.data;
         });
     };
-    obj.pullUncurated = function(){
-        return $http.get(serviceBase + 'pullUncurated');
+    obj.pullUncurated = function(locked){
+        return $http.get(serviceBase + 'pullUncurated?locked=' + locked);
     };
     obj.saveCurated = function(videos,curator){
         return $http.post(serviceBase + 'saveCurated', {videos:videos,curator:curator});
@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.311; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.312; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -471,21 +471,28 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     
     $scope.beginCurator = function() {
         $scope.gettingUncurated = true;
-        services.pullUncurated().then(function(data) {
-            console.log('Videos retrieved to be curated',data.data);
-            if(!data || !data.data || data.data.length != 5) {
-                $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return;
+        fireRef.child('curating').once('value',function(snap) {
+            var locked = [];
+            for(var videoID in snap.val()) { if(!snap.val().hasOwnProperty(videoID)) continue;
+                locked.push("'"+videoID+"'");
             }
-            var curating = {}; // Object of video IDs 
-            for(var d = 0, dl = data.data.length; d < dl; d++) {
-                curating[data.data[d].video_id] = username;
-                data.data[d].duration = parseUTCtime(data.data[d].duration);
-                data.data[d].index = d;
-            }
-            fireRef.child('curating').update(curating);
-            $scope.gettingUncurated = false;
-            $scope.curateList = data.data;
-            $timeout(function(){});
+            locked = locked.join(',');
+            services.pullUncurated(locked).then(function(data) {
+                console.log('Videos retrieved to be curated',data.data);
+                if(!data || !data.data || data.data.length != 5) {
+                    $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return;
+                }
+                var curating = {}; // Object of video IDs 
+                for(var d = 0, dl = data.data.length; d < dl; d++) {
+                    curating[data.data[d].video_id] = username;
+                    data.data[d].duration = parseUTCtime(data.data[d].duration);
+                    data.data[d].index = d;
+                }
+                fireRef.child('curating').update(curating);
+                $scope.gettingUncurated = false;
+                $scope.curateList = data.data;
+                $timeout(function(){});
+            });
         });
     };
     
