@@ -130,10 +130,12 @@
             }
             $curation = json_decode(file_get_contents("php://input"),true);
             $videos = $curation['videos'];
-            $username = $curation['curator'];
+            $username = mysqli_real_escape_string($this->mysqli,$curation['curator']);
 
             foreach ($videos as $video) {
-                $query = "UPDATE videos SET artist = '$video->artist', track = '$video->track', curated_by = '$username' WHERE video_id = '$video->video_id';";
+                $artist = mysqli_real_escape_string($this->mysqli,$video->artist);
+                $track = mysqli_real_escape_string($this->mysqli,$video->track);
+                $query = "UPDATE videos SET artist = '$artist', track = '$track', curated_by = '$username' WHERE video_id = '$video->video_id';";
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             }
             
