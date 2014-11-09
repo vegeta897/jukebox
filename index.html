@@ -162,7 +162,7 @@
             <ul ng-show="curateList && curateList.length > 0">
                 <li ng-repeat="video in curateList">
                     <button class="close" ng-click="curateList.splice($index,1)" ng-disabled="savingCurated"><i class="fa fa-close"></i></button>
-                    <h3>{{ video.title }}</h3>
+                    <h3>{{ video.title }} <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a></h3>
                     <label>Artist</label><input ng-model="video.artist" type="text" size="24" maxlength="120" ng-disabled="savingCurated" />
                     <label>Track</label><input ng-model="video.track" type="text" size="32" maxlength="120" ng-disabled="savingCurated" />
                 </li>
