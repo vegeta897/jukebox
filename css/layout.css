@@ -89,6 +89,7 @@ p.message { text-align: center; margin-bottom: 4px; }
 .curator ul li { display: block; margin: 18px 0 4px; position: relative; }
 .curator ul li button.close { font-size: 14px; position: absolute; padding: 4px 6px 4px 7px; margin-top: 6px; }
 .curator ul li h3 { font-size: 14px; padding-left: 36px; text-align: left; }
+.curator ul li h3 i { margin-left: 8px; }
 .curator ul li label { display: inline-block; margin: 2px 6px 2px 20px; }
 .curator ul li label:first-of-type { margin-left: 36px; }
 

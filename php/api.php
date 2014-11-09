@@ -131,16 +131,14 @@
             $curation = json_decode(file_get_contents("php://input"),true);
             $videos = $curation['videos'];
             $username = mysqli_real_escape_string($this->mysqli,$curation['curator']);
-            $r = '';
             foreach ($videos as $video) {
-                $artist = mysqli_real_escape_string($this->mysqli,$video->artist);
-                $track = mysqli_real_escape_string($this->mysqli,$video->track);
-                $video_id = mysqli_real_escape_string($this->mysqli,$video->video_id);
+                $artist = mysqli_real_escape_string($this->mysqli,$video['artist']);
+                $track = mysqli_real_escape_string($this->mysqli,$video['track']);
+                $video_id = mysqli_real_escape_string($this->mysqli,$video['video_id']);
                 $query = "UPDATE videos SET artist = '$artist', track = '$track', curated_by = '$username' WHERE video_id = '$video_id';";
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
             }
-            
-            $success = array('status' => "Success", "msg" => "Videos Updated Successfully.", "data" => $r);
+            $success = array('status' => "Success", "msg" => "Videos Updated Successfully!", "data" => $curation);
             $this->response($this->json($success),200);
         }
 		private function deleteVideo(){

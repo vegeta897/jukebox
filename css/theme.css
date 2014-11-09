@@ -66,6 +66,8 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .curator button.close { background: #2e2e2e; color: #c6c6c6; }
 .curator button.close:hover { background: #c60a09; color: white; }
 .curator ul li h3 { color: #D7EDA9; }
+.curator ul li h3 i { color: #d3d9b9; }
+.curator ul li h3 i:hover { color: #f2f5eb; }
 .curator label { color: #A0A399; }
 
 .avatar-shop * { transition: all 0.1s; }

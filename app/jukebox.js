@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.309; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.31; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -448,19 +448,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
     };
     
-    $scope.saveCurated = function() {
-        $scope.savingCurated = true;
-        services.saveCurated($scope.curateList, username).then(function(results) {
-            console.log(results);
-            $scope.savingCurated = false;
-            if(!results.data || !results.data.data) {
-                $scope.message = { type: 'error', text: 'Sorry, there was a server error. Tell Vegeta about it.' }; return;
-            }
-            $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
-            delete $scope.curateList;
-        });
-    };
-    
     $scope.hasAvatar = function(avatar) { 
         return avatar == 'headphones' ? true : $scope.user && $scope.user.avatars ? $scope.user.avatars.hasOwnProperty(avatar) : false; 
     };
@@ -496,15 +483,21 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.curateList = data.data;
             $timeout(function(){});
         });
-        //$scope.curateList = [
-        //    {video_id: 'PuLO1A857yE', title: 'Hotline Miami OST - Inner Animal (Scattle)', 
-        //        artist: 'Hotline Miami OST', track: 'Inner Animal (Scattle)',
-        //        duration: parseUTCtime('PT3M43S'), added_by: 'voiper'},
-        //    {video_id: 'IfHXDZsVTYA', title: 'Bangs - My Life is Hard [Music Video]',
-        //        artist: 'Bangs', track: 'My Life is Hard [Music Video]',
-        //        duration: parseUTCtime('PT3M36S'), added_by: 'vegeta897'}];
-        //$scope.gettingUncurated = false;
-        //$timeout(function(){});
+    };
+
+    $scope.saveCurated = function() {
+        $scope.savingCurated = true;
+        services.saveCurated($scope.curateList, username).then(function(results) {
+            console.log(results);
+            $scope.savingCurated = false;
+            if(!results.data || !results.data.data) {
+                $scope.message = { type: 'error', text: 'Sorry, there was a server error. Tell Vegeta about it.' }; return;
+            }
+            $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
+            var addQuantity = results.data.length == 1 ? 'a video' : results.data.length + ' videos';
+            sendEvent('<strong>'+username+'</strong> just curated ' + addQuantity + '! What ' + buildSubject() + '!');
+            delete $scope.curateList;
+        });
     };
 
     $scope.forceVote = function() {
