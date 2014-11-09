@@ -82,6 +82,16 @@ p.message { text-align: center; margin-bottom: 4px; }
 .add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; float: left; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
 
+.curator { margin-left: 8px; margin-right: 0; }
+.curator p { text-align: center; }
+.curator button { display: block; margin: 6px auto; }
+.curator ul { margin-bottom: 16px; }
+.curator ul li { display: block; margin: 18px 0 4px; position: relative; }
+.curator ul li button.close { font-size: 14px; position: absolute; padding: 4px 6px 4px 7px; margin-top: 6px; }
+.curator ul li h3 { font-size: 14px; padding-left: 36px; text-align: left; }
+.curator ul li label { display: inline-block; margin: 2px 6px 2px 20px; }
+.curator ul li label:first-of-type { margin-left: 36px; }
+
 .avatar-shop p { text-align: center; }
 .avatar-shop > div > div { width: 192px; height: 22px; float: left; cursor: pointer; }
 .avatar-shop > div > div > i { display: inline-block; width: 30px; font-size: 1.1em; text-align: center; }

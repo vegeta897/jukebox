@@ -12,29 +12,23 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-function onPlayerReady(event) {
-    
-}
+function onPlayerReady(event) { }
 var playing = false;
 function onPlayerStateChange(event) {
-    if(event.data == YT.PlayerState.PAUSED && playing) {
-        player.playVideo();
-    }
-    if (event.data == YT.PlayerState.PLAYING && !playing) {
-        //setTimeout(stopVideo, 6000);
-        playing = true;
-    }
+    if(event.data == YT.PlayerState.PAUSED && playing) { player.playVideo(); }
+    if (event.data == YT.PlayerState.PLAYING && !playing) { playing = true; player.setPlaybackQuality('large'); }
 }
 function stopVideo() { player.stopVideo(); }
 
 var avatars = {
-    headphones: ['Headphones',0], wheelchair: ['Wheelchair',6000], 'plus-square': ['Medkit',5000], ambulance: ['Ambulance',8000], windows: ['Windows',3000],
-    twitter: ['Twitter',6000], twitch: ['Twitch',6000], 'steam-square': ['Steam',10000], soundcloud: ['SoundCloud',8000],
-    reddit: ['Reddit',8000], linux: ['Linux',10000], 'github-alt': ['GitHub Cat',15000], 'facebook-square': ['Facebook', 3000],
-    apple: ['Apple',5000], android: ['Android',8000], backward: ['Rewind',8000], eject: ['Eject',12000], forward: ['Forward',8000],
-    pause: ['Pause',15000], play: ['Play',20000], 'play-circle': ['Play Circle',20000], 'youtube-play': ['YouTube',10000],
-    'hand-o-right': ['Pointer',15000], 'chevron-right': ['Chevron',10000], 'chevron-circle-right': ['Chevron Circle',10000],
-    arrows: ['Arrows',8000], 'arrow-right': ['Arrow',15000], undo: ['Undo',10000], repeat: ['Repeat',10000], th: ['Grid',8000],
+    headphones: ['Headphones',0], wheelchair: ['Wheelchair',6000], 'plus-square': ['Medkit',5000], ambulance: ['Ambulance',8000], 
+    windows: ['Windows',3000], twitter: ['Twitter',6000], twitch: ['Twitch',6000], 'steam-square': ['Steam',10000], 
+    soundcloud: ['SoundCloud',8000], reddit: ['Reddit',8000], linux: ['Linux',10000], 'github-alt': ['GitHub Cat',15000], 
+    'facebook-square': ['Facebook', 3000], apple: ['Apple',5000], android: ['Android',8000], backward: ['Rewind',8000], 
+    eject: ['Eject',12000], forward: ['Forward',8000], pause: ['Pause',15000], play: ['Play',20000], 
+    'play-circle': ['Play Circle',20000], 'youtube-play': ['YouTube',10000], 'hand-o-right': ['Pointer',15000], 
+    'chevron-right': ['Chevron',10000], 'chevron-circle-right': ['Chevron Circle',10000], arrows: ['Arrows',8000], 
+    'arrow-right': ['Arrow',15000], undo: ['Undo',10000], repeat: ['Repeat',10000], th: ['Grid',8000],
     scissors: ['Scissors',8000], save: ['Floppy',15000], font: ['A',8000], jpy: ['Yen',15000], usd: ['Dollar',15000],
     gbp: ['Pounds',15000], 'circle-o': ['Circle',8000], 'dot-circle-o': ['Dot Circle',9000], cog: ['Gear',15000], 
     refresh: ['Refresh',15000], 'volume-up': ['Speaker',20000], wrench: ['Wrench',4000], warning: ['Warning',10000],
@@ -110,6 +104,12 @@ Application.Services.factory("services", ['$http', function($http) {
             return status.data;
         });
     };
+    obj.pullUncurated = function(){
+        return $http.get(serviceBase + 'pullUncurated');
+    };
+    obj.saveCurated = function(videos,curator){
+        return $http.post(serviceBase + 'saveCurated', {videos:videos,curator:curator});
+    };
     return obj;
 }]);
 
@@ -124,12 +124,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.305; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.306; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
-    $scope.controlList = [{name:'controlAddVideo',title:'Add a video'},{name:'controlAddBounty',title:'Add a bounty'},
-        {name:'controlTitleGamble',title:'Title Gamble'},{name:'controlAvatarShop',title:'Avatar Shop'},
-        {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},{name:'controlAdmin',title:'Admin'}];
+    $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
+        {name:'controlAddBounty',title:'Add Bounty'},{name:'controlTitleGamble',title:'Title Gamble'},
+        {name:'controlAvatarShop',title:'Avatar Shop'},{name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},
+        {name:'controlAdmin',title:'Admin'}];
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; $scope.avatars = avatars;
     $scope.countProperties = countProperties;
 
@@ -159,7 +160,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         console.log('playing update',snap.val());
         if(!$scope.playing || snap.val().video_id != $scope.playing.video_id) { // If video changed, load it
             console.log('video changed');
-            player.loadVideoById(snap.val().video_id,0,'large');
+            player.loadVideoById(snap.val().video_id);
+            player.setPlaybackQuality('large');
         }
         $scope.playing = snap.val();
         if(!$scope.auth) return;
@@ -420,6 +422,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if($scope.parsedIds.length < 11 || !$scope.add_valid) { return; }
         console.log('adding',$scope.parsedIds);
         $scope.addingVideo = true;
+        $scope.add_artist = $scope.add_artist.trim(); $scope.add_track = $scope.add_track.trim();
         services.addVideo($scope.parsedIds, $scope.add_artist, $scope.add_track, username).then(function(results) {
             console.log(results);
             $scope.parsedIds = '';
@@ -445,6 +448,19 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
     };
     
+    $scope.saveCurated = function() {
+        $scope.savingCurated = true;
+        services.saveCurated($scope.curateList, username).then(function(results) {
+            console.log(results);
+            $scope.savingCurated = false;
+            if(!results.data || !results.data.data) {
+                $scope.message = { type: 'error', text: 'Sorry, there was a server error. Tell Vegeta about it.' }; return;
+            }
+            $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
+            delete $scope.curateList;
+        });
+    };
+    
     $scope.hasAvatar = function(avatar) { 
         return avatar == 'headphones' ? true : $scope.user && $scope.user.avatars ? $scope.user.avatars.hasOwnProperty(avatar) : false; 
     };
@@ -463,6 +479,32 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         fireUser.child('avatars/'+avatar).set(true);
         fireUser.child('avatar').set(avatar);
         sendEvent('<strong>'+username+'</strong> just bought the <strong>'+$scope.avatars[avatar][0]+'</strong> avatar!');
+    };
+    
+    $scope.beginCurator = function() {
+        $scope.gettingUncurated = true;
+        services.pullUncurated().then(function(data) {
+            console.log('Videos retrieved to be curated',data.data);
+            if(!data || !data.data || data.data.length != 10) {
+                $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return;
+            }
+            for(var d = 0, dl = data.data.length; d < dl; d++) {
+                data.data[d].duration = parseUTCtime(data.data[d].duration);
+                data.data[d].index = d;
+            }
+            $scope.gettingUncurated = false;
+            $scope.curateList = data.data;
+            $timeout(function(){});
+        });
+        //$scope.curateList = [
+        //    {video_id: 'PuLO1A857yE', title: 'Hotline Miami OST - Inner Animal (Scattle)', 
+        //        artist: 'Hotline Miami OST', track: 'Inner Animal (Scattle)',
+        //        duration: parseUTCtime('PT3M43S'), added_by: 'voiper'},
+        //    {video_id: 'IfHXDZsVTYA', title: 'Bangs - My Life is Hard [Music Video]',
+        //        artist: 'Bangs', track: 'My Life is Hard [Music Video]',
+        //        duration: parseUTCtime('PT3M36S'), added_by: 'vegeta897'}];
+        //$scope.gettingUncurated = false;
+        //$timeout(function(){});
     };
 
     $scope.forceVote = function() {
@@ -502,7 +544,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         console.log('retrieving videos');
         services.getVideos(currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
-            if(data && data.data && data.data.length != 6) { 
+            if(!data || !data.data || data.data.length != 6) { 
                 $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return; 
             }
             for(var d = 0, dl = data.data.length; d < dl; d++) {

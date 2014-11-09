@@ -108,6 +108,38 @@
             }else
                 $this->response('',204);	//"No Content" status
         }
+        private function pullUncurated(){ // Get uncurated videos
+            if($this->get_request_method() != "GET"){
+                $this->response('',406);
+            }
+            $query="SELECT v.video_id, v.title, v.artist, v.track, v.duration, v.added_by FROM videos v WHERE v.embeddable = 'true' ORDER BY v.curated_by, v.track, v.artist, v.id LIMIT 10";
+            $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
+
+            if($r->num_rows > 0){
+                $result = array();
+                while($row = $r->fetch_assoc()){
+                    $result[] = $row;
+                }
+                $this->response($this->json($result), 200); // send user details
+            }
+            $this->response('',204);	// If no records "No Content" status
+        }
+        private function saveCurated(){
+            if($this->get_request_method() != "POST"){
+                $this->response('',406);
+            }
+            $curation = json_decode(file_get_contents("php://input"),true);
+            $videos = $curation['videos'];
+            $username = $curation['curator'];
+
+            foreach ($videos as $video) {
+                $query = "UPDATE videos SET artist = '$video->artist', track = '$video->track', curated_by = '$username' WHERE video_id = '$video->video_id';";
+                $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
+            }
+            
+            $success = array('status' => "Success", "msg" => "Videos Updated Successfully.", "data" => $videos);
+            $this->response($this->json($success),200);
+        }
 		private function deleteVideo(){
 			if($this->get_request_method() != "DELETE"){
 				$this->response('',406);

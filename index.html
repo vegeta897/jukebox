@@ -155,6 +155,20 @@
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
+        <div class="control-panel curator" ng-show="auth && controlCurator">
+            <p ng-hide="curateList && curateList.length > 0">Add or correct the artist and track names in the database!</p>
+            <p ng-show="curateList && curateList.length > 0">If you don't know how a video should be tagged, click the X button.</p>
+            <button ng-click="beginCurator()" ng-hide="curateList" ng-disabled="gettingUncurated">Pull up some videos</button>
+            <ul ng-show="curateList && curateList.length > 0">
+                <li ng-repeat="video in curateList">
+                    <button class="close" ng-click="curateList.splice($index,1)" ng-disabled="savingCurated"><i class="fa fa-close"></i></button>
+                    <h3>{{ video.title }}</h3>
+                    <label>Artist</label><input ng-model="video.artist" type="text" size="24" maxlength="120" onClick="this.select();" ng-disabled="savingCurated" />
+                    <label>Track</label><input ng-model="video.title" type="text" size="32" maxlength="120" onClick="this.select();" ng-disabled="savingCurated" />
+                </li>
+            </ul>
+            <button ng-show="curateList && curateList.length > 0" ng-click="saveCurated()" ng-disabled="savingCurated">Save these badboys!</button>
+        </div>
         <div class="avatar-shop control-panel animate-show" ng-show="auth && controlAvatarShop">
             <p>Click an avatar to purchase and/or wear it</p>
             <div>

@@ -63,6 +63,11 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .field .invalid, p.message.error { color: #c60a09; }
 .field .invalid strong, p.message.error strong { color: #e90000; }
 
+.curator button.close { background: #2e2e2e; color: #c6c6c6; }
+.curator button.close:hover { background: #c60a09; color: white; }
+.curator ul li h3 { color: #D7EDA9; }
+.curator label { color: #A0A399; }
+
 .avatar-shop * { transition: all 0.1s; }
 .avatar-shop .name { color: #d3d9b9; }
 .avatar-shop > div > div > i { color: #ecffd3; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
