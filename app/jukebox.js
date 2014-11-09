@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.31; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.311; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -422,7 +422,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if($scope.parsedIds.length < 11 || !$scope.add_valid) { return; }
         console.log('adding',$scope.parsedIds);
         $scope.addingVideo = true;
-        $scope.add_artist = $scope.add_artist.trim(); $scope.add_track = $scope.add_track.trim();
+        if($scope.add_artist) $scope.add_artist = $scope.add_artist.trim();
+        if($scope.add_track) $scope.add_track = $scope.add_track.trim();
         services.addVideo($scope.parsedIds, $scope.add_artist, $scope.add_track, username).then(function(results) {
             console.log(results);
             $scope.parsedIds = '';
@@ -472,17 +473,25 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.gettingUncurated = true;
         services.pullUncurated().then(function(data) {
             console.log('Videos retrieved to be curated',data.data);
-            if(!data || !data.data || data.data.length != 10) {
+            if(!data || !data.data || data.data.length != 5) {
                 $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return;
             }
+            var curating = {}; // Object of video IDs 
             for(var d = 0, dl = data.data.length; d < dl; d++) {
+                curating[data.data[d].video_id] = username;
                 data.data[d].duration = parseUTCtime(data.data[d].duration);
                 data.data[d].index = d;
             }
+            fireRef.child('curating').update(curating);
             $scope.gettingUncurated = false;
             $scope.curateList = data.data;
             $timeout(function(){});
         });
+    };
+    
+    $scope.removeFromCurator = function(index) {
+        $scope.curateList.splice(index,1);
+        fireRef.child('curating/'+$scope.curateList[index].video_id).remove();
     };
 
     $scope.saveCurated = function() {
@@ -494,8 +503,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type: 'error', text: 'Sorry, there was a server error. Tell Vegeta about it.' }; return;
             }
             $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
-            var addQuantity = results.data.length == 1 ? 'a video' : results.data.length + ' videos';
+            var addQuantity = results.data.data.videos.length == 1 ? 'a video' : results.data.data.videos.length + ' videos';
             sendEvent('<strong>'+username+'</strong> just curated ' + addQuantity + '! What ' + buildSubject() + '!');
+            for(var i = 0, il = results.data.data.videos.length; i < il; i++) {
+                fireRef.child('curating/'+results.data.data.videos[i].video_id).remove();
+            }
             delete $scope.curateList;
         });
     };

@@ -112,7 +112,7 @@
             if($this->get_request_method() != "GET"){
                 $this->response('',406);
             }
-            $query="SELECT v.video_id, v.title, v.artist, v.track, v.duration, v.added_by FROM videos v WHERE v.embeddable = 'true' ORDER BY v.curated_by, v.track, v.artist, v.id LIMIT 10";
+            $query="SELECT v.video_id, v.title, v.artist, v.track, v.duration, v.added_by FROM videos v WHERE v.embeddable = 'true' ORDER BY v.curated_by, v.track, v.artist, v.id LIMIT 5";
             $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
             if($r->num_rows > 0){
