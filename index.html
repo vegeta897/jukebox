@@ -108,7 +108,7 @@
             <div ng-show="fillBlankTitle">
                 <h3 ng-bind-html="fillBlankTitle.challenge"></h3>
                 <div class="letter-inputs">
-                    <input ng-repeat="inputLetter in fillBlankInputLetters" ng-model="inputLetter.value" size="2" maxlength="1" type="text">
+                    <input ng-repeat="inputLetter in fillBlankInputLetters" ng-model="inputLetter.value" ng-change="fillBlankInputChange()" size="2" maxlength="1" type="text">
                 </div>
                 <p>Reward: <span>{{ fillBlankTitle.missing.length * 20 }} kudos</span></p>
                 <button ng-click="fillBlankSubmit()" ng-disabled="fillBlankIncomplete">Submit Guess</button>

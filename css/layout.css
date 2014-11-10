@@ -14,6 +14,7 @@ h3 { text-align: center; margin-bottom: 6px; font-size: 1.1em; }
 dl dt { line-height: 1.2em; }
 p { margin-bottom: 1em; }
 strong { font-weight: bold; }
+small { font-size: 0.7em; }
 form input[type="text"] { padding-left: 4px; }
 header form { padding-left: 375px; padding-top: 24px; }
 header form fieldset { float: left; }
@@ -50,8 +51,7 @@ header form button { float: left; width: 66px; height: 24px; }
 .listener i { font-size: 1.5em; top: 2px; position: relative; margin-right: 3px; }
 .listener .volume { width: 72px; margin: 5px auto 4px; height: 4px; padding: 1px; }
 .listener .volume div { height: 4px; }
-.message { cursor: pointer; }
-p.message { text-align: center; margin-bottom: 4px; }
+.message { cursor: pointer; margin-bottom: 8px; text-align: center; padding: 4px 0; }
 .message i { margin-right: 10px; }
 
 .control-buttons { text-align: center; margin: 10px 0; }
@@ -86,10 +86,12 @@ p.message { text-align: center; margin-bottom: 4px; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
 
 .fill-blank p { text-align: center; }
-.fill-blank h3 { font-size: 14px; }
-.fill-blank h3 span { font-size: 16px; margin: 0 4px; }
-.fill-blank .letter-inputs { margin: 4px auto; }
-.fill-blank .letter-inputs input { text-align: center; margin-right: 8px; width: 18px; height: 24px; font-size: 20px; }
+.fill-blank h3 { font-size: 16px; margin-bottom: 14px; }
+.fill-blank h3 span { font-size: 18px; margin: 0 4px; padding: 0 6px 2px; }
+.fill-blank .letter-inputs, .fill-blank button { margin: 4px auto 10px; display: block; text-align: center; }
+.fill-blank .letter-inputs input { 
+    text-align: center; margin-right: 8px; width: 18px; height: 24px; font-size: 20px; display: inline-block; 
+}
 
 .curator { margin-left: 8px; margin-right: 0; }
 .curator p { text-align: center; }

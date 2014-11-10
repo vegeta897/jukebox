@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.315; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.316; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -550,7 +550,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.fillBlankIncomplete = false;
         $scope.fillBlankGuess = '';
         for(var i = 0, il = $scope.fillBlankInputLetters.length; i < il; i++) {
-            $scope.fillBlankInputLetters[i].value = $scope.fillBlankInputLetters[i].value.trim();
+            $scope.fillBlankInputLetters[i].value = $scope.fillBlankInputLetters[i].value.trim().toUpperCase();
             var valLength = $scope.fillBlankInputLetters[i].value.length;
             $scope.fillBlankIncomplete = $scope.fillBlankIncomplete ? true : valLength == 0;
             $scope.fillBlankGuess += valLength == 0 ? ' ' : $scope.fillBlankInputLetters[i].value;

@@ -62,8 +62,9 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .field .invalid, p.message.error { color: #c60a09; }
 .field .invalid strong, p.message.error strong { color: #e90000; }
 
-.fill-blank h3 { color: #d3d9b9; }
-.fill-blank h3 span { color: #D7EDA9; background: #2d2f2e; }
+.fill-blank h3 { color: #DEFF7C; }
+.fill-blank h3 span { color: #d8ffa0; background: #2d2f2e; }
+.fill-blank p strong { color: #DEFF7C; }
 
 .curator button.close { background: #2e2e2e; color: #c6c6c6; }
 .curator button.close:hover { background: #c60a09; color: white; }
