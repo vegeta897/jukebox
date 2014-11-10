@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.317; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.318; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -523,9 +523,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.fillBlankGetTitle = function() {
+        if(!$scope.user.kudos || $scope.user.kudos < 5) { return; }
+        fireUser.child('kudos').transaction(function(userKudos) {
+            return userKudos ? +userKudos - 5 : 0;
+        });
         $scope.gettingFillBlankTitle = true;
         $timeout(function(){});
-        services.getVideos(1,'abc').then(function(data) {
+        var currentID = $scope.playing ? $scope.playing.video_id : 'abc';
+        services.getVideos(1,currentID).then(function(data) {
             if(!data || !data.data || data.data.length != 1 || !data.data[0].title) {
                 $scope.message = { type:'error',text:'Error retrieving video title. You can probably blame my hosting service.' }; return;
             }
@@ -606,7 +611,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         voting = true;
         gettingVideos = true;
         // 30 seconds til end of video, get a new video list
-        var currentID = $scope.playing ? $scope.playing.video_id : '';
+        var currentID = $scope.playing ? $scope.playing.video_id : 'abc';
         console.log('retrieving videos');
         services.getVideos(6,currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
@@ -751,4 +756,22 @@ Application.Filters.filter('capitalize', function() {
         if(seconds < 86400) { return seconds > 7199 ? 'hours' : 'hour'; } // hours
         else { return seconds > 172799 ? 'days' : 'day'; } // days
     }
+});
+
+Application.Directives.directive('letterInput', function() {
+    return {
+        restrict: 'C',
+        link: function(scope, element) {
+            console.log('letter input ready',scope,element);
+            element.bind('click',function() {
+                jQuery(element).select();
+            });
+            element.bind('keyup',function() {
+                console.log('letter input change',element[0].value,element);
+                if(element[0].value.length == 0) return;
+                console.log('there\'s a value!');
+                jQuery(element).next().focus().select();
+            })
+        }
+    };
 });
