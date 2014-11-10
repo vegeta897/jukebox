@@ -7,8 +7,8 @@ h1 { color: #d3d9b9; -webkit-text-fill-color: transparent;
     background: -o-linear-gradient(transparent, transparent); -webkit-background-clip: text; }
 
 input[type="text"], select { background: #ddd; }
-button { background: #20aa22; color: white; border: none; transition: all 0.3s; padding: 3px 10px; }
-button:hover { background: #1e8020; }
+button { background: #549816; color: white; border: none; transition: all 0.3s; padding: 3px 10px; }
+button:hover { background: #397114; }
 button[disabled] { background: #444; color: #777; cursor: default; }
 
 header p:last-child { color: #858a71; }
@@ -57,8 +57,8 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .control-buttons button:hover { background: #2e2e2e; color: #ddd; }
 .control-buttons button.selected, .control-buttons button.selected:hover { background: #161616; color: #ccc; }
 
-.field .valid, p.message.success { color: #20aa22; }
-.field .valid strong, p.message.success strong { color: #33cb16; }
+.field .valid, p.message.success { color: #53aa29; }
+.field .valid strong, p.message.success strong { color: #6bcb16; }
 .field .invalid, p.message.error { color: #c60a09; }
 .field .invalid strong, p.message.error strong { color: #e90000; }
 

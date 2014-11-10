@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.316; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.317; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -524,6 +524,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     
     $scope.fillBlankGetTitle = function() {
         $scope.gettingFillBlankTitle = true;
+        $timeout(function(){});
         services.getVideos(1,'abc').then(function(data) {
             if(!data || !data.data || data.data.length != 1 || !data.data[0].title) {
                 $scope.message = { type:'error',text:'Error retrieving video title. You can probably blame my hosting service.' }; return;

@@ -104,7 +104,7 @@
             <p ng-show="!user.kudos || user.kudos < 5">You need to earn some more kudos first.</p>
             <p ng-show="user.kudos >= 5">Fill in the blanks from video titles and win kudos!<br />
                 <small>The title is a pun, because you'll fill your bank if you win a lot!</small></p>
-            <button ng-show="!fillBlankTitle && user.kudos >= 5" ng-click="fillBlankGetTitle()" ng-disabled="gettingFillBlankTitle">Gimme a title! (5 kudos)</button>
+            <button ng-hide="fillBlankTitle || user.kudos < 5" ng-click="fillBlankGetTitle()" ng-disabled="gettingFillBlankTitle">Gimme a Title! (5 kudos)</button>
             <div ng-show="fillBlankTitle">
                 <h3 ng-bind-html="fillBlankTitle.challenge"></h3>
                 <div class="letter-inputs">
