@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.321; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.322; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -535,7 +535,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type:'error',text:'Error retrieving video title. You can probably blame my hosting service.' }; return;
             }
             var title = data.data[0].title.trim();
-            //var title = 'hello there';
+            //var title = '6uy\'s 1t\'s c00l!';
             var words = title.split(' '); // Break title into array of words
             var challengeWordIndex;
             var challengeWord = '';
@@ -546,8 +546,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             var blankedWord = '<span>';
             $scope.fillBlankInputLetters = [];
             for(var i = 0, il = challengeWord.length; i < il; i++) { // Build blanked word ('_ _ _ _')
-                blankedWord += i == il - 1 ? '_</span>' : '_ ';
-                $scope.fillBlankInputLetters.push({value:'',index:i});
+                var alphaNum = /^[a-z0-9]+$/i.test(challengeWord[i]);
+                var blankChar = alphaNum ? '_' : challengeWord[i];
+                blankedWord += i == il - 1 ? blankChar+'</span>' : blankChar+' ';
+                $scope.fillBlankInputLetters.push({value:alphaNum ? '' : blankChar,index:i,disabled: !alphaNum});
             }
             words[challengeWordIndex] = blankedWord; // Change challenge word to blanks
             $scope.fillBlankTitle = { challenge: words.join(' '), complete: title, missing: challengeWord };
@@ -768,6 +770,7 @@ Application.Directives.directive('letterInput', function() {
         restrict: 'C',
         link: function(scope, element) {
             console.log('letter input ready',scope,element);
+            setTimeout(function(){window.scrollTo(0,document.body.scrollHeight);},500);
             element.bind('click',function() {
                 jQuery(element).select();
             });
