@@ -124,7 +124,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.319; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.32; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -537,8 +537,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             var title = data.data[0].title.trim();
             //var title = 'hello there';
             var words = title.split(' '); // Break title into array of words
-            var challengeWordIndex = randomIntRange(0,words.length-1); // Choose a word
-            var challengeWord = words[challengeWordIndex]; // Get word from chosen index
+            var challengeWordIndex;
+            var challengeWord = '';
+            while(challengeWordIndex.length < 2) { // Minimum 2 characters long
+                challengeWordIndex = randomIntRange(0,words.length-1); // Choose a word
+                challengeWord = words[challengeWordIndex]; // Get word from chosen index
+            }
             var blankedWord = '<span>';
             $scope.fillBlankInputLetters = [];
             for(var i = 0, il = challengeWord.length; i < il; i++) { // Build blanked word ('_ _ _ _')
@@ -567,7 +571,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     $scope.fillBlankSubmit = function() {
         if($scope.fillBlankIncomplete) return;
         if($scope.fillBlankGuess.toUpperCase() == $scope.fillBlankTitle.missing.toUpperCase()) {
-            var reward = $scope.fillBlankTitle.missing.length * 20;
+            var reward = $scope.fillBlankTitle.missing.length * 5;
             $scope.message = { type: 'success', text: 'You guessed <strong>correctly!</strong> Nice one.', kudos: reward };
             sendEvent('<strong>'+username+'</strong> just won <strong>' + reward + '</strong> kudos by filling in the blank!');
             fireUser.child('kudos').transaction(function(userKudos) {
