@@ -88,8 +88,8 @@ function isInt(input) { return parseInt(input) === input; }
 
 Application.Services.factory("services", ['$http', function($http) {
     var serviceBase = 'php/', obj = {};
-    obj.getVideos = function(currentID){
-        return $http.get(serviceBase + 'videos?current_id=' + currentID);
+    obj.getVideos = function(count,currentID){
+        return $http.get(serviceBase + 'videos?count=' + count + '&current_id=' + currentID);
     };
     obj.updateVideo = function(videoID,votes){
         return $http.post(serviceBase + 'updateVideo', {video_id:videoID,votes:votes});
@@ -124,13 +124,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.314; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.315; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
         {name:'controlAddBounty',title:'Add Bounty'},{name:'controlTitleGamble',title:'Title Gamble'},
-        {name:'controlAvatarShop',title:'Avatar Shop'},{name:'controlMumble',title:'Mumble'},
-        {name:'controlChangelog',title:'Changelog'},{name:'controlAdmin',title:'Admin'}];
+        {name:'controlFillBlank',title:'Fill the B_ank'},{name:'controlAvatarShop',title:'Avatar Shop'},
+        {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},
+        {name:'controlAdmin',title:'Admin'}];
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; $scope.avatars = avatars;
     $scope.countProperties = countProperties;
 
@@ -498,8 +499,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.removeFromCurator = function(index) {
-        $scope.curateList.splice(index,1);
         fireRef.child('curating/'+$scope.curateList[index].video_id).remove();
+        $scope.curateList.splice(index,1);
     };
 
     $scope.saveCurated = function() {
@@ -513,11 +514,62 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
             var addQuantity = results.data.data.videos.length == 1 ? 'a video' : results.data.data.videos.length + ' videos';
             sendEvent('<strong>'+username+'</strong> just curated ' + addQuantity + '! What ' + buildSubject() + '!');
-            for(var i = 0, il = results.data.data.videos.length; i < il; i++) {
-                fireRef.child('curating/'+results.data.data.videos[i].video_id).remove();
+            for(var i = 0, il = $scope.curateList.length; i < il; i++) {
+                fireRef.child('curating/'+$scope.curateList[i].video_id).remove();
             }
             delete $scope.curateList;
+            $timeout(function(){});
         });
+    };
+    
+    $scope.fillBlankGetTitle = function() {
+        $scope.gettingFillBlankTitle = true;
+        services.getVideos(1,'abc').then(function(data) {
+            if(!data || !data.data || data.data.length != 1 || !data.data[0].title) {
+                $scope.message = { type:'error',text:'Error retrieving video title. You can probably blame my hosting service.' }; return;
+            }
+            var title = data.data[0].title.trim();
+            var words = title.split(' '); // Break title into array of words
+            var challengeWordIndex = randomIntRange(0,words.length-1); // Choose a word
+            var challengeWord = words[challengeWordIndex]; // Get word from chosen index
+            var blankedWord = '<span>';
+            $scope.fillBlankInputLetters = [];
+            for(var i = 0, il = challengeWord.length; i < il; i++) { // Build blanked word ('_ _ _ _')
+                blankedWord += i == il - 1 ? '_</span>' : '_ ';
+                $scope.fillBlankInputLetters.push({value:'',index:i});
+            }
+            words[challengeWordIndex] = blankedWord; // Change challenge word to blanks
+            $scope.fillBlankTitle = { challenge: words.join(' '), complete: title, missing: challengeWord };
+            $scope.gettingFillBlankTitle = false;
+            $scope.fillBlankIncomplete = true;
+            $timeout(function(){});
+        });
+    };
+    
+    $scope.fillBlankInputChange = function() {
+        $scope.fillBlankIncomplete = false;
+        $scope.fillBlankGuess = '';
+        for(var i = 0, il = $scope.fillBlankInputLetters.length; i < il; i++) {
+            $scope.fillBlankInputLetters[i].value = $scope.fillBlankInputLetters[i].value.trim();
+            var valLength = $scope.fillBlankInputLetters[i].value.length;
+            $scope.fillBlankIncomplete = $scope.fillBlankIncomplete ? true : valLength == 0;
+            $scope.fillBlankGuess += valLength == 0 ? ' ' : $scope.fillBlankInputLetters[i].value;
+        }
+    };
+    
+    $scope.fillBlankSubmit = function() {
+        if($scope.fillBlankIncomplete) return;
+        if($scope.fillBlankGuess.toUpperCase() == $scope.fillBlankTitle.missing.toUpperCase()) {
+            var reward = $scope.fillBlankTitle.missing.length * 20;
+            $scope.message = { type: 'success', text: 'You guessed <strong>correctly!</strong> Nice one.', kudos: reward };
+            sendEvent('<strong>'+username+'</strong> just won <strong>' + reward + '</strong> kudos by filling in the blank!');
+            fireUser.child('kudos').transaction(function(userKudos) {
+                return userKudos ? +userKudos + +reward : reward;
+            });
+        } else {
+            $scope.message = { type: 'default', text: 'Sorry, the correct answer was "<strong>'+$scope.fillBlankTitle.missing+'</strong>". Try another!' };
+        }
+        delete $scope.fillBlankTitle; delete $scope.fillBlankGuess; delete $scope.fillBlankInputLetters; // Cleanup
     };
 
     $scope.forceVote = function() {
@@ -555,7 +607,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         // 30 seconds til end of video, get a new video list
         var currentID = $scope.playing ? $scope.playing.video_id : '';
         console.log('retrieving videos');
-        services.getVideos(currentID).then(function(data) {
+        services.getVideos(6,currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
             if(!data || !data.data || data.data.length != 6) { 
                 $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return; 

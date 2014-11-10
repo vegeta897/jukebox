@@ -30,12 +30,13 @@
 				$this->response('',404); // If the method not exist with in this class "Page not found".
 		}
 		
-		private function videos(){ // Get 6 random videos
+		private function videos(){ // Get random videos
 			if($this->get_request_method() != "GET"){
 				$this->response('',406);
 			}
             $current_id = $this->_request['current_id'];
-			$query="SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by, v.last_played, v.play_count, v.vote_count FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY RAND() LIMIT 6";
+            $count = $this->_request['count'];
+			$query="SELECT v.id, v.video_id, v.title, v.artist, v.track, v.duration, v.add_date, v.added_by, v.last_played, v.play_count, v.vote_count FROM videos v WHERE v.video_id <> '$current_id' AND v.embeddable = 'true' ORDER BY RAND() LIMIT $count";
 			$r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
 			if($r->num_rows > 0){

@@ -1,9 +1,10 @@
 /* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+.clearfix:after { content: "."; clear: both; display: block; height: 0; visibility: hidden; }
 
 body { width: 640px; margin: 0 auto; }
-header { width: 100%; height: 80px; }
-h1 { padding: 10px 0; float: left; }
+header { width: 100%; height: 72px; }
+h1 { font-size: 3em; padding: 10px 0; float: left; }
 button { cursor: pointer; }
 header h1 + p { float: left; margin: 30px 0 0 12px; }
 header p:last-child { float: right; margin-top: 30px; }
@@ -12,13 +13,15 @@ h2 { text-align: center; margin-bottom: 10px; font-size: 1.5em; }
 h3 { text-align: center; margin-bottom: 6px; font-size: 1.1em; }
 dl dt { line-height: 1.2em; }
 p { margin-bottom: 1em; }
+strong { font-weight: bold; }
 form input[type="text"] { padding-left: 4px; }
 header form { padding-left: 375px; padding-top: 24px; }
 header form fieldset { float: left; }
 header form input[type="text"] { margin-right: 8px; height: 18px; }
 header form button { float: left; width: 66px; height: 24px; }
 #player { width: 100%; height: 390px; }
-.now-playing { padding: 20px 0 0; }
+.now-playing { padding: 8px 0 0; }
+.now-playing h2 { margin-bottom: 6px; }
 .video-selection { margin: 20px 0; overflow: hidden; }
 .video-selection .vote-timer { text-align: center; margin-bottom: 4px; }
 .video-selection table { font-size: 1.2em; width: 100%; border-collapse: separate; }
@@ -27,8 +30,8 @@ header form button { float: left; width: 66px; height: 24px; }
 .video-selection table tr td:first-child + td { width: 32px; text-align: right; padding-left: 0; }
 .video-selection table tr td:first-child + td + td { position: relative; }
 .video-selection table tr td:first-child + td + td div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.video-selection table tr td:first-child + td + td div i { float: right; margin-left: 12px; font-size: 1.7em; margin-top: 3px;
-    color: rgba(222, 255, 124, 0.3); }
+.video-selection table tr td:first-child + td + td div i { float: right; margin-left: 12px; font-size: 1.7em; 
+    margin-top: 3px; color: rgba(222, 255, 124, 0.3); }
 .video-selection table tr td:hover { cursor: pointer; }
 .video-selection table tr td.control { text-align: center; width: 10px; }
 .video-selection table tr td.control a { text-decoration: none; font-size: 0.8em; }
@@ -52,7 +55,7 @@ p.message { text-align: center; margin-bottom: 4px; }
 .message i { margin-right: 10px; }
 
 .control-buttons { text-align: center; margin: 10px 0; }
-.control-buttons button { display: inline-block; margin: 3px 4px; }
+.control-buttons button { display: inline-block; margin: 4px 7px; }
 .control-buttons button.selected { }
 .control-buttons button:focus { outline-width: 0; }
 .control-panel { margin: 16px 32px 32px; }
@@ -81,6 +84,12 @@ p.message { text-align: center; margin-bottom: 4px; }
 .add-video form button { float: left; margin-left: 130px; }
 .add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; float: left; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
+
+.fill-blank p { text-align: center; }
+.fill-blank h3 { font-size: 14px; }
+.fill-blank h3 span { font-size: 16px; margin: 0 4px; }
+.fill-blank .letter-inputs { margin: 4px auto; }
+.fill-blank .letter-inputs input { text-align: center; margin-right: 8px; width: 18px; height: 24px; font-size: 20px; }
 
 .curator { margin-left: 8px; margin-right: 0; }
 .curator p { text-align: center; }

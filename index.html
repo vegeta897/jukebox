@@ -76,7 +76,7 @@
         <div class="control-buttons" ng-show="auth">
             <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && username != 'vegeta897'">{{ control.title }}</button>
         </div>
-        <div class="title-gamble control-panel animate-show" ng-show="auth && controlTitleGamble">
+        <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
             <p ng-hide="dj">You can't place any bets without a DJ.</p>
             <p ng-show="videoSelection">You can't bet on the titles yet!</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
@@ -99,6 +99,20 @@
                 </fieldset>
                 <button type="submit" ng-disabled="titleGambleAmount < 1 || !titleGambleString || titleGambleString.length < 2" >Place ya' bet!</button>
             </form>
+        </div>
+        <div class="fill-blank control-panel" ng-show="auth && controlFillBlank">
+            <p ng-show="!user.kudos || user.kudos < 5">You need to earn some more kudos first.</p>
+            <p ng-show="user.kudos >= 5">Fill in the blanks from video titles and win kudos!<br />
+                <small>The title is a pun, because you'll fill your bank if you win a lot!</small></p>
+            <button ng-show="!fillBlankTitle && user.kudos >= 5" ng-click="fillBlankGetTitle()" ng-disabled="gettingFillBlankTitle">Gimme a title! (5 kudos)</button>
+            <div ng-show="fillBlankTitle">
+                <h3 ng-bind-html="fillBlankTitle.challenge"></h3>
+                <div class="letter-inputs">
+                    <input ng-repeat="inputLetter in fillBlankInputLetters" ng-model="inputLetter.value" size="2" maxlength="1" type="text">
+                </div>
+                <p>Reward: <span>{{ fillBlankTitle.missing.length * 20 }} kudos</span></p>
+                <button ng-click="fillBlankSubmit()" ng-disabled="fillBlankIncomplete">Submit Guess</button>
+            </div>
         </div>
         <div class="add-bounty control-panel animate-show" ng-show="auth && controlAddBounty">
             <p ng-hide="dj">You can't place a bounty without a DJ.</p>
@@ -172,7 +186,7 @@
         </div>
         <div class="avatar-shop control-panel animate-show" ng-show="auth && controlAvatarShop">
             <p>Click an avatar to purchase and/or wear it</p>
-            <div>
+            <div class="clearfix">
                 <div ng-repeat="(avatarID, avatar) in avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !user.avatar) || user.avatar == avatarID}" ng-click="buyEquipAvatar(avatarID)">
                     <i class="fa" ng-class="'fa-'+avatarID"></i><span class="price" ng-class="{'cant-buy': !user.kudos || avatar[1] > user.kudos}">{{ avatar[1] }}</span> - <span class="name">{{ avatar[0] }}</span>
                 </div>

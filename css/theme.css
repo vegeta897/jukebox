@@ -2,7 +2,7 @@ body { background: #343635; color: #d3d9b9; font-family: "Roboto", Arial, sans-s
 a { color: #b9e890; }
 
 /*noinspection ALL*/
-h1 { font-size: 3em; color: #d3d9b9; text-shadow: none; -webkit-text-fill-color: transparent;
+h1 { color: #d3d9b9; -webkit-text-fill-color: transparent;
     background: -webkit-linear-gradient(left top, #f2f5eb, #d3d9b9);
     background: -o-linear-gradient(transparent, transparent); -webkit-background-clip: text; }
 
@@ -16,7 +16,6 @@ header p:last-child span { color: #5ea25a; }
 
 h2, legend { color: #f2f5eb; }
 
-strong { font-weight: bold; }
 .muted { color: #858a71; }
 p:not(.error) strong, dt strong { color: #f2f5eb; }
 
@@ -62,6 +61,9 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .field .valid strong, p.message.success strong { color: #33cb16; }
 .field .invalid, p.message.error { color: #c60a09; }
 .field .invalid strong, p.message.error strong { color: #e90000; }
+
+.fill-blank h3 { color: #d3d9b9; }
+.fill-blank h3 span { color: #D7EDA9; background: #2d2f2e; }
 
 .curator button.close { background: #2e2e2e; color: #c6c6c6; }
 .curator button.close:hover { background: #c60a09; color: white; }
