@@ -105,14 +105,14 @@
             <p ng-show="user.kudos >= 5">Fill in the blanks from video titles and win kudos!<br />
                 <small>The title is a pun, because you'll fill your bank if you win a lot!</small></p>
             <button ng-hide="fillBlankTitle || user.kudos < 5" ng-click="fillBlankGetTitle()" ng-disabled="gettingFillBlankTitle">Gimme a Title! (5 kudos)</button>
-            <div ng-show="fillBlankTitle">
+            <form ng-show="fillBlankTitle" ng-submit="fillBlankSubmit()">
                 <h3 ng-bind-html="fillBlankTitle.challenge"></h3>
                 <div class="letter-inputs">
                     <input class="letter-input" ng-repeat="inputLetter in fillBlankInputLetters" ng-model="inputLetter.value" ng-change="fillBlankInputChange()" size="2" maxlength="1" type="text">
                 </div>
                 <p>Reward: <strong>{{ fillBlankTitle.missing.length * 20 }} kudos</strong></p>
-                <button ng-click="fillBlankSubmit()" ng-disabled="fillBlankIncomplete">Submit Guess</button>
-            </div>
+                <button ng-disabled="fillBlankIncomplete">Submit Guess</button>
+            </form>
         </div>
         <div class="add-bounty control-panel animate-show" ng-show="auth && controlAddBounty">
             <p ng-hide="dj">You can't place a bounty without a DJ.</p>
