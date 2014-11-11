@@ -659,7 +659,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     var thisDay = $scope.metaVideoCount[i];
                     thisDay.add_date = new Date(thisDay.add_date).getTime();
                     thisDay.showLabel = i % labelFrequency == 0;
-                    countMax = countMax < thisDay.vidCount ? thisDay.vidCount : countMax;
+                    countMax = countMax < +thisDay.vidCount ? +thisDay.vidCount : countMax;
                     videoTotal += +thisDay.vidCount;
                 }
                 for(var j = 0, jl = $scope.metaVideoCount.length; j < jl; j++) {
