@@ -143,6 +143,22 @@
             $success = array('status' => "Success", "msg" => "Videos Updated Successfully!", "data" => $curation);
             $this->response($this->json($success),200);
         }
+        private function getVideoCount(){ // Get random videos
+            if($this->get_request_method() != "GET"){
+                $this->response('',406);
+            }
+            $query="SELECT count(v.video_id) as vidCount, v.add_date, (select topv.added_by from videos topv where concat(year(topv.add_date),'-',month(topv.add_date),'-',day(topv.add_date)) = concat(year(v.add_date),'-',month(v.add_date),'-',day(v.add_date)) order by count(topv.added_by) desc limit 1) as topSubmitter from videos v GROUP BY YEAR(v.add_date), MONTH(v.add_date), DAY(v.add_date) ORDER BY v.add_date";
+            $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
+
+            if($r->num_rows > 0){
+                $result = array();
+                while($row = $r->fetch_assoc()){
+                    $result[] = $row;
+                }
+                $this->response($this->json($result), 200); // send user details
+            }
+            $this->response('',204);	// If no records "No Content" status
+        }
 		private function deleteVideo(){
 			if($this->get_request_method() != "DELETE"){
 				$this->response('',406);

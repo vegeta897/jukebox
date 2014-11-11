@@ -56,11 +56,12 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .control-buttons button { background: #282828; color: #fff; }
 .control-buttons button:hover { background: #2e2e2e; color: #ddd; }
 .control-buttons button.selected, .control-buttons button.selected:hover { background: #161616; color: #ccc; }
+.control-buttons button i { color: #DEFF7C; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
 
 .field .valid, p.message.success { color: #53aa29; }
-.field .valid strong, p.message.success strong { color: #6bcb16; }
-.field .invalid, p.message.error { color: #c60a09; }
-.field .invalid strong, p.message.error strong { color: #e90000; }
+.field .valid strong, .message p.success strong { color: #6bcb16; }
+.field .invalid, .message p.error { color: #c60a09; }
+.field .invalid strong, .message p.error strong { color: #e90000; }
 
 .fill-blank h3 { color: #DEFF7C; }
 .fill-blank h3 span { color: #d8ffa0; background: #2d2f2e; }
@@ -86,6 +87,14 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .avatar-shop .owned .price {  color: #646d4b; }
 
 .mumble ul li ul li { color: #DEFF7C; }
+
+.meta .graph { background: #2d2f2e; }
+.meta .graph .bar { background: #c6d9a7; transition: all 0.3s; }
+.meta .graph .data-point:hover .bar { background: #eefade; }
+.meta .graph .bar:hover { background: #eefade; }
+.meta .graph .bar .bar-whitespace { background: #2d2f2e; }
+.meta .graph .label { color: #A0A399; }
+.meta .graph .data-point:hover .label { color: #eefade; }
 
 ::-webkit-input-placeholder { color: #999; }
 :-moz-placeholder { color: #999; }

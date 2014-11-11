@@ -66,15 +66,15 @@
                 <div class="volume"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
-        <div ng-show="message" ng-click="closeMessage()">
-            <p class="message" ng-class="message.type"><i class="fa fa-close"></i><span ng-bind-html="message.text"></span></p>
-            <p class="message" ng-show="message.kudos">You gained <strong>{{ message.kudos }}</strong> kudos!</p>
+        <div class="message" ng-show="message" ng-click="closeMessage()">
+            <p ng-class="message.type" ng-bind-html="message.text"></p>
+            <p ng-show="message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
         </div>
         <p ng-show="jackpot" style="text-align: center;">
             <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(jackpot/10000))+'px'}">{{ jackpot | number }}</strong>
         </p>
         <div class="control-buttons" ng-show="auth">
-            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && username != 'vegeta897'">{{ control.title }}</button>
+            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && username != 'vegeta897'"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
         </div>
         <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
             <p ng-hide="dj">You can't place any bets without a DJ.</p>
@@ -192,13 +192,13 @@
                 </div>
             </div>
         </div>
-        <div class="changelog control-panel animate-show" ng-show="auth && controlChangelog">
+        <div class="changelog control-panel" ng-show="auth && controlChangelog">
             <table><tr ng-repeat="commit in commits">
                 <td class="muted">{{ commit.date | timeUnits }} {{ commit.date | timeUnitsLabel }} ago</td>
                 <td>{{ commit.message }}</td>
             </tr></table>
         </div>
-        <div class="mumble control-panel animate-show" ng-show="auth && controlMumble">
+        <div class="mumble control-panel" ng-show="auth && controlMumble">
             <p class="muted" ng-show="mumble.empty">Nobody's in the mumble server :(</p>
             <ul ng-hide="mumble.empty">
                 <li ng-repeat="(channelName, users) in mumble" ng-show="users">
@@ -206,6 +206,22 @@
                     <ul><li ng-repeat="user in users">{{ user.name }}</li></ul>
                 </li>
             </ul>
+        </div>
+        <div class="meta control-panel" ng-show="auth && controlMeta">
+            <button ng-click="metaGetVideoCount()" ng-hide="metaVideoCount">Video Count</button>
+            <div class="graph" ng-show="metaVideoCount">
+                <div class="y-axis">
+                    <div class="label" ng-repeat="yLabel in metaVidCountYAxisLabels">{{yLabel}} -</div>
+                </div>
+                <div class="data">
+                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}">
+                        <div class="bar">
+                            <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}"></div>
+                        </div>
+                        <div class="label">{{ dayCount.add_date | date:'shortDate' }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="control-panel" ng-show="auth && controlAdmin">
             <button ng-click="requireVersion()">Require Version</button>

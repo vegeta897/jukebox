@@ -51,13 +51,14 @@ header form button { float: left; width: 66px; height: 24px; }
 .listener i { font-size: 1.5em; top: 2px; position: relative; margin-right: 3px; }
 .listener .volume { width: 72px; margin: 5px auto 4px; height: 4px; padding: 1px; }
 .listener .volume div { height: 4px; }
-.message { cursor: pointer; margin-bottom: 8px; text-align: center; padding: 4px 0; }
-.message i { margin-right: 10px; }
+.message { cursor: pointer; margin-bottom: 8px; padding: 4px 0; }
+.message p { margin-bottom: 4px; text-align: center; }
 
 .control-buttons { text-align: center; margin: 10px 0; }
-.control-buttons button { display: inline-block; margin: 4px 7px; }
+.control-buttons button { display: inline-block; margin: 4px 7px; position: relative; }
 .control-buttons button.selected { }
 .control-buttons button:focus { outline-width: 0; }
+.control-buttons button i { position: absolute; top: -3px; right: -5px; }
 .control-panel { margin: 16px 32px 32px; }
 .control-panel h2, .control-panel legend { text-align: center; margin-bottom: 10px; font-size: 1.5em; }
 
@@ -118,6 +119,18 @@ header form button { float: left; width: 66px; height: 24px; }
 .mumble > ul > li h3 { float: left; margin-right: 40px; font-size: 1.2em; }
 .mumble ul li ul { float: left; margin-top: 3px; }
 .mumble ul li ul li { float: left; padding-right: 32px; }
+
+.meta button { display: block; margin: 6px auto; }
+.meta .graph { height: 100px; padding: 16px 8px 26px 4px; }
+.meta .graph .y-axis { width: 36px; float: left; }
+.meta .graph .y-axis .label { 
+    height: 25px; text-align: right; font-size: 12px; position: relative; top: -7px; padding-right: 2px; 
+}
+.meta .graph .data { width: 528px; float: left; }
+.meta .graph .data-point { float: left; }
+.meta .graph .bar { height: 100px; }
+.meta .graph .bar .bar-whitespace { width: 100%; }
+.meta .graph .data-point .label { text-align: center; margin-top: 8px; font-size: 10px; }
 
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }
 

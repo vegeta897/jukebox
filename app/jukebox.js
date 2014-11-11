@@ -110,6 +110,9 @@ Application.Services.factory("services", ['$http', function($http) {
     obj.saveCurated = function(videos,curator){
         return $http.post(serviceBase + 'saveCurated', {videos:videos,curator:curator});
     };
+    obj.getVideoCount = function() {
+        return $http.get(serviceBase + 'getVideoCount');
+    };
     return obj;
 }]);
 
@@ -124,14 +127,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.322; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.323; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
         {name:'controlAddBounty',title:'Add Bounty'},{name:'controlTitleGamble',title:'Title Gamble'},
-        {name:'controlFillBlank',title:'Fill the B_ank'},{name:'controlAvatarShop',title:'Avatar Shop'},
+        {name:'controlFillBlank',title:'Fill the B_ank',new:true},{name:'controlAvatarShop',title:'Avatar Shop'},
         {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},
-        {name:'controlAdmin',title:'Admin'}];
+        {name:'controlMeta',title:'Meta',new:true},{name:'controlAdmin',title:'Admin'}];
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; $scope.avatars = avatars;
     $scope.countProperties = countProperties;
 
@@ -583,6 +586,65 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.message = { type: 'default', text: 'Sorry, the correct answer was "<strong>'+$scope.fillBlankTitle.missing+'</strong>". Try another!' };
         }
         delete $scope.fillBlankTitle; delete $scope.fillBlankGuess; delete $scope.fillBlankInputLetters; // Cleanup
+    };
+    
+    $scope.metaGetVideoCount = function() {
+        fireRef.child('meta/vidCount').once('value',function(snap) {
+            if(snap.val() && snap.val().lastFetch && snap.val().lastFetch + 900000 > getServerTime()) {
+                $scope.metaVideoCount = snap.val().data;
+                $scope.metaVidCountMax = snap.val().max;
+                return; // Data on firebase is less than 15 min old, so we're using that
+            }
+            services.getVideoCount().then(function(data) { // Get new data
+                if(!data || !data.data) {
+                    $scope.message = { type:'error',text:'Error retrieving stats. You can probably blame my hosting service.' }; return;
+                }
+                $scope.metaVideoCount = data.data;
+                //$scope.metaVideoCount = [
+                //    {vidCount: 21, add_date: '2014-10-25 06:14:52',
+                //        topSubmitter: 'badhat'},
+                //    {vidCount: 9, add_date: '2014-10-26 22:58:06',
+                //        topSubmitter: 'voiper'},
+                //    {vidCount: 33, add_date: '2014-10-27 11:41:36',
+                //        topSubmitter: 'vegeta897'},
+                //    {vidCount: 17, add_date: '2014-10-28 03:55:03',
+                //        topSubmitter: 'badhat'},
+                //    {vidCount: 35, add_date: '2014-10-29 23:19:07',
+                //        topSubmitter: 'vegeta897'},
+                //    {vidCount: 20, add_date: '2014-10-30 04:20:11',
+                //        topSubmitter: 'badhat'},
+                //    {vidCount: 16, add_date: '2014-10-31 23:31:13',
+                //        topSubmitter: 'voiper'},
+                //    {vidCount: 17, add_date: '2014-10-28 03:55:03',
+                //        topSubmitter: 'badhat'},
+                //    {vidCount: 35, add_date: '2014-10-29 23:19:07',
+                //        topSubmitter: 'vegeta897'},
+                //    {vidCount: 20, add_date: '2014-10-30 04:20:11',
+                //        topSubmitter: 'badhat'},
+                //    {vidCount: 16, add_date: '2014-10-31 23:31:13',
+                //        topSubmitter: 'voiper'}
+                //];
+                var countMax = 0;
+                $scope.metaVidCountBarWidth = (100/$scope.metaVideoCount.length)-(10/$scope.metaVideoCount.length);
+                $scope.metaVidCountBarMargin = 5/$scope.metaVideoCount.length;
+                for(var i = 0, il = $scope.metaVideoCount.length; i < il; i++) {
+                    var thisDay = $scope.metaVideoCount[i];
+                    thisDay.add_date = new Date(thisDay.add_date);
+                    countMax = countMax < thisDay.vidCount ? thisDay.vidCount : countMax;
+                }
+                for(var j = 0, jl = $scope.metaVideoCount.length; j < jl; j++) {
+                    thisDay = $scope.metaVideoCount[j];
+                    thisDay.barHeight = (thisDay.vidCount/countMax)*100;
+                }
+                $scope.metaVidCountYAxisLabels = [];
+                for(var k = 4; k > 0; k--) {
+                    $scope.metaVidCountYAxisLabels.push(Math.round(countMax * (k/4)));
+                }
+                $scope.metaVidCountMax = countMax;
+                console.log($scope.metaVideoCount);
+                fireRef.child('meta/vidCount').set({data:$scope.metaVideoCount,max:countMax,lastFetch:getServerTime()});
+            });
+        });
     };
 
     $scope.forceVote = function() {
