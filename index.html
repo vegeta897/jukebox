@@ -214,7 +214,7 @@
                     <div class="label" ng-repeat="yLabel in metaVidCountYAxisLabels">{{yLabel}} -</div>
                 </div>
                 <div class="data">
-                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}" ng-mouseenter="metaVideoCountDay = dayCount" ng-mouseleave="metaVideoCountDay = {}">
+                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}" ng-click="metaVidCountDay = dayCount">
                         <div class="bar">
                             <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}"></div>
                         </div>
@@ -223,9 +223,9 @@
                 </div>
                 <div class="clearfix legend">
                     <dl ng-show="metaVideoCountDay.vidCount">
-                        <dt class="label">Day:</dt><dd>{{ metaVideoCountDay.add_date | date:'shortDate' }}</dd>
-                        <dt class="label">Video Count:</dt><dd class="small">{{ metaVideoCountDay.vidCount }}</dd>
-                        <dt class="label">Top Submitter:</dt><dd>{{ metaVideoCountDay.topSubmitter }}</dd>
+                        <dt class="label">Day:</dt><dd>{{ metaVidCountDay.add_date | date:'shortDate' }}</dd>
+                        <dt class="label">Video Count:</dt><dd class="small">{{ metaVidCountDay.vidCount }}</dd>
+                        <dt class="label">Top Submitter:</dt><dd>{{ metaVidCountDay.topSubmitter }}</dd>
                     </dl>
                 </div>
             </div>

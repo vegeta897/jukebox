@@ -127,7 +127,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.326; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.327; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -356,6 +356,24 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if(control == "controlTitleGamble" && !$scope.titleGambleSet) {
             fireRef.child('titleGamble/wins').once('value',function(snap) {
                 $scope.titleGambleWins = snap.val() ? snap.val() : {};
+            });
+        }
+
+        if(control == "controlMumble") {
+            jQuery.ajax({
+                url: 'http://api.commandchannel.com/cvp.json?email=vegeta897@gmail.com&apiKey=4BC693B4-11FD-4E9E-8BA5-E3B39D5A04B9&callback=?',
+                dataType: 'jsonp',
+                success: function(results) {
+                    if(results.name) {
+                        $scope.mumble = { empty: true };
+                        for(var i = 0, il = results.root.channels.length; i < il; i++) {
+                            var channel = results.root.channels[i];
+                            if(channel.users.length == 0) { continue; }
+                            $scope.mumble.empty = false;
+                            $scope.mumble[channel.name] = channel.users;
+                        }
+                    }
+                }
             });
         }
     };
@@ -597,8 +615,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.metaVidCountBarWidth = snap.val().barWidth;
                 $scope.metaVidCountBarMargin = snap.val().barMargin;
                 $scope.metaVidCountYAxisLabels = snap.val().yAxisLabels;
-                $scope.metaVideoCountDay = {};
+                $scope.metaVidCountDay = {};
                 $scope.gettingMetaVideoCount = false;
+                console.log($scope.metaVideoCount);
                 $timeout(function(){});
                 return; // Data on firebase is less than 15 min old, so we're using that
             }
@@ -652,7 +671,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.metaVidCountYAxisLabels.push(Math.round(countMax * (k/4)));
                 }
                 $scope.metaVidCountMax = countMax;
-                $scope.metaVideoCountDay = {};
+                $scope.metaVidCountDay = {};
                 console.log($scope.metaVideoCount);
                 fireRef.child('meta/vidCount').set({
                     data:$scope.metaVideoCount, max:countMax, lastFetch:getServerTime(), 
@@ -785,26 +804,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
         $scope.theTime = getServerTime();
         purgeEventLog();
-        console.log($scope.metaVideoCountDay);
         everyThirtySeconds += 0.5;
         if(everyThirtySeconds >= 30) {
             everyThirtySeconds = 0;
-            jQuery.ajax({ 
-                url: 'http://api.commandchannel.com/cvp.json?email=vegeta897@gmail.com&apiKey=4BC693B4-11FD-4E9E-8BA5-E3B39D5A04B9&callback=?',
-                dataType: 'jsonp',
-                success: function(results) {
-                    if(results.name) {
-                        $scope.mumble = { empty: true };
-                        for(var i = 0, il = results.root.channels.length; i < il; i++) {
-                            var channel = results.root.channels[i];
-                            if(channel.users.length == 0) { continue; }
-                            $scope.mumble.empty = false;
-                            $scope.mumble[channel.name] = channel.users;
-                        }
-                    }
-                }
-            });
-            
+            // do stuff
         }
         $timeout(function(){});
     };
