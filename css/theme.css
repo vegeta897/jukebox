@@ -88,6 +88,7 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 
 .mumble ul li ul li { color: #DEFF7C; }
 
+.meta h3 strong { color: #DEFF7C; }
 .meta .graph { background: #2d2f2e; }
 .meta .graph .bar { background: #c6d9a7; transition: all 0.3s; }
 .meta .graph .data-point:hover .bar { background: #eefade; }

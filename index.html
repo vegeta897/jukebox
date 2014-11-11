@@ -210,6 +210,7 @@
         </div>
         <div class="meta control-panel" ng-show="auth && controlMeta">
             <button ng-click="metaGetVideoCount()" ng-hide="metaVideoCount" ng-disabled="gettingMetaVideoCount">Video Count</button>
+            <h3 ng-show="metaVideoCount">Total Videos: <strong>{{ metaVidCountTotal }}</strong></h3>
             <div class="graph" ng-show="metaVideoCount">
                 <div class="y-axis">
                     <div class="label" ng-repeat="yLabel in metaVidCountYAxisLabels">{{yLabel}} -</div>

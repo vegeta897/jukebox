@@ -127,7 +127,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.328; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.329; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -284,20 +284,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     lastOnlineRef.onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
                 }
             });
-            jQuery.ajax({ // Get last 8 commits from github
-                url: 'https://api.github.com/repos/vegeta897/jukebox/commits',
-                dataType: 'jsonp',
-                success: function(results) {
-                    $scope.commits = [];
-                    if(!results.data) { return; }
-                    for(var i = 0; i < results.data.length; i++) {
-                        $scope.commits.push({
-                            message:results.data[i].commit.message,date:Date.parse(results.data[i].commit.committer.date)
-                        });
-                        if($scope.commits.length > 9) { break; }
-                    }
-                }
-            });
         };
         username = $scope.username; passcode = $scope.passcode;
         console.log('Logging in',username);
@@ -317,8 +303,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     $scope.vote = function(index) {
         if(!$scope.auth || !$scope.videoSelection) return;
         if(player.isMuted()) {
-            $scope.message = { type: 'error', text: 'You can\'t vote while muted!' };
-            return;
+            $scope.message = { type: 'error', text: 'You can\'t vote while muted!' }; return;
         }
         myVote = parseInt(index);
         fireRef.child('votes/'+username).set(index);
@@ -352,17 +337,14 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope[$scope.controlList[i].name] = control == $scope.controlList[i].name;
         }
         $timeout(function(){ window.scrollTo(0,document.body.scrollHeight); }); // Scroll to bottom
-        
         if(control == "controlTitleGamble" && !$scope.titleGambleSet) {
             fireRef.child('titleGamble/wins').once('value',function(snap) {
                 $scope.titleGambleWins = snap.val() ? snap.val() : {};
             });
         }
-
         if(control == "controlMumble") {
-            jQuery.ajax({
-                url: 'http://api.commandchannel.com/cvp.json?email=vegeta897@gmail.com&apiKey=4BC693B4-11FD-4E9E-8BA5-E3B39D5A04B9&callback=?',
-                dataType: 'jsonp',
+            jQuery.ajax({ // Get mumble server status
+                url: 'http://api.commandchannel.com/cvp.json?email=vegeta897@gmail.com&apiKey=4BC693B4-11FD-4E9E-8BA5-E3B39D5A04B9&callback=?', dataType: 'jsonp',
                 success: function(results) {
                     if(results.name) {
                         $scope.mumble = { empty: true };
@@ -372,6 +354,22 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                             $scope.mumble.empty = false;
                             $scope.mumble[channel.name] = channel.users;
                         }
+                    }
+                }
+            });
+        }
+        if(control == "controlChangelog") {
+            jQuery.ajax({ // Get last 8 commits from github
+                url: 'https://api.github.com/repos/vegeta897/jukebox/commits', dataType: 'jsonp',
+                success: function (results) {
+                    $scope.commits = [];
+                    if (!results.data) return;
+                    for (var i = 0; i < results.data.length; i++) {
+                        $scope.commits.push({
+                            message: results.data[i].commit.message,
+                            date: Date.parse(results.data[i].commit.committer.date)
+                        });
+                        if ($scope.commits.length > 9) break;
                     }
                 }
             });
@@ -615,6 +613,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.metaVidCountBarWidth = snap.val().barWidth;
                 $scope.metaVidCountBarMargin = snap.val().barMargin;
                 $scope.metaVidCountYAxisLabels = snap.val().yAxisLabels;
+                $scope.metaVidCountTotal = snap.val().videoTotal;
                 $scope.gettingMetaVideoCount = false;
                 console.log($scope.metaVideoCount);
                 $timeout(function(){});
@@ -655,11 +654,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 // if less than 48 pixels, only show ever other label
                 var labelRoom = ($scope.metaVidCountBarWidth + $scope.metaVidCountBarMargin)/100*528;
                 var labelFrequency = labelRoom < 6 ? 5 : labelRoom < 12 ? 4 : labelRoom < 24 ? 3 : labelRoom < 48 ? 2 : 1;
+                var videoTotal = 0;
                 for(var i = 0, il = $scope.metaVideoCount.length; i < il; i++) {
                     var thisDay = $scope.metaVideoCount[i];
                     thisDay.add_date = new Date(thisDay.add_date);
                     thisDay.showLabel = i % labelFrequency == 0;
                     countMax = countMax < thisDay.vidCount ? thisDay.vidCount : countMax;
+                    videoTotal += thisDay.vidCount;
                 }
                 for(var j = 0, jl = $scope.metaVideoCount.length; j < jl; j++) {
                     thisDay = $scope.metaVideoCount[j];
@@ -670,11 +671,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.metaVidCountYAxisLabels.push(Math.round(countMax * (k/4)));
                 }
                 $scope.metaVidCountMax = countMax;
+                $scope.metaVidCountTotal = videoTotal;
                 console.log($scope.metaVideoCount);
                 fireRef.child('meta/vidCount').set({
                     data:$scope.metaVideoCount, max:countMax, lastFetch:getServerTime(), 
                     barWidth: $scope.metaVidCountBarWidth, barMargin: $scope.metaVidCountBarMargin,
-                    yAxisLabels: $scope.metaVidCountYAxisLabels
+                    yAxisLabels: $scope.metaVidCountYAxisLabels, videoTotal: $scope.metaVidCountTotal
                 });
                 $scope.gettingMetaVideoCount = false;
                 $timeout(function(){});
