@@ -134,7 +134,7 @@ header form button { float: left; width: 66px; height: 24px; }
 .meta .graph .legend dt, .meta .graph .legend dd {
     display: inline-block; padding-right: 8px; text-align: right; padding-top: 7px; 
 }
-.meta .graph .legend dd { width: 18%; }
+.meta .graph .legend dd { width: 18%; text-align: left; }
 .meta .graph .legend dd.small { width: 10%; }
 
 [ng\:cloak], [ng-cloak], .ng-cloak { display: none !important; }

@@ -127,7 +127,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.327; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.328; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -615,7 +615,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.metaVidCountBarWidth = snap.val().barWidth;
                 $scope.metaVidCountBarMargin = snap.val().barMargin;
                 $scope.metaVidCountYAxisLabels = snap.val().yAxisLabels;
-                $scope.metaVidCountDay = {};
                 $scope.gettingMetaVideoCount = false;
                 console.log($scope.metaVideoCount);
                 $timeout(function(){});
@@ -671,7 +670,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.metaVidCountYAxisLabels.push(Math.round(countMax * (k/4)));
                 }
                 $scope.metaVidCountMax = countMax;
-                $scope.metaVidCountDay = {};
                 console.log($scope.metaVideoCount);
                 fireRef.child('meta/vidCount').set({
                     data:$scope.metaVideoCount, max:countMax, lastFetch:getServerTime(), 
@@ -682,6 +680,10 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $timeout(function(){});
             });
         });
+    };
+    
+    $scope.metaViewVidCountDay = function(index) {
+        $scope.metaVidCountDay = index >= 0 ? $scope.metaVideoCount[index] : null;
     };
 
     $scope.forceVote = function() {

@@ -199,7 +199,8 @@
             </tr></table>
         </div>
         <div class="mumble control-panel" ng-show="auth && controlMumble">
-            <p class="muted" ng-show="mumble.empty">Nobody's in the mumble server :(</p>
+            <p class="muted" ng-show="!mumble">Loading Mumble server info...</p>
+            <p class="muted" ng-show="mumble.empty">Nobody's in the Mumble server :(</p>
             <ul ng-hide="mumble.empty">
                 <li ng-repeat="(channelName, users) in mumble" ng-show="users">
                     <h3>{{ channelName }}</h3>
@@ -214,15 +215,16 @@
                     <div class="label" ng-repeat="yLabel in metaVidCountYAxisLabels">{{yLabel}} -</div>
                 </div>
                 <div class="data">
-                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}" ng-click="metaVidCountDay = dayCount">
+                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',paddingRight: metaVidCountBarMargin+'%',paddingLeft: metaVidCountBarMargin+'%'}" ng-mouseenter="metaViewVidCountDay($index)" ng-mouseleave="metaViewVidCountDay(false)">
                         <div class="bar">
-                            <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}"></div>
+                            <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}">
+                            </div>
                         </div>
                         <div class="label" ng-show="dayCount.showLabel">{{ dayCount.add_date | date:'shortDate' }}</div>
                     </div>
                 </div>
                 <div class="clearfix legend">
-                    <dl ng-show="metaVideoCountDay.vidCount">
+                    <dl ng-show="metaVidCountDay">
                         <dt class="label">Day:</dt><dd>{{ metaVidCountDay.add_date | date:'shortDate' }}</dd>
                         <dt class="label">Video Count:</dt><dd class="small">{{ metaVidCountDay.vidCount }}</dd>
                         <dt class="label">Top Submitter:</dt><dd>{{ metaVidCountDay.topSubmitter }}</dd>
