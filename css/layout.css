@@ -120,7 +120,7 @@ header form button { float: left; width: 66px; height: 24px; }
 .mumble ul li ul li { float: left; padding-right: 32px; }
 
 .meta button { display: block; margin: 6px auto; }
-.meta .graph { height: 100px; padding: 16px 20px 8px 4px; }
+.meta .graph { padding: 16px 20px 8px 4px; }
 .meta .graph .y-axis { width: 36px; float: left; }
 .meta .graph .y-axis .label { 
     height: 25px; text-align: right; font-size: 12px; position: relative; top: -7px; padding-right: 2px; 

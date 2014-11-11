@@ -127,7 +127,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.325; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.326; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -589,6 +589,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.metaGetVideoCount = function() {
+        $scope.gettingMetaVideoCount = true;
         fireRef.child('meta/vidCount').once('value',function(snap) {
             if(snap.val() && snap.val().lastFetch && snap.val().lastFetch + 900000 > getServerTime()) {
                 $scope.metaVideoCount = snap.val().data;
@@ -596,6 +597,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.metaVidCountBarWidth = snap.val().barWidth;
                 $scope.metaVidCountBarMargin = snap.val().barMargin;
                 $scope.metaVidCountYAxisLabels = snap.val().yAxisLabels;
+                $scope.metaVideoCountDay = {};
+                $scope.gettingMetaVideoCount = false;
+                $timeout(function(){});
                 return; // Data on firebase is less than 15 min old, so we're using that
             }
             services.getVideoCount().then(function(data) { // Get new data
@@ -648,12 +652,15 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.metaVidCountYAxisLabels.push(Math.round(countMax * (k/4)));
                 }
                 $scope.metaVidCountMax = countMax;
+                $scope.metaVideoCountDay = {};
                 console.log($scope.metaVideoCount);
                 fireRef.child('meta/vidCount').set({
                     data:$scope.metaVideoCount, max:countMax, lastFetch:getServerTime(), 
                     barWidth: $scope.metaVidCountBarWidth, barMargin: $scope.metaVidCountBarMargin,
                     yAxisLabels: $scope.metaVidCountYAxisLabels
                 });
+                $scope.gettingMetaVideoCount = false;
+                $timeout(function(){});
             });
         });
     };

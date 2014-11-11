@@ -208,13 +208,13 @@
             </ul>
         </div>
         <div class="meta control-panel" ng-show="auth && controlMeta">
-            <button ng-click="metaGetVideoCount()" ng-hide="metaVideoCount">Video Count</button>
+            <button ng-click="metaGetVideoCount()" ng-hide="metaVideoCount" ng-disabled="gettingMetaVideoCount">Video Count</button>
             <div class="graph" ng-show="metaVideoCount">
                 <div class="y-axis">
                     <div class="label" ng-repeat="yLabel in metaVidCountYAxisLabels">{{yLabel}} -</div>
                 </div>
                 <div class="data">
-                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}" ng-mouseover="metaVideoCountDay = dayCount" ng-mouseleave="metaVideoCountDay = null">
+                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}" ng-mouseover="metaVideoCountDay = dayCount" ng-mouseleave="metaVideoCountDay = {}">
                         <div class="bar">
                             <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}"></div>
                         </div>
@@ -222,7 +222,7 @@
                     </div>
                 </div>
                 <div class="clearfix legend">
-                    <dl ng-show="metaVideoCountDay">
+                    <dl ng-show="metaVideoCountDay.vidCount">
                         <dt class="label">Day:</dt><dd>{{ metaVideoCountDay.add_date | date:'shortDate' }}</dd>
                         <dt class="label">Video Count:</dt><dd class="small">{{ metaVideoCountDay.vidCount }}</dd>
                         <dt class="label">Top Submitter:</dt><dd>{{ metaVideoCountDay.topSubmitter }}</dd>
