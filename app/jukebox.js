@@ -785,6 +785,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
         $scope.theTime = getServerTime();
         purgeEventLog();
+        console.log($scope.metaVideoCountDay);
         everyThirtySeconds += 0.5;
         if(everyThirtySeconds >= 30) {
             everyThirtySeconds = 0;
