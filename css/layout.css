@@ -130,7 +130,7 @@ header form button { float: left; width: 66px; height: 24px; }
 .meta .graph .bar { height: 100px; }
 .meta .graph .bar .bar-whitespace { width: 100%; }
 .meta .graph .data-point .label { text-align: center; margin-top: 8px; font-size: 10px; }
-.meta .graph .legend { padding-left: 48px; height: 124px; }
+.meta .graph .legend { padding-left: 48px; height: 139px; }
 .meta .graph .legend dt, .meta .graph .legend dd {
     display: inline-block; padding-right: 8px; text-align: right; padding-top: 7px; 
 }

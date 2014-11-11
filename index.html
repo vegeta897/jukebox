@@ -214,7 +214,7 @@
                     <div class="label" ng-repeat="yLabel in metaVidCountYAxisLabels">{{yLabel}} -</div>
                 </div>
                 <div class="data">
-                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}" ng-mouseover="metaVideoCountDay = dayCount" ng-mouseleave="metaVideoCountDay = {}">
+                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',marginRight: metaVidCountBarMargin+'%',marginLeft: metaVidCountBarMargin+'%'}" ng-mouseenter="metaVideoCountDay = dayCount" ng-mouseleave="metaVideoCountDay = {}">
                         <div class="bar">
                             <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}"></div>
                         </div>
