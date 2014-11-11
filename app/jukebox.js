@@ -127,7 +127,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.323; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.324; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -593,6 +593,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             if(snap.val() && snap.val().lastFetch && snap.val().lastFetch + 900000 > getServerTime()) {
                 $scope.metaVideoCount = snap.val().data;
                 $scope.metaVidCountMax = snap.val().max;
+                $scope.metaVidCountBarWidth = snap.val().barWidth;
+                $scope.metaVidCountBarMargin = snap.val().barMargin;
+                $scope.metaVidCountYAxisLabels = snap.val().yAxisLabels;
                 return; // Data on firebase is less than 15 min old, so we're using that
             }
             services.getVideoCount().then(function(data) { // Get new data
@@ -627,9 +630,13 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 var countMax = 0;
                 $scope.metaVidCountBarWidth = (100/$scope.metaVideoCount.length)-(10/$scope.metaVideoCount.length);
                 $scope.metaVidCountBarMargin = 5/$scope.metaVideoCount.length;
+                // if less than 48 pixels, only show ever other label
+                var labelRoom = ($scope.metaVidCountBarWidth + $scope.metaVidCountBarMargin)/100*528;
+                var labelFrequency = labelRoom < 6 ? 5 : labelRoom < 12 ? 4 : labelRoom < 24 ? 3 : labelRoom < 48 ? 2 : 1;
                 for(var i = 0, il = $scope.metaVideoCount.length; i < il; i++) {
                     var thisDay = $scope.metaVideoCount[i];
                     thisDay.add_date = new Date(thisDay.add_date);
+                    thisDay.showLabel = i % labelFrequency == 0;
                     countMax = countMax < thisDay.vidCount ? thisDay.vidCount : countMax;
                 }
                 for(var j = 0, jl = $scope.metaVideoCount.length; j < jl; j++) {
@@ -642,7 +649,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 }
                 $scope.metaVidCountMax = countMax;
                 console.log($scope.metaVideoCount);
-                fireRef.child('meta/vidCount').set({data:$scope.metaVideoCount,max:countMax,lastFetch:getServerTime()});
+                fireRef.child('meta/vidCount').set({
+                    data:$scope.metaVideoCount, max:countMax, lastFetch:getServerTime(), 
+                    barWidth: $scope.metaVidCountBarWidth, barMargin: $scope.metaVidCountBarMargin,
+                    yAxisLabels: $scope.metaVidCountYAxisLabels
+                });
             });
         });
     };

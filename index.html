@@ -218,7 +218,7 @@
                         <div class="bar">
                             <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}"></div>
                         </div>
-                        <div class="label">{{ dayCount.add_date | date:'shortDate' }}</div>
+                        <div class="label" ng-show="dayCount.showLabel">{{ dayCount.add_date | date:'shortDate' }}</div>
                     </div>
                 </div>
             </div>
