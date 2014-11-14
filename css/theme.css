@@ -47,9 +47,10 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .listeners h2 { color: #DEFF7C; }
 .listener { color: #DEFF7C; }
 .listener i { color: #D8DBCD; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
-.listener i.muted { color: #A8554A; }
 .listener .volume { background: #212322; }
+.listener .volume.muted { background: #351A1A; }
 .listener .volume div { background: #A0A399; }
+.listener .volume.muted div { background: #994C4C; }
 
 .message i { color: #858a71; }
 

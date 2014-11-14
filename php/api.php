@@ -101,7 +101,7 @@
                 $insert_values = $insert_values.$pre."('".$value->id."','".$title."','".$artist."','".$track."','".$duration."',UTC_TIMESTAMP(),'".$added_by."','".$embeddable."')";
                 $array_index++;
             }
-            $query = "INSERT INTO videos(video_id,title,artist,track,duration,add_date,added_by,embeddable) VALUES$insert_values;";
+            $query = "INSERT IGNORE INTO videos(video_id,title,artist,track,duration,add_date,added_by,embeddable) VALUES$insert_values;";
             if(!empty($video)){
                 $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
                 $success = array('status' => "Success", "msg" => "Video Added Successfully.", "data" => $content);
@@ -147,7 +147,7 @@
             if($this->get_request_method() != "GET"){
                 $this->response('',406);
             }
-            $query="SELECT count(v.video_id) as vidCount, v.add_date, (select topv.added_by from videos topv where concat(year(topv.add_date),'-',month(topv.add_date),'-',day(topv.add_date)) = concat(year(v.add_date),'-',month(v.add_date),'-',day(v.add_date)) order by count(topv.added_by) desc limit 1) as topSubmitter from videos v GROUP BY YEAR(v.add_date), MONTH(v.add_date), DAY(v.add_date) ORDER BY v.add_date";
+            $query="SELECT count(v.video_id) as vidCount, v.add_date, (select topv.added_by from videos topv where concat(year(topv.add_date),'-',month(topv.add_date),'-',day(topv.add_date)) = concat(year(v.add_date),'-',month(v.add_date),'-',day(v.add_date)) group by topv.added_by order by count(topv.added_by) desc limit 1) as topSubmitter from videos v GROUP BY YEAR(v.add_date), MONTH(v.add_date), DAY(v.add_date) ORDER BY v.add_date";
             $r = $this->mysqli->query($query) or die($this->mysqli->error.__LINE__);
 
             if($r->num_rows > 0){

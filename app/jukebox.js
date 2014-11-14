@@ -127,7 +127,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.329; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.33; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -327,7 +327,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
     };
     
-    $scope.listenerClasses = function(listener) { return 'fa fa-' + (listener.avatar ? listener.avatar : 'headphones') + (listener.muted ? ' muted' : ''); };
+    $scope.listenerClasses = function(listener) { return 'fa fa-' + (listener.avatar ? listener.avatar : 'headphones'); };
     
     $scope.closeMessage = function() { delete $scope.message; };
     
@@ -444,6 +444,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         $scope.addingVideo = true;
         if($scope.add_artist) $scope.add_artist = $scope.add_artist.trim();
         if($scope.add_track) $scope.add_track = $scope.add_track.trim();
+        if($scope.add_artist == '') delete $scope.add_artist;
+        if($scope.add_track == '') delete $scope.add_track;
         services.addVideo($scope.parsedIds, $scope.add_artist, $scope.add_track, username).then(function(results) {
             console.log(results);
             $scope.parsedIds = '';
@@ -631,14 +633,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 //        topSubmitter: 'voiper'},
                 //    {vidCount: 33, add_date: '2014-10-27 11:41:36',
                 //        topSubmitter: 'vegeta897'},
-                //    {vidCount: 17, add_date: '2014-10-28 03:55:03',
-                //        topSubmitter: 'badhat'},
-                //    {vidCount: 35, add_date: '2014-10-29 23:19:07',
-                //        topSubmitter: 'vegeta897'},
-                //    {vidCount: 20, add_date: '2014-10-30 04:20:11',
-                //        topSubmitter: 'badhat'},
-                //    {vidCount: 16, add_date: '2014-10-31 23:31:13',
-                //        topSubmitter: 'voiper'},
                 //    {vidCount: 17, add_date: '2014-10-28 03:55:03',
                 //        topSubmitter: 'badhat'},
                 //    {vidCount: 35, add_date: '2014-10-29 23:19:07',
