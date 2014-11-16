@@ -56,13 +56,17 @@
         </div>
         <div class="event-log">
             <ul><li ng-repeat="entry in eventLog" class="animate-repeat">
-                <span ng-style="{opacity: (300000 - entry.age)/300000}">{{ entry.time | date:'H:mm:ss' }}</span><span ng-bind-html="entry.text" ng-style="{opacity: (300000 - entry.age)/300000}"></span>
+                <div ng-style="{opacity: (300000 - entry.age)/300000}">
+                    <span>{{ entry.time | date:'H:mm:ss' }}</span>
+                    <strong ng-style="{color: '#'+getUserColor(entry.user)}">{{ entry.user }} </strong>
+                    <span ng-bind-html="entry.text"></span>
+                </div>
             </li></ul>
         </div>
         <div ng-show="users" class="listeners">
             <h3 class="muted">Listeners</h3>
             <div class="listener" ng-repeat="(name,listener) in users" ng-show="listener.connections">
-                <div><i class="fa" ng-class="listenerClasses(listener)"></i> {{ name }}</div>
+                <div><i class="fa" ng-class="listenerClasses(listener)" ng-style="{color: '#'+getUserColor(name)}"></i> {{ name }}</div>
                 <div class="volume" ng-class="{muted:listener.muted}"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
@@ -114,7 +118,7 @@
                 <button ng-disabled="fillBlankIncomplete">Submit Guess</button>
             </form>
         </div>
-        <div class="add-bounty control-panel animate-show" ng-show="auth && controlAddBounty">
+        <div class="add-bounty control-panel" ng-show="auth && controlAddBounty">
             <p ng-hide="dj">You can't place a bounty without a DJ.</p>
             <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
             <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
@@ -137,7 +141,7 @@
                 <button type="submit" ng-disabled="bountyAmount < 1" >Add it!</button>
             </form>
         </div>
-        <div class="add-video control-panel animate-show" ng-show="auth && controlAddVideo">
+        <div class="add-video control-panel" ng-show="auth && controlAddVideo">
             <form ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">
                     <legend>Add a video</legend>
@@ -184,8 +188,13 @@
             </ul>
             <button ng-show="curateList && curateList.length > 0" ng-click="saveCurated()" ng-disabled="savingCurated">Save these badboys!</button>
         </div>
-        <div class="avatar-shop control-panel animate-show" ng-show="auth && controlAvatarShop">
-            <p>Click an avatar to purchase and/or wear it</p>
+        <div class="avatar-shop control-panel" ng-show="auth && controlAvatarShop">
+            <p>Click an avatar or color to purchase and/or wear it</p>
+            <div class="clearfix">
+                <div ng-repeat="(colorID, color) in avatarColors" ng-class="{owned: hasAvatarColor(colorID), equipped: (colorID == 'normal' && !user.avatarColor) || user.avatarColor == colorID}" ng-click="buyEquipAvatarColor(colorID)">
+                    <i class="fa" ng-class="listenerClasses(users[username])" ng-style="{color: '#'+color[1]}"></i><span class="price" ng-class="{'cant-buy': !user.kudos || color[2] > user.kudos}">{{ color[2] }}</span> - <span class="name">{{ color[0] }}</span>
+                </div>
+            </div>
             <div class="clearfix">
                 <div ng-repeat="(avatarID, avatar) in avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !user.avatar) || user.avatar == avatarID}" ng-click="buyEquipAvatar(avatarID)">
                     <i class="fa" ng-class="'fa-'+avatarID"></i><span class="price" ng-class="{'cant-buy': !user.kudos || avatar[1] > user.kudos}">{{ avatar[1] }}</span> - <span class="name">{{ avatar[0] }}</span>

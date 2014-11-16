@@ -106,9 +106,10 @@ header form button { float: left; width: 66px; height: 24px; }
 .curator ul li label:first-of-type { margin-left: 36px; }
 
 .avatar-shop p { text-align: center; }
+.avatar-shop > div:first-of-type { margin-bottom: 16px; }
 .avatar-shop > div > div { width: 192px; height: 22px; float: left; cursor: pointer; }
 .avatar-shop > div > div > i { display: inline-block; width: 30px; font-size: 1.1em; text-align: center; }
-.avatar-shop .price { display: inline-block; width: 40px; text-align: right; }
+.avatar-shop .price { display: inline-block; width: 48px; text-align: right; }
 
 .changelog table tr td { padding: 4px 0; }
 .changelog table tr td:first-child { width: 110px; }

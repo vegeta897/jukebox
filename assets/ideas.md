@@ -10,4 +10,3 @@
   - Jackpot won by guessing the exact number of seconds that the total playtime of the selection is?
   - Kudo bank to gain interest?
 - Multiple color themes with selector
-- Buy avatar colors

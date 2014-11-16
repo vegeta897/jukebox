@@ -41,6 +41,15 @@ var avatars = {
     camera: ['Camera',10000], bug: ['Bug',15000]
 };
 
+var avatarColors = {
+    normal: ['Normal','D8DBCD',0], jukeGreen: ['Juke Green','B5D053',7000], red: ['Red','D05353',5000], 
+    orange: ['Orange','D09553',6000], kudoGreen: ['Kudo Green','53D055',5000], teal: ['Teal','53D097',6000],
+    babyBlue: ['Baby Blue','53D0D0',6000], justBlue: ['Just Blue','5389D0',5000], purple: ['Purple','7C53D0',5000],
+    hotPink: ['Hot Pink','D053B7',6000], yellow: ['Yellow','E4E253',7000], cherryRed: ['Cherry Red','F23D3D',8000],
+    limeGreen: ['Lime Green','86F23D',8000], icyBlue: ['Icy Blue','83F7F3',8000], babyPink: ['Baby Pink','FC9EEC',8000],
+    shadyGray: ['Shady Gray','A5A5A5',9000], pureWhite: ['Pure White','FFFFFF',250000], zero: ['Zero Black','000000',500000]
+};
+
 var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan','buddy','hero','pal','submitter','giver','contributor','philanthropist','giver','patron','guest','supporter'];
 var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish','elegant','glamorous'];
 function buildSubject() {
@@ -127,15 +136,16 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.33; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.331; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
         {name:'controlAddBounty',title:'Add Bounty'},{name:'controlTitleGamble',title:'Title Gamble'},
-        {name:'controlFillBlank',title:'Fill the B_ank',new:true},{name:'controlAvatarShop',title:'Avatar Shop'},
+        {name:'controlFillBlank',title:'Fill the B_ank'},{name:'controlAvatarShop',title:'Avatar Shop',new:true},
         {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},
-        {name:'controlMeta',title:'Meta',new:true},{name:'controlAdmin',title:'Admin'}];
-    $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; $scope.avatars = avatars;
+        {name:'controlMeta',title:'Meta'},{name:'controlAdmin',title:'Admin'}];
+    $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; 
+    $scope.avatars = avatars; $scope.avatarColors = avatarColors;
     $scope.countProperties = countProperties;
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
@@ -218,7 +228,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+$scope.videoSelection[i].title+'</strong>"!',
                         kudos: gambleWinnings };
                     won = true;
-                    sendEvent('<strong>'+username+'</strong> won <strong>'+(gambleWinnings-$scope.titleGambleAmount)+'</strong> kudos by betting '+$scope.titleGambleAmount+' on "'+gambleString+'"!');
+                    sendEvent(username,'won <strong>'+(gambleWinnings-$scope.titleGambleAmount)+'</strong> kudos by betting '+$scope.titleGambleAmount+' on "'+gambleString+'"!');
                     fireUser.child('kudos').transaction(function(userKudos) {
                         return userKudos ? +userKudos + +gambleWinnings : +gambleWinnings;
                     });
@@ -230,7 +240,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             }
             if(!won) { 
                 $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' };
-                sendEvent('<strong>'+username+'</strong> lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
+                sendEvent(username,'lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
                 fireRef.child('jackpot').transaction(function(jack) {
                     return jack ? +jack + +$scope.titleGambleAmount : +$scope.titleGambleAmount;
                 });
@@ -250,8 +260,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         delete $scope.titleGambleSet; delete $scope.titleGambleString; $scope.titleGambleAmount = 1; $scope.controlTitleGamble = false;
     };
     
-    var sendEvent = function(text) {
-        fireRef.child('eventLog').push({ text: text, time: getServerTime() });
+    var sendEvent = function(user,text) {
+        fireRef.child('eventLog').push({ user: user, text: text, time: getServerTime() });
     };
     var purgeEventLog = function() {
         for(var il = $scope.eventLog.length-1, i = il; i >= 0; i--) { // Age and remove old events (locally)
@@ -327,7 +337,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
     };
     
-    $scope.listenerClasses = function(listener) { return 'fa fa-' + (listener.avatar ? listener.avatar : 'headphones'); };
+    $scope.listenerClasses = function(listener) { 
+        if(!listener) return; return 'fa-' + (listener.avatar ? listener.avatar : 'headphones'); 
+    };
+    $scope.getUserColor = function(username) { 
+        var user = $scope.users[username]; return user.avatarColor ? $scope.avatarColors[user.avatarColor][1] : $scope.avatarColors.normal[1]; 
+    };
     
     $scope.closeMessage = function() { delete $scope.message; };
     
@@ -387,7 +402,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
         $scope.controlTitleGamble = false;
         $scope.titleGambleSet = true;
-        sendEvent('<strong>'+username+'</strong> made a <strong>'+$scope.titleGambleAmount+'</strong> kudo title bet!');
+        sendEvent(username,'made a <strong>'+$scope.titleGambleAmount+'</strong> kudo title bet!');
     };
     
     $scope.titleGambleCalcMulti = function() {
@@ -411,7 +426,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         fireRef.child('selection/'+(+$scope.bountyIndex)+'/bounty').transaction(function(bounty) {
             return bounty ? parseInt(bounty) + $scope.bountyAmount : $scope.bountyAmount;
         });
-        sendEvent('<strong>'+username+'</strong> placed a <strong>'+$scope.bountyAmount+'</strong> kudo bounty on "'+$scope.videoSelection[+$scope.bountyIndex].title+'"!');
+        sendEvent(username,'placed a <strong>'+$scope.bountyAmount+'</strong> kudo bounty on "'+$scope.videoSelection[+$scope.bountyIndex].title+'"!');
         $scope.controlAddBounty = false; $scope.bountySet = true;
     };
 
@@ -463,7 +478,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 var reward = parseInt(results.data.data.items.length * 25);
                 $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward };
                 var addQuantity = results.data.data.items.length == 1 ? 'a video' : results.data.data.items.length + ' videos';
-                sendEvent('<strong>'+username+'</strong> just added ' + addQuantity + '! What ' + buildSubject() + '!');
+                sendEvent(username,'just added ' + addQuantity + '! What ' + buildSubject() + '!');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? +userKudos + +reward : reward;
                 });
@@ -473,6 +488,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     
     $scope.hasAvatar = function(avatar) { 
         return avatar == 'headphones' ? true : $scope.user && $scope.user.avatars ? $scope.user.avatars.hasOwnProperty(avatar) : false; 
+    };
+    $scope.hasAvatarColor = function(color) {
+        return color == 'normal' ? true : $scope.user && $scope.user.avatarColors ? $scope.user.avatarColors.hasOwnProperty(color) : false;
     };
     
     $scope.buyEquipAvatar = function(avatar) {
@@ -488,7 +506,23 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         });
         fireUser.child('avatars/'+avatar).set(true);
         fireUser.child('avatar').set(avatar);
-        sendEvent('<strong>'+username+'</strong> just bought the <strong>'+$scope.avatars[avatar][0]+'</strong> avatar!');
+        sendEvent(username,'just bought the <strong>'+$scope.avatars[avatar][0]+'</strong> avatar!');
+    };
+
+    $scope.buyEquipAvatarColor = function(color) {
+        if(color == 'normal' && !$scope.user.avatarColor) { return; }
+        if(color == 'normal' && $scope.user.avatarColor) { fireUser.child('avatar').remove(); return; }
+        if((color == 'normal' && $scope.user.avatarColor) || ($scope.user.avatarColors && $scope.user.avatarColors[color] && color != $scope.user.avatarColor)) {
+            fireUser.child('avatarColor').set(color); return;
+        }
+        var cost = $scope.avatarColors[color][2];
+        if(!$scope.user.kudos || $scope.user.kudos < cost) { return; }
+        fireUser.child('kudos').transaction(function(userKudos) {
+            return userKudos ? parseInt(userKudos) - cost : -cost;
+        });
+        fireUser.child('avatarColors/'+color).set(true);
+        fireUser.child('avatarColor').set(color);
+        sendEvent(username,'just bought the <strong>'+$scope.avatarColors[color][0]+'</strong> avatar color!');
     };
     
     $scope.beginCurator = function() {
@@ -534,7 +568,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             }
             $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
             var addQuantity = results.data.data.videos.length == 1 ? 'a video' : results.data.data.videos.length + ' videos';
-            sendEvent('<strong>'+username+'</strong> just curated ' + addQuantity + '! What ' + buildSubject() + '!');
+            sendEvent(username,'just curated ' + addQuantity + '! What ' + buildSubject() + '!');
             for(var i = 0, il = $scope.curateList.length; i < il; i++) {
                 fireRef.child('curating/'+$scope.curateList[i].video_id).remove();
             }
@@ -596,7 +630,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         if($scope.fillBlankGuess.toUpperCase() == $scope.fillBlankTitle.missing.toUpperCase()) {
             var reward = $scope.fillBlankTitle.missing.length * 5;
             $scope.message = { type: 'success', text: 'You guessed <strong>correctly!</strong> Nice one.', kudos: reward };
-            sendEvent('<strong>'+username+'</strong> just won <strong>' + reward + '</strong> kudos by filling in the blank!');
+            sendEvent(username,'just won <strong>' + reward + '</strong> kudos by filling in the blank!');
             fireUser.child('kudos').transaction(function(userKudos) {
                 return userKudos ? +userKudos + +reward : reward;
             });
@@ -775,7 +809,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 var elapsed = parseInt((getServerTime() - $scope.playing.startTime) / 1000);
                 if (elapsed + 90 > $scope.playing.duration.totalSec && !voting) {
                     console.log('video close to ending or ended');
-                    getVideos();
+                    if(!$scope.videoSelection) getVideos();
                     videoTimeout = setTimeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)-1000); // Voting for 89 seconds
                     fireRef.child('voting').set(getServerTime() + Math.min($scope.playing.duration.totalSec*1000,90000));
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
@@ -784,7 +818,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if (elapsed > $scope.playing.duration.totalSec && !voting) { // Video expired
                     console.log('video expired');
                     fireRef.child('playing').remove();
-                    getVideos();
+                    if(!$scope.videoSelection) getVideos();
                     videoTimeout = setTimeout(playVideo, 15000); // Voting for 15 seconds
                     fireRef.child('voting').set(getServerTime() + 15000);
                 }
