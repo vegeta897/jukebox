@@ -136,7 +136,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.333; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.334; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -218,7 +218,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             $scope.videoSelection = snap.val();
             if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
             var won = false;
-            var gambleString = $scope.titleGambleString+''; // Cast as string
+            var gambleString = ($scope.titleGambleString+'').toLowerCase(); // Cast as string, lowercase
             var gambleWinnings = Math.floor(+$scope.titleGambleAmount + ($scope.titleGambleAmount * $scope.titleGambleMulti));
             for(var i = 0, il = $scope.videoSelection.length; i < il; i++) {
                 var theIndex = $scope.videoSelection[i].title.toUpperCase().indexOf(gambleString.toUpperCase());
