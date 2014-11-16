@@ -149,8 +149,8 @@ Application.Services.service('Canvas', function() {
     highCanvas.onselectstart = function() { return false; }; // Disable selecting and right clicking
     jQuery('body').on('contextmenu', '#highCanvas', function(e){ return false; });
 
-    var cursor = { x: '-', y: '-'}, grid = 8, nextPiece = randomIntRange(0,pieces.length-1), rotation = randomIntRange(0,3),
-        blockGrid = {};
+    var cursor = { x: '-', y: '-'}, grid = 8, 
+        nextPiece = randomIntRange(0,pieces.length-1), rotation = randomIntRange(0,3), blockGrid = {}, fireRef;
     
     var rotatePiece = function(piece,rot) {
         if(rot == 0) return piece;
@@ -193,7 +193,7 @@ Application.Services.service('Canvas', function() {
         if(color == 'high') mainColor = 'rgba(255,255,255,0.5)';
         if(color == 'collision') mainColor = 'rgba(255,0,0,0.5)';
         if(color != 'high' && color != 'collision') {
-            var rCol = randomColor('vibrant').rgb;
+            var rCol = randomColor('vibrant').rgb; // TODO: Seed random color by piece, grid, and rotation
             mainColor = 'rgba('+rCol.r+','+rCol.g+','+rCol.b+',0.7)';
         }
         underContext.fillStyle = underColor;
@@ -227,8 +227,7 @@ Application.Services.service('Canvas', function() {
         if(e.which == 3) { rotation = rotation == 3 ? 0 : rotation + 1; drawHigh(); return; } // Right mouse
         if(e.which == 2) return; // Middle mouse
         if(checkCollision(nextPiece,cursor.x,cursor.y,rotation)) return;
-        placePiece(nextPiece,cursor.x,cursor.y,rotation,'me');
-        drawPiece(nextPiece,cursor.x,cursor.y,rotation,'gray');
+        fireRef.child('pieces/'+cursor.x+':'+cursor.y).set([nextPiece,rotation,'anon']);
         nextPiece = randomIntRange(0,pieces.length-1);
         rotation = randomIntRange(0,3);
         drawHigh();
@@ -247,6 +246,14 @@ Application.Services.service('Canvas', function() {
             blockGrid = {}; 
             mainContext.clearRect(0,0,mainCanvas.width,mainCanvas.height);
             mainUnderContext.clearRect(0,0,mainUnderCanvas.width,mainUnderCanvas.height);
+        },
+        attachFire: function(fire) {
+            fireRef = fire;
+            fireRef.child('pieces').on('child_added',function(snap) { // Listen for new pieces
+                var p = snap.val(), x = snap.name().split(':')[0], y = snap.name().split(':')[1];
+                placePiece(p[0],x,y,p[1],p[2]);
+                drawPiece(p[0],x,y,p[1],'random');
+            });
         }
     };
 });

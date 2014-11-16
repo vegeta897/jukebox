@@ -136,7 +136,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.334; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.335; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -150,6 +150,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
+    Canvas.attachFire(fireRef.child('canvas'));
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
         if($scope.version < snap.val()) {
@@ -727,6 +728,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             voting = false;
             fireRef.child('votes').remove();
             services.updateVideo(play.video_id,countProperties(play.votes,false));
+            fireRef.child('canvas/pieces').remove();
         });
     };
 
