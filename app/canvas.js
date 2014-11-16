@@ -66,7 +66,6 @@ function randomColor(/* maxMins (object has 'maxSat') OR object type (string) */
     } else if (hsv.hue < 0) {
         hsv.hue = 360 + (hsv.hue % 360);
     }
-    console.log(hsv);
     return {hex: hsvToHex(hsv), hsv: hsv, rgb: hexToRGB(hsvToHex(hsv))};
 }
 
