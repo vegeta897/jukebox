@@ -2,6 +2,73 @@
 
 function randomIntRange(min,max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function pickInArray(array) { return array[Math.floor(Math.random()*array.length)]; }
+function hsvToHex(hsv) {
+    var h = hsv.hue, s = hsv.sat, v = hsv.val, rgb, i, data = [];
+    if (s === 0) { rgb = [v,v,v]; }
+    else {
+        h = h / 60; i = Math.floor(h);
+        data = [v*(1-s), v*(1-s*(h-i)), v*(1-s*(1-(h-i)))];
+        switch(i) {
+            case 0: rgb = [v, data[2], data[0]]; break;
+            case 1: rgb = [data[1], v, data[0]]; break;
+            case 2: rgb = [data[0], v, data[2]]; break;
+            case 3: rgb = [data[0], data[1], v]; break;
+            case 4: rgb = [data[2], data[0], v]; break;
+            default: rgb = [v, data[0], data[1]]; break;
+        }
+    }
+    return rgb.map(function(x){ return ("0" + Math.round(x*255).toString(16)).slice(-2); }).join('');
+}
+function hexToRGB(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+};
+function randomColor(/* maxMins (object has 'maxSat') OR object type (string) */) {
+    //    var palette = jQuery.isArray(arguments[0]) ? arguments[0] : undefined;
+    if (arguments[0]) {
+        var maxMins = arguments[0].hasOwnProperty('maxSat') ? arguments[0] : undefined;
+        var objectType = typeof arguments[0] == 'string' ? arguments[0] : undefined;
+    }
+    //    var averages = getAverages(palette);
+    var hsv = {};
+    if (maxMins) {
+        var hueRange = maxMins.maxHue - maxMins.minHue;
+        var satRange = maxMins.maxSat - maxMins.minSat;
+        var valRange = maxMins.maxVal - maxMins.minVal;
+        hsv = {
+            hue: Math.floor(Math.random() * hueRange + maxMins.minHue),
+            sat: Math.round(Math.random() * satRange + maxMins.minSat) / 100,
+            val: Math.round(Math.random() * valRange + maxMins.minVal) / 100
+        };
+    } else if (objectType) {
+        switch (objectType) {
+            case 'vibrant':
+                hsv = {
+                    hue: Math.floor(Math.random() * 360),
+                    sat: Math.round(Math.random() * 30 + 70) / 100,
+                    val: Math.round(Math.random() * 40 + 60) / 100
+                };
+                break;
+        }
+    } else {
+        hsv = {
+            hue: Math.floor(Math.random() * 360),
+            sat: Math.round(Math.random() * 100) / 100,
+            val: Math.round(Math.random() * 100) / 100
+        };
+    }
+    if (hsv.hue >= 360) { // Fix hue wraparound
+        hsv.hue = hsv.hue % 360;
+    } else if (hsv.hue < 0) {
+        hsv.hue = 360 + (hsv.hue % 360);
+    }
+    console.log(hsv);
+    return {hex: hsvToHex(hsv), hsv: hsv, rgb: hexToRGB(hsvToHex(hsv))};
+}
 
 var pieces = [
     ''+ // Plus
@@ -127,8 +194,8 @@ Application.Services.service('Canvas', function() {
         if(color == 'high') mainColor = 'rgba(255,255,255,0.5)';
         if(color == 'collision') mainColor = 'rgba(255,0,0,0.5)';
         if(color != 'high' && color != 'collision') {
-            var r = randomIntRange(200,255), g = randomIntRange(200,255), b = randomIntRange(200,255);
-            mainColor = 'rgba('+r+','+g+','+b+',0.7)';
+            var rCol = randomColor('vibrant').rgb;
+            mainColor = 'rgba('+rCol.r+','+rCol.g+','+rCol.b+',0.7)';
         }
         underContext.fillStyle = underColor;
         context.fillStyle = mainColor;
@@ -168,7 +235,9 @@ Application.Services.service('Canvas', function() {
         drawHigh();
     };
     var onMouseOut = function() { 
-        cursor.x = cursor.y = '-'; highContext.clearRect(0,0,highCanvas.width,highCanvas.height); 
+        cursor.x = cursor.y = '-'; 
+        highContext.clearRect(0,0,highCanvas.width,highCanvas.height);
+        highUnderContext.clearRect(0,0,highUnderCanvas.width,highUnderCanvas.height);
     };
     highCanvas.addEventListener('mousemove',onMouseMove,false);
     highCanvas.addEventListener('mouseleave',onMouseOut,false);
