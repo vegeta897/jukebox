@@ -125,7 +125,7 @@ Application.Services.factory("services", ['$http', function($http) {
     return obj;
 }]);
 
-Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService) {
+Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Canvas) {
     console.log('Main controller initialized');
     
     var username = localStorageService.get('username');
@@ -136,7 +136,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.331; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.332; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -176,6 +176,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             console.log('video changed');
             player.loadVideoById(snap.val().video_id);
             player.setPlaybackQuality('large');
+            Canvas.clear();
         }
         $scope.playing = snap.val();
         if(!$scope.auth) return;
@@ -660,22 +661,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     $scope.message = { type:'error',text:'Error retrieving stats. You can probably blame my hosting service.' }; return;
                 }
                 $scope.metaVideoCount = data.data;
-                //$scope.metaVideoCount = [
-                //    {vidCount: 21, add_date: '2014-10-25 06:14:52',
-                //        topSubmitter: 'badhat'},
-                //    {vidCount: 9, add_date: '2014-10-26 22:58:06',
-                //        topSubmitter: 'voiper'},
-                //    {vidCount: 33, add_date: '2014-10-27 11:41:36',
-                //        topSubmitter: 'vegeta897'},
-                //    {vidCount: 17, add_date: '2014-10-28 03:55:03',
-                //        topSubmitter: 'badhat'},
-                //    {vidCount: 35, add_date: '2014-10-29 23:19:07',
-                //        topSubmitter: 'vegeta897'},
-                //    {vidCount: 20, add_date: '2014-10-30 04:20:11',
-                //        topSubmitter: 'badhat'},
-                //    {vidCount: 16, add_date: '2014-10-31 23:31:13',
-                //        topSubmitter: 'voiper'}
-                //];
                 var countMax = 0;
                 $scope.metaVidCountBarWidth = (100/$scope.metaVideoCount.length)-(10/$scope.metaVideoCount.length);
                 $scope.metaVidCountBarMargin = 5/$scope.metaVideoCount.length;
@@ -723,6 +708,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.requireVersion = function() { fireRef.parent().child('version').set($scope.version); }; // Set firebase version
+    $scope.clearCanvas = function() { fireRef.child('canvas/pieces').remove(); Canvas.clear(); };
 
     var playVideo = function() { // Tally votes and pick the video with the most
         if(!$scope.auth || $scope.dj != username || !$scope.videoSelection) return;

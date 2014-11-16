@@ -24,6 +24,12 @@
     <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="initializing || needUpdate">
         <div id="player"></div>
+        <div class="canvases"><div>
+            <canvas id="mainUnderCanvas" width="640" height="360"></canvas>
+            <canvas id="mainCanvas" width="640" height="360"></canvas>
+            <canvas id="highUnderCanvas" width="640" height="360"></canvas>
+            <canvas id="highCanvas" width="640" height="360"></canvas>
+        </div></div>
         <div class="now-playing" ng-show="playing">
             <h3 class="muted">NOW PLAYING</h3>
             <h2 ng-bind="playing.title"></h2>
@@ -78,7 +84,7 @@
             <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(jackpot/10000))+'px'}">{{ jackpot | number }}</strong>
         </p>
         <div class="control-buttons" ng-show="auth">
-            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && username != 'vegeta897'"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
+            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && !(username == 'vegeta897' || username == 'tester')"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
         </div>
         <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
             <p ng-hide="dj">You can't place any bets without a DJ.</p>
@@ -245,6 +251,7 @@
         </div>
         <div class="control-panel" ng-show="auth && controlAdmin">
             <button ng-click="requireVersion()">Require Version</button>
+            <button ng-click="clearCanvas()">Clear Canvas</button>
         </div>
         <button ng-hide="username != dj || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
@@ -258,6 +265,7 @@
     <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script>
     <script src="app/app.js"></script> <!-- My Stuff -->
     <script src="app/jukebox.js"></script>
+    <script src="app/canvas.js"></script>
     <script src="js/vendor/seedrandom.js"></script>
     <!-- Error Reporting -->
     <script src="//cdn.ravenjs.com/1.1.15/jquery,native/raven.min.js"></script>
