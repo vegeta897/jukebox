@@ -81,7 +81,7 @@ Application.Services.factory("services", ['$http', function($http) {
     return obj;
 }]);
 
-Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Polyominoes, Util) {
+Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Canvas, Util) {
     console.log('Main controller initialized');
     
     var username = localStorageService.get('username');
@@ -92,7 +92,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.336; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.337; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -106,7 +106,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
-    Polyominoes.attachFire(fireRef.child('canvas'));
+    Canvas.changeMode('polyominoes');
+    Canvas.attachFire(fireRef.child('canvas'));
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
         if($scope.version < snap.val()) {
@@ -133,7 +134,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             console.log('video changed');
             player.loadVideoById(snap.val().video_id);
             player.setPlaybackQuality('large');
-            Polyominoes.clear();
+            Canvas.clear();
         }
         $scope.playing = snap.val();
         if(!$scope.auth) return;
@@ -665,7 +666,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
     
     $scope.requireVersion = function() { fireRef.parent().child('version').set($scope.version); }; // Set firebase version
-    $scope.clearCanvas = function() { fireRef.child('polyominoes/pieces').remove(); Polyominoes.clear(); };
+    $scope.clearCanvas = function() { fireRef.child('canvas').remove(); Canvas.clear(); };
 
     var playVideo = function() { // Tally votes and pick the video with the most
         if(!$scope.auth || $scope.dj != username || !$scope.videoSelection) return;
@@ -684,7 +685,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             voting = false;
             fireRef.child('votes').remove();
             services.updateVideo(play.video_id,Util.countProperties(play.votes,false));
-            fireRef.child('polyominoes/pieces').remove();
+            fireRef.child('canvas').remove();
         });
     };
 

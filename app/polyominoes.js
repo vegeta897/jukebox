@@ -118,18 +118,9 @@ var pieces = [
 ];
 
 Application.Services.service('Polyominoes', function(Util) {
-    var mainCanvas = document.getElementById('mainCanvas');
-    var mainUnderCanvas = document.getElementById('mainUnderCanvas');
-    var highCanvas = document.getElementById('highCanvas');
-    var highUnderCanvas = document.getElementById('highUnderCanvas');
-    var mainContext = mainCanvas.getContext ? mainCanvas.getContext('2d') : null;
-    var mainUnderContext = mainUnderCanvas.getContext ? mainUnderCanvas.getContext('2d') : null;
-    var highContext = highCanvas.getContext ? highCanvas.getContext('2d') : null;
-    var highUnderContext = highUnderCanvas.getContext ? highUnderCanvas.getContext('2d') : null;
 
-    highCanvas.onselectstart = function() { return false; }; // Disable selecting and right clicking
-    jQuery('body').on('contextmenu', '#highCanvas', function(e){ return false; });
-
+    var mainCanvas, mainUnderCanvas, highCanvas, highUnderCanvas,
+        mainContext, mainUnderContext, highContext, highUnderContext;
     var cursor = { x: '-', y: '-'}, grid = 10, 
         nextPiece = Util.randomIntRange(0,pieces.length-1), rotation = Util.randomIntRange(0,3),
         blockGrid = {}, fireRef;
@@ -196,43 +187,44 @@ Application.Services.service('Polyominoes', function(Util) {
         highUnderContext.clearRect(0,0,highUnderCanvas.width,highUnderCanvas.height);
         drawPiece(nextPiece,cursor.x,cursor.y,rotation,checkCollision(nextPiece,cursor.x,cursor.y,rotation) ? 'collision' : 'high');
     };
-
-    var onMouseMove = function(e) {
-        var offset = jQuery(highCanvas).offset();
-        var newX = e.pageX - offset.left < 0 ? 0 : Math.floor((e.pageX - offset.left)/grid);
-        var newY = e.pageY - offset.top < 0 ? 0 : Math.floor((e.pageY - offset.top)/grid);
-        var moved = cursor.x != newX || cursor.y != newY;
-        cursor.x = newX; cursor.y = newY;
-        if(moved) drawHigh();
-    };
-    var onMouseDown = function(e) {
-        if(e.which == 3) { rotation = rotation == 3 ? 0 : rotation + 1; drawHigh(); return; } // Right mouse
-        if(e.which == 2) return; // Middle mouse
-        if(checkCollision(nextPiece,cursor.x,cursor.y,rotation)) return;
-        fireRef.child('pieces/'+cursor.x+':'+cursor.y).set([nextPiece,rotation,'anon']);
-        nextPiece = Util.randomIntRange(0,pieces.length-1);
-        rotation = Util.randomIntRange(0,3);
-        drawHigh();
-    };
-    var onMouseOut = function() { 
-        cursor.x = cursor.y = '-'; 
-        highContext.clearRect(0,0,highCanvas.width,highCanvas.height);
-        highUnderContext.clearRect(0,0,highUnderCanvas.width,highUnderCanvas.height);
-    };
-    highCanvas.addEventListener('mousemove',onMouseMove,false);
-    highCanvas.addEventListener('mouseleave',onMouseOut,false);
-    highCanvas.addEventListener('mousedown',onMouseDown,false);
     
     return {
-        clear: function() { 
-            blockGrid = {}; 
+        onMouseMove: function(e) {
+            var offset = jQuery(highCanvas).offset();
+            var newX = e.pageX - offset.left < 0 ? 0 : Math.floor((e.pageX - offset.left)/grid);
+            var newY = e.pageY - offset.top < 0 ? 0 : Math.floor((e.pageY - offset.top)/grid);
+            var moved = cursor.x != newX || cursor.y != newY;
+            cursor.x = newX; cursor.y = newY;
+            if(moved) drawHigh();
+        },
+        onMouseDown: function(e) {
+            if(e.which == 3) { rotation = rotation == 3 ? 0 : rotation + 1; drawHigh(); return; } // Right mouse
+            if(e.which == 2) return; // Middle mouse
+            if(checkCollision(nextPiece,cursor.x,cursor.y,rotation)) return;
+            fireRef.child('pieces/'+cursor.x+':'+cursor.y).set([nextPiece,rotation,'anon'].join(':'));
+            nextPiece = Util.randomIntRange(0,pieces.length-1);
+            rotation = Util.randomIntRange(0,3);
+            drawHigh();
+        },
+        onMouseOut: function() {
+            cursor.x = cursor.y = '-';
+            highContext.clearRect(0,0,highCanvas.width,highCanvas.height);
+            highUnderContext.clearRect(0,0,highUnderCanvas.width,highUnderCanvas.height);
+        },
+        attachCanvases: function(mCan,mUCan,hCan,hUCan,mCon,mUCon,hCon,hUCon) {
+            mainCanvas = mCan; mainUnderCanvas = mUCan; highCanvas = hCan; highUnderCanvas = hUCan;
+            mainContext = mCon; mainUnderContext = mUCon;
+            highContext = hCon; highUnderContext = hUCon;
+        },
+        clear: function() {
+            blockGrid = {};
             mainContext.clearRect(0,0,mainCanvas.width,mainCanvas.height);
             mainUnderContext.clearRect(0,0,mainUnderCanvas.width,mainUnderCanvas.height);
         },
         attachFire: function(fire) {
             fireRef = fire;
             fireRef.child('pieces').on('child_added',function(snap) { // Listen for new pieces
-                var p = snap.val(), x = snap.name().split(':')[0], y = snap.name().split(':')[1];
+                var p = snap.val().split(':'), x = snap.name().split(':')[0], y = snap.name().split(':')[1];
                 placePiece(p[0],x,y,p[1],p[2]);
                 drawPiece(p[0],x,y,p[1],'random');
             });
