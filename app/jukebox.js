@@ -270,8 +270,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     $scope.changeCanvasMode = function(mode) {
-        var color = $scope.user ? $scope.user.avatarColor ? $scope.user.avatarColor : 'default' : 'default';
-        Canvas.changeMode(mode,{myColor: avatarColors[color][1]}); 
+        var color = $scope.user ? $scope.user.avatarColor ? $scope.user.avatarColor : 'normal' : 'normal';
+        Canvas.changeMode(mode,{myColor: $scope.avatarColors[color][1]}); 
         $scope.canvasMode = mode; $timeout(function(){}); 
     };
 
