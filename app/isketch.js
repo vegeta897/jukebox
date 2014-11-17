@@ -19,7 +19,7 @@ Application.Services.service('Isketch', function(Util) {
         highContext.moveTo(cursor.x,cursor.y);
         currentSegment.push(cursor.x+':'+cursor.y);
         cursorLast.x = cursor.x; cursorLast.y = cursor.y;
-        if(currentSegment.length > 50) finishSegment();
+        if(currentSegment.length > 100) finishSegment();
     };
     
     var finishSegment = function() {
