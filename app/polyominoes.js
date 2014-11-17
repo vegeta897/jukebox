@@ -188,6 +188,12 @@ Application.Services.service('Polyominoes', function(Util) {
         drawPiece(nextPiece,cursor.x,cursor.y,rotation,checkCollision(nextPiece,cursor.x,cursor.y,rotation) ? 'collision' : 'high');
     };
     
+    var pieceAdded = function(snap) {
+        var p = snap.val().split(':'), x = +snap.name().split(':')[0], y = +snap.name().split(':')[1];
+        placePiece(+p[0],x,y,+p[1],p[2]);
+        drawPiece(p[0],x,y,p[1],'random');
+    };
+    
     return {
         onMouseMove: function(e) {
             var offset = jQuery(highCanvas).offset();
@@ -206,6 +212,7 @@ Application.Services.service('Polyominoes', function(Util) {
             rotation = Util.randomIntRange(0,3);
             drawHigh();
         },
+        onMouseUp: function(e) {  },
         onMouseOut: function() {
             cursor.x = cursor.y = '-';
             highContext.clearRect(0,0,highCanvas.width,highCanvas.height);
@@ -223,11 +230,15 @@ Application.Services.service('Polyominoes', function(Util) {
         },
         attachFire: function(fire) {
             fireRef = fire;
-            fireRef.child('pieces').on('child_added',function(snap) { // Listen for new pieces
-                var p = snap.val().split(':'), x = +snap.name().split(':')[0], y = +snap.name().split(':')[1];
-                placePiece(+p[0],x,y,+p[1],p[2]);
-                drawPiece(p[0],x,y,p[1],'random');
-            });
+        },
+        init: function(options) {
+            blockGrid = {};
+            mainContext.clearRect(0,0,mainCanvas.width,mainCanvas.height);
+            mainUnderContext.clearRect(0,0,mainUnderCanvas.width,mainUnderCanvas.height);
+            fireRef.child('pieces').on('child_added',pieceAdded);
+        },
+        disable: function() {
+            fireRef.child('pieces').off('child_added',pieceAdded);
         }
     };
 });

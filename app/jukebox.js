@@ -91,7 +91,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.338; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.339; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -102,9 +102,9 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; 
     $scope.avatars = avatars; $scope.avatarColors = avatarColors;
     $scope.countProperties = Util.countProperties;
-    $scope.canvasModes = Canvas.getModes(); $scope.changeCanvasMode = Canvas.changeMode;
-    $scope.canvasMode = 'polyominoes'; Canvas.changeMode($scope.canvasMode);
-    Canvas.attachFire(fireRef.child('canvas'));
+    $scope.canvasModes = Canvas.getModes();
+    $scope.canvasMode = 'polyominoes';
+    Canvas.attachFire(fireRef.child('canvas')); Canvas.changeMode($scope.canvasMode,{});
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
@@ -267,6 +267,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 initUser();
             });
         }
+    };
+
+    $scope.changeCanvasMode = function(mode) {
+        Canvas.changeMode(mode,{myColor: avatarColors[$scope.user.avatarColor || 'default'][1]}); 
+        $scope.canvasMode = mode; $timeout(function(){}); 
     };
 
     $scope.vote = function(index) {

@@ -1,6 +1,6 @@
 'use strict';
 
-Application.Services.service('Canvas', function(Polyominoes, Util) {
+Application.Services.service('Canvas', function(Polyominoes, Isketch, Util) {
     var mainCanvas = document.getElementById('mainCanvas');
     var mainUnderCanvas = document.getElementById('mainUnderCanvas');
     var highCanvas = document.getElementById('highCanvas');
@@ -13,7 +13,7 @@ Application.Services.service('Canvas', function(Polyominoes, Util) {
     highCanvas.onselectstart = function() { return false; }; // Disable selecting and right clicking
     jQuery('body').on('contextmenu', '#highCanvas', function(e){ return false; });
     
-    var modes = {polyominoes: Polyominoes}, mode;
+    var modes = {polyominoes: Polyominoes, isketch: Isketch}, mode;
     
     for(var m in modes) { if(!modes.hasOwnProperty(m)) continue;
         modes[m].attachCanvases(mainCanvas,mainUnderCanvas,highCanvas,highUnderCanvas,mainContext,mainUnderContext,highContext,highUnderContext);
@@ -21,10 +21,12 @@ Application.Services.service('Canvas', function(Polyominoes, Util) {
     
     var onMouseMove = function(e) { mode.onMouseMove(e); };
     var onMouseDown = function(e) { mode.onMouseDown(e); };
+    var onMouseUp = function(e) { mode.onMouseUp(e); };
     var onMouseOut = function() { mode.onMouseOut(); };
     highCanvas.addEventListener('mousemove',onMouseMove,false);
     highCanvas.addEventListener('mouseleave',onMouseOut,false);
     highCanvas.addEventListener('mousedown',onMouseDown,false);
+    highCanvas.addEventListener('mouseup',onMouseUp,false);
 
     return {
         getModes: function() {
@@ -34,8 +36,10 @@ Application.Services.service('Canvas', function(Polyominoes, Util) {
             }
             return modeList;
         },
-        changeMode: function(m) {
+        changeMode: function(m,options) {
+            if(mode) mode.disable();
             mode = modes[m];
+            mode.init(options);
         },
         clear: function() {
             mode.clear();
