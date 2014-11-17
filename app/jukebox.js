@@ -82,7 +82,6 @@ Application.Services.factory("services", ['$http', function($http) {
 }]);
 
 Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Canvas, Util) {
-    console.log('Main controller initialized');
     
     var username = localStorageService.get('username');
     var passcode = localStorageService.get('passcode');
@@ -92,7 +91,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.337; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.338; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -103,11 +102,12 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; 
     $scope.avatars = avatars; $scope.avatarColors = avatarColors;
     $scope.countProperties = Util.countProperties;
+    $scope.canvasModes = Canvas.getModes(); $scope.changeCanvasMode = Canvas.changeMode;
+    $scope.canvasMode = 'polyominoes'; Canvas.changeMode($scope.canvasMode);
+    Canvas.attachFire(fireRef.child('canvas'));
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
-    Canvas.changeMode('polyominoes');
-    Canvas.attachFire(fireRef.child('canvas'));
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
         if($scope.version < snap.val()) {
@@ -755,6 +755,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 if (elapsed + 90 > $scope.playing.duration.totalSec && !voting) {
                     console.log('video close to ending or ended');
                     if(!$scope.videoSelection) getVideos();
+                    voting = true;
                     videoTimeout = setTimeout(playVideo, Math.min($scope.playing.duration.totalSec*1000,90000)-1000); // Voting for 89 seconds
                     fireRef.child('voting').set(getServerTime() + Math.min($scope.playing.duration.totalSec*1000,90000));
                 } else if (!voting) { // Video not expired or close to being over, remove selection list
@@ -764,6 +765,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     console.log('video expired');
                     fireRef.child('playing').remove();
                     if(!$scope.videoSelection) getVideos();
+                    voting = true;
                     videoTimeout = setTimeout(playVideo, 15000); // Voting for 15 seconds
                     fireRef.child('voting').set(getServerTime() + 15000);
                 }

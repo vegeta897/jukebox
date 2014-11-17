@@ -19,6 +19,9 @@ h2, legend { color: #f2f5eb; }
 .muted { color: #858a71; }
 p:not(.error) strong, dt strong { color: #f2f5eb; }
 
+.canvas-header span:hover { color: white; }
+.canvas-header span.selected { color: #DEFF7C; }
+
 .now-playing h2 { color: #DEFF7C; }
 
 .video-selection table tr { border-color: #222; transition: all 0.1s; }

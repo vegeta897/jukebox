@@ -27,6 +27,13 @@ Application.Services.service('Canvas', function(Polyominoes, Util) {
     highCanvas.addEventListener('mousedown',onMouseDown,false);
 
     return {
+        getModes: function() {
+            var modeList = [];
+            for(var m in modes) { if(!modes.hasOwnProperty(m)) continue;
+                modeList.push(m);
+            }
+            return modeList;
+        },
         changeMode: function(m) {
             mode = modes[m];
         },

@@ -23,6 +23,9 @@
     </header>
     <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="initializing || needUpdate">
+        <div class="canvas-header">
+            <span ng-repeat="mode in canvasModes" ng-click="changeCanvasMode(mode)" ng-class="{selected: canvasMode == mode}">{{ mode }}</span>
+        </div>
         <div id="player"></div>
         <div class="canvases"><div>
             <canvas id="mainUnderCanvas" width="640" height="370"></canvas>

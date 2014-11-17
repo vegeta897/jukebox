@@ -224,8 +224,8 @@ Application.Services.service('Polyominoes', function(Util) {
         attachFire: function(fire) {
             fireRef = fire;
             fireRef.child('pieces').on('child_added',function(snap) { // Listen for new pieces
-                var p = snap.val().split(':'), x = snap.name().split(':')[0], y = snap.name().split(':')[1];
-                placePiece(p[0],x,y,p[1],p[2]);
+                var p = snap.val().split(':'), x = +snap.name().split(':')[0], y = +snap.name().split(':')[1];
+                placePiece(+p[0],x,y,+p[1],p[2]);
                 drawPiece(p[0],x,y,p[1],'random');
             });
         }
