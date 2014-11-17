@@ -50,50 +50,6 @@ var avatarColors = {
     shadyGray: ['Shady Gray','A5A5A5',9000], pureWhite: ['Pure White','FFFFFF',250000], zero: ['Zero Black','000000',500000]
 };
 
-var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan','buddy','hero','pal','submitter','giver','contributor','philanthropist','giver','patron','guest','supporter'];
-var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish','elegant','glamorous'];
-function buildSubject() {
-    var adj = pickInArray(adjectives);
-    return 'a' + (jQuery.inArray(adj[0],['a','e','i','o','u']) >= 0 ? 'n ' : ' ') + adj + ' ' + pickInArray(nouns);
-}
-
-function parseUTCtime(utc) { // Converts 'PT#M#S' to an object
-    if(!utc || utc.hasOwnProperty('stamp')) return utc;
-    var sec, min, stamp;
-    if(utc.indexOf('S') >= 0 && utc.indexOf('M') >= 0) { // M and S
-        sec = parseInt(utc.substring(utc.indexOf('M')+1,utc.indexOf('S')));
-        min = parseInt(utc.substring(2,utc.indexOf('M')));
-        stamp = utc.substring(2,utc.indexOf('S')).replace('M',':').split(':');
-        stamp = stamp[0] + ':' + ( stamp[1].length > 1 ? stamp[1] : '0' + stamp[1] );
-        return { totalSec: (min*60 + sec), min: min, sec: sec, stamp: stamp };
-    } else if (utc.indexOf('S') >= 0 && utc.indexOf('M') < 0) { // Just S
-        min = 0;
-        sec = parseInt(utc.substring(utc.indexOf('T')+1,utc.indexOf('S')));
-        stamp = '0:' + ((sec+'').length == 1 ? '0'+sec : sec);
-        return { totalSec: (min*60 + sec), min: min, sec: sec, stamp: stamp };
-    } else { // Just M
-        min = parseInt(utc.substring(2,utc.indexOf('M')));
-        sec = 0;
-        stamp = min + ':00';
-        return { totalSec: (min*60 + sec), min: min, sec: sec, stamp: stamp };
-    }
-}
-
-function randomIntRange(min,max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function countProperties(obj,exception) { // Return number of properties an object has
-    if(!obj) return 0; var count = 0; for(var key in obj) { if(!obj.hasOwnProperty(key) || key == exception) { continue; } count++; } return count; 
-}
-// Return a random element from input array
-function pickInArray(array) { return array[Math.floor(Math.random()*array.length)]; }
-function pickInObject(object) { // Return a random property from input object (attach name)
-    var array = [];
-    for(var key in object) { if(object.hasOwnProperty(key)) {
-        var property = object[key]; array.push(property); } }
-    return pickInArray(array);
-}
-
-function flip() { return Math.random() > 0.5; } // Flip a coin
-function isInt(input) { return parseInt(input) === input; }
 
 Application.Services.factory("services", ['$http', function($http) {
     var serviceBase = 'php/', obj = {};
@@ -125,7 +81,7 @@ Application.Services.factory("services", ['$http', function($http) {
     return obj;
 }]);
 
-Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Canvas) {
+Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Polyominoes, Util) {
     console.log('Main controller initialized');
     
     var username = localStorageService.get('username');
@@ -136,7 +92,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.335; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.336; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -146,11 +102,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         {name:'controlMeta',title:'Meta'},{name:'controlAdmin',title:'Admin'}];
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; 
     $scope.avatars = avatars; $scope.avatarColors = avatarColors;
-    $scope.countProperties = countProperties;
+    $scope.countProperties = Util.countProperties;
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
-    Canvas.attachFire(fireRef.child('canvas'));
+    Polyominoes.attachFire(fireRef.child('canvas'));
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
         if($scope.version < snap.val()) {
@@ -177,20 +133,20 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             console.log('video changed');
             player.loadVideoById(snap.val().video_id);
             player.setPlaybackQuality('large');
-            Canvas.clear();
+            Polyominoes.clear();
         }
         $scope.playing = snap.val();
         if(!$scope.auth) return;
         var refundAmount = 0;
         if(parseInt($scope.playing.index) === myVote) {
             if(!$scope.playing.bounty || (+$scope.bountyIndex === +$scope.playing.index && $scope.bountySet)) {
-                refundAmount = countProperties($scope.playing.votes,false) == 1 && $scope.bountySet ? $scope.bountyAmount : 0;
+                refundAmount = Util.countProperties($scope.playing.votes,false) == 1 && $scope.bountySet ? $scope.bountyAmount : 0;
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? +userKudos + 2 + +refundAmount : 2 + +refundAmount;
                 });
             } else {
                 fireUser.child('kudos').transaction(function(userKudos) {
-                    var reward = parseInt($scope.playing.bounty / Math.max(1,countProperties($scope.playing.votes,username)) + 2);
+                    var reward = parseInt($scope.playing.bounty / Math.max(1,Util.countProperties($scope.playing.votes,username)) + 2);
                     $scope.message = { type: 'success', text: 'The bounty was awarded to you!', kudos: reward };
                     return userKudos ? +userKudos + +reward : +reward ;
                 });
@@ -480,7 +436,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 var reward = parseInt(results.data.data.items.length * 25);
                 $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward };
                 var addQuantity = results.data.data.items.length == 1 ? 'a video' : results.data.data.items.length + ' videos';
-                sendEvent(username,'just added ' + addQuantity + '! What ' + buildSubject() + '!');
+                sendEvent(username,'just added ' + addQuantity + '! What ' + Util.buildSubject() + '!');
                 fireUser.child('kudos').transaction(function(userKudos) {
                     return userKudos ? +userKudos + +reward : reward;
                 });
@@ -544,7 +500,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 var curating = {}; // Object of video IDs 
                 for(var d = 0, dl = data.data.length; d < dl; d++) {
                     curating[data.data[d].video_id] = username;
-                    data.data[d].duration = parseUTCtime(data.data[d].duration);
+                    data.data[d].duration = Util.parseUTCtime(data.data[d].duration);
                     data.data[d].index = d;
                 }
                 fireRef.child('curating').update(curating);
@@ -570,7 +526,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             }
             $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
             var addQuantity = results.data.data.videos.length == 1 ? 'a video' : results.data.data.videos.length + ' videos';
-            sendEvent(username,'just curated ' + addQuantity + '! What ' + buildSubject() + '!');
+            sendEvent(username,'just curated ' + addQuantity + '! What ' + Util.buildSubject() + '!');
             for(var i = 0, il = $scope.curateList.length; i < il; i++) {
                 fireRef.child('curating/'+$scope.curateList[i].video_id).remove();
             }
@@ -597,7 +553,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             var challengeWordIndex;
             var challengeWord = '';
             while(challengeWord.length < 2) { // Minimum 2 characters long
-                challengeWordIndex = randomIntRange(0,words.length-1); // Choose a word
+                challengeWordIndex = Util.randomIntRange(0,words.length-1); // Choose a word
                 challengeWord = words[challengeWordIndex]; // Get word from chosen index
             }
             var blankedWord = '<span>';
@@ -703,20 +659,20 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     };
 
     $scope.forceVote = function() {
-        getVideos();
+        if(!$scope.videoSelection) getVideos();
         videoTimeout = setTimeout(playVideo, 15000); // Voting for 15 seconds
         fireRef.child('voting').set(getServerTime() + 15000);
     };
     
     $scope.requireVersion = function() { fireRef.parent().child('version').set($scope.version); }; // Set firebase version
-    $scope.clearCanvas = function() { fireRef.child('canvas/pieces').remove(); Canvas.clear(); };
+    $scope.clearCanvas = function() { fireRef.child('polyominoes/pieces').remove(); Polyominoes.clear(); };
 
     var playVideo = function() { // Tally votes and pick the video with the most
         if(!$scope.auth || $scope.dj != username || !$scope.videoSelection) return;
         var winner = 0;
         fireRef.child('votes').once('value', function(snap) {
             var snapped = angular.copy(snap.val());
-            winner = snapped ? pickInObject(snapped) : randomIntRange(0,$scope.videoSelection.length-1);
+            winner = snapped ? Util.pickInObject(snapped) : Util.randomIntRange(0,$scope.videoSelection.length-1);
             console.log('winner chosen:',winner);
             var play = $scope.videoSelection[winner];
             play.startTime = getServerTime();
@@ -727,8 +683,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             fireRef.child('selection').remove();
             voting = false;
             fireRef.child('votes').remove();
-            services.updateVideo(play.video_id,countProperties(play.votes,false));
-            fireRef.child('canvas/pieces').remove();
+            services.updateVideo(play.video_id,Util.countProperties(play.votes,false));
+            fireRef.child('polyominoes/pieces').remove();
         });
     };
 
@@ -745,7 +701,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                 $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return; 
             }
             for(var d = 0, dl = data.data.length; d < dl; d++) {
-                data.data[d].duration = parseUTCtime(data.data[d].duration);
+                data.data[d].duration = Util.parseUTCtime(data.data[d].duration);
                 data.data[d].index = d;
             }
             fireRef.child('selection').set(angular.copy(data.data));
