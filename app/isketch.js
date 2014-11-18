@@ -5,12 +5,12 @@ Application.Services.service('Isketch', function(Util) {
     var mainCanvas, mainUnderCanvas, highCanvas, highUnderCanvas,
         mainContext, mainUnderContext, highContext, highUnderContext;
     var cursor = { x: '-', y: '-'}, cursorLast = {x: '-', y: '-'}, grid = 1, fireRef, 
-        myColor, drawing, drawTimer, currentSegment, segmentCount = 0;
+        myColor, drawing, erasing, drawTimer, currentSegment, segmentCount = 0, lineWidth = 2, eraseWidth = 12;
 
     setInterval(function(){ segmentCount = segmentCount < 10 ? 0 : segmentCount - 10; },500);
     
     var drawPoints = function() {
-        if(!drawing) return;
+        if(!drawing && !erasing) return;
         if(cursor.x == '-' || cursor.y == '-') return;
         if(Math.abs(cursorLast.x - cursor.x) < 3 && Math.abs(cursorLast.y - cursor.y) < 3) return;
         highContext.lineTo(cursor.x,cursor.y);
@@ -23,7 +23,7 @@ Application.Services.service('Isketch', function(Util) {
     };
     
     var finishSegment = function() {
-        drawing = false;
+        drawing = erasing = false;
         if(!currentSegment) return;
         if(cursor.x != '-' && cursor.y != '-') currentSegment.push(cursor.x+':'+cursor.y);
         if(!currentSegment || currentSegment.length < 3) return;
@@ -35,7 +35,10 @@ Application.Services.service('Isketch', function(Util) {
     var segmentAdded = function(snap) {
         var segment = snap.val().split('&');
         mainContext.strokeStyle = '#'+segment[0];
-        mainContext.lineWidth = 2;
+        mainContext.lineWidth = segment[0] == 'erase' ? eraseWidth : lineWidth;
+        mainUnderContext.lineWidth = segment[0] == 'erase' ? eraseWidth - 2 : lineWidth + 2;
+        mainContext.globalCompositeOperation = segment[0] == 'erase' ? 'destination-out' : 'source-over';
+        mainUnderContext.globalCompositeOperation = segment[0] == 'erase' ? 'destination-out' : 'source-over';
         mainContext.beginPath();
         mainUnderContext.beginPath();
         var x = +segment[1].split(':')[0], y = +segment[1].split(':')[1];
@@ -60,18 +63,20 @@ Application.Services.service('Isketch', function(Util) {
             //if(moved) 
         },
         onMouseDown: function(e) {
-            if(e.which == 3) { return; } // Right mouse
+            if(drawing || erasing) return;
             if(e.which == 2) return; // Middle mouse
-            if(drawing) return;
-            if(segmentCount > 100) return;
+            if(segmentCount > 200) return; // Spam prevention
+            if(e.which == 3) erasing = true; // Right mouse
+            if(e.which != 3) drawing = true;
+            highContext.lineWidth = erasing ? eraseWidth : lineWidth;
             highContext.beginPath();
             highContext.moveTo(cursor.x,cursor.y);
-            currentSegment = [myColor,cursor.x+':'+cursor.y];
-            drawing = true;
+            currentSegment = [(drawing ? myColor : 'erase'),cursor.x+':'+cursor.y];
             drawTimer = setInterval(drawPoints,50);
         },
         onMouseUp: function(e) {
-            if(e.which == 3) { return; } // Right mouse
+            if(e.which == 1 && erasing) return;
+            if(e.which == 3 && drawing) return; // Right mouse
             if(e.which == 2) return; // Middle mouse
             highContext.clearRect(0,0,highCanvas.width,highCanvas.height);
             highUnderContext.clearRect(0,0,highUnderCanvas.width,highUnderCanvas.height);
@@ -89,11 +94,9 @@ Application.Services.service('Isketch', function(Util) {
             highContext = hCon; highUnderContext = hUCon;
             highContext.lineCap = 'round';
             highContext.strokeStyle = 'white';
-            highContext.lineWidth = 2;
             mainContext.lineCap = 'round';
             mainUnderContext.lineCap = 'round';
             mainUnderContext.strokeStyle = 'black';
-            mainUnderContext.lineWidth = 4;
         },
         clear: function() {
             mainContext.clearRect(0,0,mainCanvas.width,mainCanvas.height);

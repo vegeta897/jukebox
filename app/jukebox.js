@@ -91,7 +91,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.34; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.341; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
