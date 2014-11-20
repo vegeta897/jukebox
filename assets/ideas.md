@@ -1,12 +1,16 @@
 - Weighting video selection to encourage variety
-  - Have videos() select 100, then weight them in javascript
-  - Use play_count, vote_count, and last_played (and date_added?)
-  - System must not result in all the "bad" videos constantly coming up
-    - Consistently not voting for a bad video should decrease its chances
-    - Maybe add a 'rating' column to the DB
+    - Have videos() select 100, then weight them in javascript
+    - Use play_count, vote_count, and last_played (and date_added?)
+    - System must not result in all the "bad" videos constantly coming up
+        - Consistently not voting for a bad video should decrease its chances
+        - Maybe add a 'rating' column to the DB
 - Idle games/activities embedded on the page
-  - Whiteboard or some way to mark up the video, maybe placing "stickers"
-  - Generated trivia/math/misc questions?
-  - Jackpot won by guessing the exact number of seconds that the total playtime of the selection is?
-  - Kudo bank to gain interest?
+    - Whiteboard or some way to mark up the video, maybe placing "stickers"
+    - Generated trivia/math/misc questions?
+    - Jackpot won by guessing the exact number of seconds that the total playtime of the selection is?
+    - Kudo bank to gain interest?
 - Multiple color themes with selector
+- Animate random synced events like a bird flying in and landing on a button
+    - Click bird to shoo (also synced, and get kudos)
+    - Use flash to animate them, flat colors with .gif format
+        - Flying in/away animation uses large gif positioned in the right spot

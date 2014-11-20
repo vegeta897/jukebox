@@ -1,129 +1,14 @@
 'use strict';
 
-var pieces = [
-    ''+ // Plus
-        '     '+
-        '  #  '+
-        ' ### '+
-        '  #'
-    ,''+ // U short
-        '     '+
-        ' # # '+
-        ' ###'
-    ,''+ // Z
-        '     '+
-        '  ## '+
-        ' ##'
-    ,''+ // Z flipped
-        '     '+
-        ' ##  '+
-        '  ##'
-    ,''+ // Big Z
-        '     '+
-        ' #   '+
-        ' ### '+
-        '   #'
-    ,''+ // Big Z flipped
-        '     '+
-        '   # '+
-        ' ### '+
-        ' #'
-    ,''+ // Z extended
-        '     '+
-        '  ## '+
-        '###'
-    ,''+ // Z extended flipped
-        '     '+
-        ' ##  '+
-        '  ###'
-    ,''+ // W
-        '     '+
-        ' #   '+
-        ' ##  '+
-        '  ##'
-    ,''+ // Angle long
-        '  #  '+
-        '  #  '+
-        '###'
-    ,''+ // Notched
-        '     '+
-        '  #  '+
-        '####'
-    ,''+ // Notched flipped
-        '     '+
-        '  #  '+
-        ' ####'
-    ,''+ // Angle short
-        '     '+
-        '  #  '+
-        ' ##'
-    ,''+ // L
-        '  #  '+
-        '  #  '+
-        ' ##'
-    ,''+ // L flipped
-        '  #  '+
-        '  #  '+
-        '  ##'
-    ,''+ // T long
-        '  #  '+
-        '  #  '+
-        ' ###'
-    ,''+ // T short
-        '     '+
-        '  #  '+
-        ' ###'
-    ,''+ // T notched
-        '     '+
-        '  #  '+
-        ' ### '+
-        '   #'
-    ,''+ // T notched flipped
-        '     '+
-        '  #  '+
-        ' ### '+
-        ' #'
-    ,''+ // 2x2 block
-        '     '+
-        ' ##  '+
-        ' ##'
-    ,''+ // 2x2 notched
-        '  #  '+
-        ' ##  '+
-        ' ##'
-    ,''+ // 2x2 notched flipped
-        ' #   '+
-        ' ##  '+
-        ' ##'
-    ,''+ // Line long
-        '     '+
-        '     '+
-        '#####'
-    ,''+ // Line
-        '     '+
-        '     '+
-        '####'
-    ,''+ // Line short
-        '     '+
-        '     '+
-        ' ###'
-    ,''+ // Domino
-        '     '+
-        '     '+
-        ' ##'
-    ,''+ // Dot
-        '     '+
-        '     '+
-        '  #'
-];
+var pieces=[""+"     "+"  #  "+" ### "+"  #",""+"     "+" # # "+" ###",""+"     "+"  ## "+" ##",""+"     "+" ##  "+"  ##",""+"     "+" #   "+" ### "+"   #",""+"     "+"   # "+" ### "+" #",""+"     "+"  ## "+"###",""+"     "+" ##  "+"  ###",""+"     "+" #   "+" ##  "+"  ##",""+"  #  "+"  #  "+"###",""+"     "+"  #  "+"####",""+"     "+"  #  "+" ####",""+"     "+"  #  "+" ##",""+"  #  "+"  #  "+" ##",""+"  #  "+"  #  "+"  ##",""+"  #  "+"  #  "+" ###",""+"     "+"  #  "+" ###",""+"     "+"  #  "+" ### "+"   #",""+"     "+"  #  "+" ### "+" #",""+"     "+" ##  "+" ##",""+"  #  "+" ##  "+" ##",""+" #   "+" ##  "+" ##",""+"     "+"     "+"#####",""+"     "+"     "+"####",""+"     "+"     "+" ###",""+"     "+"     "+" ##",""+"     "+"     "+"  #"];
 
 Application.Services.service('Polyominoes', function(Util) {
 
     var mainCanvas, mainUnderCanvas, highCanvas, highUnderCanvas,
         mainContext, mainUnderContext, highContext, highUnderContext;
-    var cursor = { x: '-', y: '-'}, grid = 10, 
+    var scope, fireRef, link, cursor = { x: '-', y: '-'}, grid = 10, 
         nextPiece = Util.randomIntRange(0,pieces.length-1), rotation = Util.randomIntRange(0,3),
-        blockGrid = {}, fireRef;
+        blockGrid = {};
     
     var rotatePiece = function(piece,rot) {
         if(rot == 0) return piece;
@@ -207,7 +92,7 @@ Application.Services.service('Polyominoes', function(Util) {
             if(e.which == 3) { rotation = rotation == 3 ? 0 : rotation + 1; drawHigh(); return; } // Right mouse
             if(e.which == 2) return; // Middle mouse
             if(checkCollision(nextPiece,cursor.x,cursor.y,rotation)) return;
-            fireRef.child('pieces/'+cursor.x+':'+cursor.y).set([nextPiece,rotation,'anon'].join(':'));
+            fireRef.child('pieces/'+cursor.x+':'+cursor.y).set([nextPiece,rotation,link.username].join(':'));
             nextPiece = Util.randomIntRange(0,pieces.length-1);
             rotation = Util.randomIntRange(0,3);
             drawHigh();
@@ -228,10 +113,10 @@ Application.Services.service('Polyominoes', function(Util) {
             mainContext.clearRect(0,0,mainCanvas.width,mainCanvas.height);
             mainUnderContext.clearRect(0,0,mainUnderCanvas.width,mainUnderCanvas.height);
         },
-        attachFire: function(fire) {
-            fireRef = fire;
+        attachVars: function(fire,s,l) {
+            fireRef = fire; scope = s; link = l;
         },
-        init: function(options) {
+        init: function() {
             blockGrid = {};
             mainContext.clearRect(0,0,mainCanvas.width,mainCanvas.height);
             mainUnderContext.clearRect(0,0,mainUnderCanvas.width,mainUnderCanvas.height);

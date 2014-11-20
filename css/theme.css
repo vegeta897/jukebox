@@ -24,6 +24,8 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 
 .now-playing h2 { color: #DEFF7C; }
 
+.isketch h3 strong { color: #DEFF7C; }
+
 .video-selection table tr { border-color: #222; transition: all 0.1s; }
 .video-selection table tr td { transition: all 0.1s; }
 .video-selection table tr.has-1-votes { background: rgba(222, 255, 124, 0.06); }
@@ -45,7 +47,6 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .video-selection table tr td.control:hover a { color: #f2f5eb; }
 .video-selection table tr td.votes { color: #70cb1b; }
 
-.event-log ul li span strong { color: #DEFF7C; }
 .event-log ul li span:first-child { color: #858a71; }
 
 .listeners h2 { color: #DEFF7C; }

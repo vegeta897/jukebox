@@ -91,7 +91,7 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     var init = false, localTimeOffset;
     var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
 
-    $scope.version = 0.341; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.342; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
@@ -102,9 +102,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     $scope.bountyIndex = 0; $scope.titleGambleAmount = 1; $scope.bountyAmount = 1; 
     $scope.avatars = avatars; $scope.avatarColors = avatarColors;
     $scope.countProperties = Util.countProperties;
-    $scope.canvasModes = Canvas.getModes();
-    $scope.canvasMode = 'polyominoes';
-    Canvas.attachFire(fireRef.child('canvas')); Canvas.changeMode($scope.canvasMode,{});
 
     function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
@@ -240,7 +237,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             localStorageService.set('passcode',passcode);
             fireUser = fireRef.child('users/'+username);
             fireUser.child('version').set($scope.version);
-            fireUser.once('value',function(snap){ $scope.user = snap.val(); });
             var lastOnlineRef = fireUser.child('lastOnline');
             var fireAuths = fireRef.child('auths');
             fireAuths.child(auth.uid).set({username:username,passcode:passcode});
@@ -253,6 +249,15 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
                     lastOnlineRef.onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
                 }
             });
+            $scope.canvasModes = Canvas.getModes();
+            $scope.canvasData = {};
+            $scope.canvasMode = 'polyominoes';
+            Canvas.attachVars(fireRef.child('canvas'),$scope.canvasData,{
+                myColor: $scope.avatarColors[$scope.user.avatarColor ? $scope.user.avatarColor : 'normal'][1],
+                fireUser: fireUser, api: services, playing: $scope.playing, users: $scope.users, username: username
+            }); 
+            Canvas.changeMode($scope.canvasMode);
+            $scope.changeCanvasMode = Canvas.changeMode;
         };
         username = $scope.username; passcode = $scope.passcode;
         console.log('Logging in',username);
@@ -269,11 +274,6 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         }
     };
 
-    $scope.changeCanvasMode = function(mode) {
-        var color = $scope.user ? $scope.user.avatarColor ? $scope.user.avatarColor : 'normal' : 'normal';
-        Canvas.changeMode(mode,{myColor: $scope.avatarColors[color][1]}); 
-        $scope.canvasMode = mode; $timeout(function(){}); 
-    };
 
     $scope.vote = function(index) {
         if(!$scope.auth || !$scope.videoSelection) return;
@@ -305,11 +305,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
     $scope.listenerClasses = function(listener) { 
         if(!listener) return; return 'fa-' + (listener.avatar ? listener.avatar : 'headphones'); 
     };
-    $scope.getUserColor = function(username) { 
-        var user = $scope.users[username]; return user.avatarColor ? $scope.avatarColors[user.avatarColor][1] : $scope.avatarColors.normal[1]; 
+    $scope.getUserColor = function(username) {
+        if(!$scope.users || !$scope.users[username]) return;
+        var user = $scope.users[username]; 
+        return user.avatarColor ? $scope.avatarColors[user.avatarColor][1] : $scope.avatarColors.normal[1]; 
     };
-    
-    $scope.closeMessage = function() { delete $scope.message; };
     
     $scope.showControl = function(control) {
         if($scope[control]) { $scope[control] = false; return; }
@@ -559,9 +559,11 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
             var words = title.split(' '); // Break title into array of words
             var challengeWordIndex;
             var challengeWord = '';
-            while(challengeWord.length < 2) { // Minimum 2 characters long
+            var safety = 0;
+            while(challengeWord.length < 2 && safety < 200) { // Minimum 2 characters long
                 challengeWordIndex = Util.randomIntRange(0,words.length-1); // Choose a word
                 challengeWord = words[challengeWordIndex]; // Get word from chosen index
+                safety++;
             }
             var blankedWord = '<span>';
             $scope.fillBlankInputLetters = [];
@@ -792,7 +794,8 @@ Application.Controllers.controller('Main', function($scope, $timeout, services, 
         everyThirtySeconds += 0.5;
         if(everyThirtySeconds >= 30) {
             everyThirtySeconds = 0;
-            // do stuff
+            /* TODO: Chance for bird to fly in for everyone
+            Not just DJ, so that the more people around, the higher the chance */
         }
         $timeout(function(){});
     };
@@ -832,7 +835,13 @@ Application.Filters.filter('capitalize', function() {
         if(seconds < 86400) { return seconds > 7199 ? 'hours' : 'hour'; } // hours
         else { return seconds > 172799 ? 'days' : 'day'; } // days
     }
+}).filter('reverse', function() {
+    return function(items) {
+        if(!items) return items;
+        return items.slice().reverse();
+    }
 });
+
 
 Application.Directives.directive('letterInput', function() {
     return {

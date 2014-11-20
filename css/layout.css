@@ -29,6 +29,14 @@ header form button { float: left; width: 66px; height: 24px; }
 #mainUnderCanvas { opacity: 0.8; }
 #highCanvas { cursor: url(../img/cursor.png), auto; }
 #highUnderCanvas { opacity: 0.6; }
+
+.isketch { margin: 12px 8px; }
+.isketch h3 { font-size: 1.5em; }
+.isketch .guesses { height: 172px; float: left; width: 240px; }
+.isketch .guesses li { line-height: 17px; }
+.isketch form { height: 40px; float: left; width: 240px; }
+.isketch form input { margin-right: 8px; }
+
 .now-playing { padding: 8px 0 0; }
 .now-playing h2 { margin-bottom: 6px; }
 .video-selection { margin: 20px 0; overflow: hidden; }
@@ -184,6 +192,11 @@ header form button { float: left; width: 66px; height: 24px; }
 .animate-repeat.ng-leave.ng-leave-active,
 .animate-repeat.ng-enter {
     opacity:0; top: -10px; max-height: 0;
+}
+
+.animate-repeat.ng-leave.ng-leave-active.reverse,
+.animate-repeat.ng-enter.reverse {
+    top: 10px;
 }
 
 .animate-repeat.ng-leave,

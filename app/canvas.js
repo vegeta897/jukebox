@@ -1,6 +1,6 @@
 'use strict';
 
-Application.Services.service('Canvas', function(Polyominoes, Isketch, Util) {
+Application.Services.service('Canvas', function(Polyominoes, Isketch, Util, $timeout) {
     var mainCanvas = document.getElementById('mainCanvas');
     var mainUnderCanvas = document.getElementById('mainUnderCanvas');
     var highCanvas = document.getElementById('highCanvas');
@@ -13,7 +13,7 @@ Application.Services.service('Canvas', function(Polyominoes, Isketch, Util) {
     highCanvas.onselectstart = function() { return false; }; // Disable selecting and right clicking
     jQuery('body').on('contextmenu', '#highCanvas', function(e){ return false; });
     
-    var modes = {polyominoes: Polyominoes, isketch: Isketch}, mode;
+    var modes = {polyominoes: Polyominoes, isketch: Isketch}, mode = Polyominoes, scope;
     
     for(var m in modes) { if(!modes.hasOwnProperty(m)) continue;
         modes[m].attachCanvases(mainCanvas,mainUnderCanvas,highCanvas,highUnderCanvas,mainContext,mainUnderContext,highContext,highUnderContext);
@@ -36,17 +36,19 @@ Application.Services.service('Canvas', function(Polyominoes, Isketch, Util) {
             }
             return modeList;
         },
-        changeMode: function(m,options) {
+        changeMode: function(m) {
             if(mode) mode.disable();
             mode = modes[m];
-            mode.init(options);
+            mode.init();
+            scope.canvasMode = m; $timeout(function(){});
         },
         clear: function() {
             mode.clear();
         },
-        attachFire: function(fire) {
+        attachVars: function(fire,s,l) {
+            scope = s;
             for(var m in modes) { if(!modes.hasOwnProperty(m)) continue;
-                modes[m].attachFire(fire.child(m));
+                s[m] = {}; modes[m].attachVars(fire.child(m), s[m], l);
             }
         }
     };

@@ -24,15 +24,33 @@
     <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="initializing || needUpdate">
         <div class="canvas-header">
-            <span ng-repeat="mode in canvasModes" ng-click="changeCanvasMode(mode)" ng-class="{selected: canvasMode == mode}">{{ mode }}</span>
+            <span ng-repeat="mode in canvasModes" ng-click="changeCanvasMode(mode)" ng-class="{selected: canvasData.canvasMode == mode}" ng-show="auth">{{ mode }}</span>
         </div>
         <div id="player"></div>
-        <div class="canvases"><div>
+        <div class="canvases" ng-show="auth"><div>
             <canvas id="mainUnderCanvas" width="640" height="370"></canvas>
             <canvas id="mainCanvas" width="640" height="370"></canvas>
             <canvas id="highUnderCanvas" width="640" height="370"></canvas>
             <canvas id="highCanvas" width="640" height="370"></canvas>
         </div></div>
+        <div class="isketch clearfix" ng-show="canvasData.canvasMode == 'isketch'">
+            <h3 ng-show="canvasData.isketch.challenge && !canvasData.isketch.winner">Your word is: <strong>{{ canvasData.isketch.challenge.word }}</strong></h3>
+            <h3 ng-show="canvasData.isketch.winner"><strong><span ng-style="{color: '#'+getUserColor(canvasData.isketch.winner.user)}">{{canvasData.isketch.winner.user}}</span> won! </strong>The answer was: <strong>{{ canvasData.isketch.winner.word }}</strong></h3>
+            <button ng-click="canvasData.isketch.startGame()" ng-disabled="canvasData.isketch.startingGame" ng-hide="canvasData.isketch.host && canvasData.isketch.status != 'loading'">Play iSketch!</button>
+            <div class="message" ng-show="canvasData.isketch.message" ng-click="canvasData.isketch.message = null">
+                <p ng-class="canvasData.isketch.message.type" ng-bind-html="canvasData.isketch.message.text"></p>
+                <p ng-show="canvasData.isketch.message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
+            </div>
+            <div class="guesses" ng-show="canvasData.isketch.status == 'playing'">
+                <ul><li ng-repeat="guess in canvasData.isketch.guesses | reverse" class="animate-repeat reverse">
+                    <strong ng-style="{color: '#'+getUserColor(guess.user)}">{{ guess.user }}</strong><span>:  {{guess.text}}</span>
+                </li></ul>
+            </div>
+            <form ng-submit="canvasData.isketch.submitGuess()" ng-show="canvasData.isketch.status == 'playing' && !canvasData.isketch.challenge">
+                <input ng-model="canvasData.isketch.myGuess" type="text" id="isketchGuess" name="isketchGuess" size="15" maxlength="16" />
+                <button type="submit">Guess</button>
+            </form>
+        </div>
         <div class="now-playing" ng-show="playing">
             <h3 class="muted">NOW PLAYING</h3>
             <h2 ng-bind="playing.title"></h2>
@@ -79,7 +97,7 @@
                 <div class="volume" ng-class="{muted:listener.muted}"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
-        <div class="message" ng-show="message" ng-click="closeMessage()">
+        <div class="message" ng-show="message" ng-click="message = null">
             <p ng-class="message.type" ng-bind-html="message.text"></p>
             <p ng-show="message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
         </div>
