@@ -84,6 +84,19 @@ Application.Services.service('Isketch', function($timeout, Util) {
                     challengeWord = words[challengeWordIndex]; // Get word from chosen index
                     safety++;
                 }
+                var startIndex = 0;
+                for(var f = 0, fl = challengeWord.length; f < fl; f++) {
+                    if(/^[a-z0-9]+$/i.test(challengeWord[f])) break;
+                    console.log('moving start index forward');
+                    startIndex++;
+                }
+                var endIndex = challengeWord.length;
+                for(var l = challengeWord.length-1; l >= 0; l--) {
+                    if(/^[a-z0-9]+$/i.test(challengeWord[l])) break;
+                    console.log('moving end index back');
+                    endIndex--;
+                }
+                challengeWord = challengeWord.substring(startIndex,endIndex);
                 var blankedWord = '';
                 for(var i = 0, il = challengeWord.length; i < il; i++) { // Build blanked word ('_ _ _ _')
                     var alphaNum = /^[a-z0-9]+$/i.test(challengeWord[i]);
@@ -130,9 +143,11 @@ Application.Services.service('Isketch', function($timeout, Util) {
         scope.guesses.push(snap.val());
         scope.guesses = scope.guesses.slice(Math.max(scope.guesses.length - 10, 0));
         $timeout(function(){});
-        if(!scope.challenge) return; // If host
+        if(!scope.challenge) return; // Only the host evaluates correct guess
         var guess = snap.val().text.trim();
-        if(guess.toUpperCase() != scope.challenge.word.trim().toUpperCase()) return; // If guess correct
+        if(guess.toUpperCase() != scope.challenge.word.trim().toUpperCase() && 
+            guess.toUpperCase().indexOf(scope.challenge.word.trim().toUpperCase()) < 0) return;
+        // If guess correct
         fireRef.child('status').set('winner');
         fireRef.child('winner').set({word:scope.challenge.word,user:snap.val().user});
         setTimeout(function(){

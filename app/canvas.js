@@ -23,10 +23,6 @@ Application.Services.service('Canvas', function(Polyominoes, Isketch, Util, $tim
     var onMouseDown = function(e) { mode.onMouseDown(e); };
     var onMouseUp = function(e) { mode.onMouseUp(e); };
     var onMouseOut = function() { mode.onMouseOut(); };
-    highCanvas.addEventListener('mousemove',onMouseMove,false);
-    highCanvas.addEventListener('mouseleave',onMouseOut,false);
-    highCanvas.addEventListener('mousedown',onMouseDown,false);
-    highCanvas.addEventListener('mouseup',onMouseUp,false);
 
     return {
         getModes: function() {
@@ -50,6 +46,10 @@ Application.Services.service('Canvas', function(Polyominoes, Isketch, Util, $tim
             for(var m in modes) { if(!modes.hasOwnProperty(m)) continue;
                 s[m] = {}; modes[m].attachVars(fire.child(m), s[m], l);
             }
+            highCanvas.addEventListener('mousemove',onMouseMove,false);
+            highCanvas.addEventListener('mouseleave',onMouseOut,false);
+            highCanvas.addEventListener('mousedown',onMouseDown,false);
+            highCanvas.addEventListener('mouseup',onMouseUp,false);
         }
     };
 });
