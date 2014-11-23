@@ -118,12 +118,11 @@ Application.Services.service('Isketch', function($timeout, Util) {
         scope.status = snap.val();
 
         if(toPlaying) {
-            clear();
-            scope.guesses = [];
+            clear(); scope.guesses = [];
             fireRef.child('guesses').endAt().limit(10).on('child_added',onGuess);
         }
         if(toWinner) {
-            fireRef.child('guesses').endAt().limit(10).off('child_added',onGuess);
+            fireRef.child('guesses').off();
             fireRef.child('winner').on('value',onWinner);
         }
         if(!scope.status) {
@@ -135,7 +134,7 @@ Application.Services.service('Isketch', function($timeout, Util) {
     
     var onWinner = function(snap) {
         scope.winner = snap.val();
-        if(scope.winner) fireRef.child('winner').off('value',onWinner);
+        if(scope.winner) fireRef.child('winner').off();
         $timeout(function(){});
     };
 
@@ -230,9 +229,9 @@ Application.Services.service('Isketch', function($timeout, Util) {
             fireRef.child('status').on('value',statusChange);
         },
         disable: function() {
-            fireRef.child('segments').off('child_added',segmentAdded);
-            fireRef.child('host').off('value',onHost);
-            fireRef.child('status').off('value',segmentAdded);
+            fireRef.child('segments').off();
+            fireRef.child('host').off();
+            fireRef.child('status').off();
         }
     };
 });

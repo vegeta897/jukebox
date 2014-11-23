@@ -123,7 +123,7 @@ Application.Services.service('Polyominoes', function(Util) {
             fireRef.child('pieces').on('child_added',pieceAdded);
         },
         disable: function() {
-            fireRef.child('pieces').off('child_added',pieceAdded);
+            fireRef.child('pieces').off();
         }
     };
 });
