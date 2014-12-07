@@ -49,3 +49,7 @@ org.eclipse.*
 CFDump.php
 db.class.php
 db-live.class.php
+
+# Visual Studio
+*.sln
+*.suo
