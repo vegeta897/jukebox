@@ -1,6 +1,6 @@
 'use strict';
 
-Application.Services.service('Isketch', function($timeout, Util) {
+Application.Services.factory('Isketch', function($timeout, Util) {
 
     var mainCanvas, mainUnderCanvas, highCanvas, highUnderCanvas,
         mainContext, mainUnderContext, highContext, highUnderContext;
