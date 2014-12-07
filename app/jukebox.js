@@ -51,34 +51,33 @@ var avatarColors = {
 };
 
 
-Application.Services.factory("services", ['$http', function($http) {
-    var serviceBase = 'php/', obj = {};
-    obj.getVideos = function(count,currentID){
+Application.Services.service("services", ['$http', function($http) {
+    var serviceBase = 'php/';
+    this.getVideos = function(count,currentID){
         return $http.get(serviceBase + 'videos?count=' + count + '&current_id=' + currentID);
     };
-    obj.updateVideo = function(videoID,votes){
+    this.updateVideo = function(videoID,votes){
         return $http.post(serviceBase + 'updateVideo', {video_id:videoID,votes:votes});
     };
-    obj.addVideo = function (videoIds, artist, track, addedBy) {
+    this.addVideo = function (videoIds, artist, track, addedBy) {
         return $http.post(serviceBase + 'addVideo', {video_ids:videoIds,artist:artist,track:track,added_by:addedBy}).then(function (results) {
             return results;
         });
     };
-    obj.deleteVideo = function (id) {
+    this.deleteVideo = function (id) {
         return $http.delete(serviceBase + 'deleteVideo?id=' + id).then(function (status) {
             return status.data;
         });
     };
-    obj.pullUncurated = function(locked){
+    this.pullUncurated = function(locked){
         return $http.get(serviceBase + 'pullUncurated?locked=' + locked);
     };
-    obj.saveCurated = function(videos,curator){
+    this.saveCurated = function(videos,curator){
         return $http.post(serviceBase + 'saveCurated', {videos:videos,curator:curator});
     };
-    obj.getVideoCount = function() {
+    this.getVideoCount = function() {
         return $http.get(serviceBase + 'getVideoCount');
     };
-    return obj;
 }]);
 
 Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Canvas, Util) {

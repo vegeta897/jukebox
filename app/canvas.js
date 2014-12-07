@@ -1,6 +1,6 @@
 'use strict';
 
-Application.Services.service('Canvas', function(Polyominoes, Isketch, Util, $timeout) {
+Application.Services.factory('Canvas', function(Polyominoes, Isketch, Util, $timeout) {
     var mainCanvas = document.getElementById('mainCanvas');
     var mainUnderCanvas = document.getElementById('mainUnderCanvas');
     var highCanvas = document.getElementById('highCanvas');
