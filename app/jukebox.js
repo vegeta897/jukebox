@@ -81,7 +81,7 @@ Application.Services.service("services", ['$http', function($http) {
 }]);
 
 Application.Controllers.controller('Main', function($scope, $timeout, services, localStorageService, Canvas, Util) {
-    
+    // We gonna refactor this shit
     var username = localStorageService.get('username');
     var passcode = localStorageService.get('passcode');
     var volume = localStorageService.get('volume');
