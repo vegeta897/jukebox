@@ -9,7 +9,7 @@ h1 { color: #d3d9b9; -webkit-text-fill-color: transparent;
 input[type="text"], select { background: #ddd; }
 button { background: #549816; color: white; border: none; transition: all 0.3s; padding: 3px 10px; }
 button:hover { background: #397114; }
-button[disabled] { background: #444; color: #777; cursor: default; }
+button[disabled] { background: #444 !important; color: #777 !important; cursor: default; }
 
 header p:last-child { color: #858a71; }
 header p:last-child span { color: #5ea25a; }
@@ -29,13 +29,13 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .video-selection table tr { border-color: #222; transition: all 0.1s; }
 .video-selection table tr td { transition: all 0.1s; }
 .video-selection table tr.has-1-votes { background: rgba(222, 255, 124, 0.06); }
-.video-selection table tr.has-2-votes { background: rgba(222, 255, 124, 0.1); }
-.video-selection table tr.has-3-votes { background: rgba(222, 255, 124, 0.15); }
-.video-selection table tr.has-4-votes { background: rgba(222, 255, 124, 0.2); }
-.video-selection table tr.has-5-votes { background: rgba(222, 255, 124, 0.25); }
-.video-selection table tr.has-6-votes { background: rgba(222, 255, 124, 0.3); }
-.video-selection table tr.has-7-votes { background: rgba(222, 255, 124, 0.35); }
-.video-selection table tr.has-8-votes { background: rgba(222, 255, 124, 0.4); }
+.video-selection table tr.has-2-votes { background: rgba(222, 255, 124, 0.12); }
+.video-selection table tr.has-3-votes { background: rgba(222, 255, 124, 0.18); }
+.video-selection table tr.has-4-votes { background: rgba(222, 255, 124, 0.24); }
+.video-selection table tr.has-5-votes { background: rgba(222, 255, 124, 0.30); }
+.video-selection table tr.has-6-votes { background: rgba(222, 255, 124, 0.36); }
+.video-selection table tr.has-7-votes { background: rgba(222, 255, 124, 0.42); }
+.video-selection table tr.has-8-votes { background: rgba(222, 255, 124, 0.48); }
 .video-selection table tr:hover { background: #4e5150; color: white; }
 .video-selection table tr td .bounty { color: #DEFF7C; }
 .video-selection table tr td:first-child + td + td { color: #D7EDA9; }

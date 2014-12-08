@@ -1,0 +1,28 @@
+<div>
+    <div class="now-playing" ng-show="playing">
+        <h3 class="muted">NOW PLAYING</h3>
+        <h2 ng-bind="playing.title"></h2>
+        <h3 class="muted">added by {{ playing.added_by }}</h3>
+    </div>
+    <div class="video-selection animate-selection" ng-show="videoSelection">
+        <h2 ng-show="getUsername()">Pick a video</h2>
+        <div class="vote-timer"><span class="muted">Time Left:</span> {{ voteTimeLeft }}</div>
+        <table>
+            <tr ng-repeat="video in videoSelection" ng-class="'has-'+countProperties(video.votes,false)+'-votes'">
+                <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>
+                <td ng-click="vote($index)">{{ video.duration.stamp }}</td>
+                <td class="title" ng-click="vote($index)">
+                    <span ng-bind-html="video.title"></span>
+                    <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
+                    <div>
+                        <span class="bounty">{{ video.bounty }}</span>
+                        <i class="fa fa-heart" ng-repeat="(voter, value) in video.votes" ng-class="{mine: voter == getUsername()}"></i>
+                    </div>
+                </td>
+                <td class="control">
+                    <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

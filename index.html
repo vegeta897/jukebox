@@ -51,32 +51,7 @@
                 <button type="submit">Guess</button>
             </form>
         </div>
-        <div class="now-playing" ng-show="playing">
-            <h3 class="muted">NOW PLAYING</h3>
-            <h2 ng-bind="playing.title"></h2>
-            <h3 class="muted">added by {{ playing.added_by }}</h3>
-        </div>
-        <div class="video-selection animate-selection" ng-show="videoSelection">
-            <h2 ng-show="auth">Pick a video</h2>
-            <div class="vote-timer"><span class="muted">Time Left:</span> {{ voteTimeLeft }}</div>
-            <table>
-                <tr ng-repeat="video in videoSelection" ng-class="'has-'+countProperties(video.votes,false)+'-votes'">
-                    <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>
-                    <td ng-click="vote($index)">{{ video.duration.stamp }}</td>
-                    <td class="title" ng-click="vote($index)">
-                        <span ng-bind-html="video.title"></span>
-                        <i ng-show="!video.title && !video.artist && !video.track">unnamed video</i>
-                        <div>
-                            <span class="bounty">{{ video.bounty }}</span>
-                            <i class="fa fa-heart" ng-repeat="(voter, value) in video.votes" ng-class="{mine: voter == username}"></i>
-                        </div>
-                    </td>
-                    <td class="control">
-                        <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <videos></videos>
         <div class="dj">
             <p ng-show="dj"><span class="muted">Current DJ: </span>{{ dj }}</p>
             <button ng-hide="dj || !auth" ng-click="becomeDJ()">Become DJ</button>
@@ -105,7 +80,7 @@
             <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(jackpot/10000))+'px'}">{{ jackpot | number }}</strong>
         </p>
         <div class="control-buttons" ng-show="auth">
-            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && !(username == 'vegeta897' || username == 'tester')"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
+            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && !(username == 'vegeta897' || username == 'tester')" ng-disabled="control.disabled"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
         </div>
         <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
             <p ng-hide="dj">You can't place any bets without a DJ.</p>
@@ -145,29 +120,7 @@
                 <button ng-disabled="fillBlankIncomplete">Submit Guess</button>
             </form>
         </div>
-        <div class="add-bounty control-panel" ng-show="auth && controlAddBounty">
-            <p ng-hide="dj">You can't place a bounty without a DJ.</p>
-            <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
-            <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
-            <p ng-show="bountySet">You can't place more than one bounty per round.</p>
-            <form ng-submit="addBounty()" ng-show="videoSelection && user.kudos && !bountySet && dj">
-                <fieldset>
-                    <legend>Add a bounty</legend>
-                    <div class="field">
-                        <label for="bountyAmount">Amount</label>
-                        <input type="text" id="bountyAmount" name="bountyAmount" ng-change="bountyAmount = restrictNumber(bountyAmount,1,user.kudos)" ng-model="bountyAmount" size="3"><span class="muted hint">kudos</span>
-                        <slider floor="1" ceiling="{{user.kudos}}" step="1" precision="0" ng-model="bountyAmount"></slider>
-                    </div>
-                    <div class="field">
-                        <label for="bountySelect">Video</label>
-                        <select ng-model="bountyIndex" id="bountySelect" name="bountySelect" size="6" >
-                            <option ng-repeat="option in videoSelection" value="{{ $index }}">{{ $index + 1 }}. {{ option.title }}</option>
-                        </select>
-                    </div>
-                </fieldset>
-                <button type="submit" ng-disabled="bountyAmount < 1" >Add it!</button>
-            </form>
-        </div>
+        <bounty></bounty>
         <div class="add-video control-panel" ng-show="auth && controlAddVideo">
             <form ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">
@@ -286,13 +239,19 @@
     <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script>
     <script src="app/app.js"></script> <!-- My Stuff -->
     <script src="app/jukebox.js"></script>
+    <script src="app/bounty/bounty.js"></script>
+    <script src="app/videos/videos.js"></script>
+    <script src="app/fireservice.js"></script>
+    <script src="app/user.js"></script>
+    <script src="app/dj.js"></script>
+    <script src="app/player/player.js"></script>
     <script src="app/canvas.js"></script>
     <script src="app/polyominoes.js"></script>
     <script src="app/isketch.js"></script>
     <script src="app/utility.js"></script>
     <script src="js/vendor/seedrandom.js"></script>
     <!-- Error Reporting -->
-    <script src="//cdn.ravenjs.com/1.1.15/jquery,native/raven.min.js"></script>
-    <script>Raven.config('https://8d6f75cd5f26489bac4330469e1789e6@app.getsentry.com/25099', {}).install();</script>
+    <!--<script src="//cdn.ravenjs.com/1.1.15/jquery,native/raven.min.js"></script>-->
+    <!--<script>Raven.config('https://8d6f75cd5f26489bac4330469e1789e6@app.getsentry.com/25099', {}).install();</script>-->
 </body>
 </html>
