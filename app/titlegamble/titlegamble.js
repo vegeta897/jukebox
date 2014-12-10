@@ -5,7 +5,7 @@ Application.Directives.directive('titleGamble',function() {
         templateUrl: 'app/titlegamble/titlegamble.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,Global,TitleGamble,ControlButtons,Videos) {
+        controller: function($rootScope,$scope,Global,TitleGamble,ControlButtons,Videos,Util) {
             $scope.control = ControlButtons.addControl('titleGamble','Title Gamble',false,false);
             $scope.titleGamble = TitleGamble.init();
             $rootScope.$on('newSelection',function() { TitleGamble.awardGamble(); });
@@ -20,6 +20,7 @@ Application.Directives.directive('titleGamble',function() {
             $scope.getKudos = Global.getKudos;
             $scope.getDJ = Global.getDJ;
             $scope.getVideoSelection = Videos.getSelection;
+            $scope.restrictNumber = Util.restrictNumber;
         },
         link: function(scope,element,attrs) {
             

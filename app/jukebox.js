@@ -1,36 +1,5 @@
 'use strict';
 
-var avatars = {
-    headphones: ['Headphones',0], wheelchair: ['Wheelchair',6000], 'plus-square': ['Medkit',5000], ambulance: ['Ambulance',8000], 
-    windows: ['Windows',3000], twitter: ['Twitter',6000], twitch: ['Twitch',6000], 'steam-square': ['Steam',10000], 
-    soundcloud: ['SoundCloud',8000], reddit: ['Reddit',8000], linux: ['Linux',10000], 'github-alt': ['GitHub Cat',15000], 
-    'facebook-square': ['Facebook', 3000], apple: ['Apple',5000], android: ['Android',8000], backward: ['Rewind',8000], 
-    eject: ['Eject',12000], forward: ['Forward',8000], pause: ['Pause',15000], play: ['Play',20000], 
-    'play-circle': ['Play Circle',20000], 'youtube-play': ['YouTube',10000], 'hand-o-right': ['Pointer',15000], 
-    'chevron-right': ['Chevron',10000], 'chevron-circle-right': ['Chevron Circle',10000], arrows: ['Arrows',8000], 
-    'arrow-right': ['Arrow',15000], undo: ['Undo',10000], repeat: ['Repeat',10000], th: ['Grid',8000],
-    scissors: ['Scissors',8000], save: ['Floppy',15000], font: ['A',8000], jpy: ['Yen',15000], usd: ['Dollar',15000],
-    gbp: ['Pounds',15000], 'circle-o': ['Circle',8000], 'dot-circle-o': ['Dot Circle',9000], cog: ['Gear',15000], 
-    refresh: ['Refresh',15000], 'volume-up': ['Speaker',20000], wrench: ['Wrench',4000], warning: ['Warning',10000],
-    'unlock-alt': ['Lock',5000], umbrella: ['Umbrella',6000], truck: ['Truck',10000], trophy: ['Trophy',8000], 
-    'thumbs-o-up': ['Thumbs Up',10000], star: ['Star',18000], 'soccer-ball-o': ['Soccer Ball',8000], 'smile-o': ['Smile',18000],
-    sliders: ['Sliders',18000], signal: ['Signal',12000], shield: ['Shield',8000], search: ['Magnifying',5000], 
-    rss: ['RSS',3000], rocket: ['Rocket',4000], 'power-off': ['Power',15000], paw: ['Paw',15000], music: ['Music',20000],
-    'moon-o': ['Moon',5000], 'meh-o': ['Meh',8000], heart: ['Heart',12000], 'frown-o': ['Frown',8000], flask: ['Flask',6000],
-    bolt: ['Lightning',8000], eye: ['Eye',15000], cube: ['Cube',8000], child: ['Child',18000], check: ['Check',5000],
-    camera: ['Camera',10000], bug: ['Bug',15000]
-};
-
-var avatarColors = {
-    normal: ['Normal','D8DBCD',0], jukeGreen: ['Juke Green','B5D053',7000], red: ['Red','D05353',5000], 
-    orange: ['Orange','D09553',6000], kudoGreen: ['Kudo Green','53D055',5000], teal: ['Teal','53D097',6000],
-    babyBlue: ['Baby Blue','53D0D0',6000], justBlue: ['Just Blue','5389D0',5000], purple: ['Purple','7C53D0',5000],
-    hotPink: ['Hot Pink','D053B7',6000], yellow: ['Yellow','E4E253',7000], cherryRed: ['Cherry Red','F23D3D',8000],
-    limeGreen: ['Lime Green','86F23D',8000], icyBlue: ['Icy Blue','83F7F3',8000], babyPink: ['Baby Pink','FC9EEC',8000],
-    shadyGray: ['Shady Gray','A5A5A5',9000], pureWhite: ['Pure White','FFFFFF',250000], zero: ['Zero Black','000000',500000]
-};
-
-
 Application.Services.service("API", function($http) {
     var serviceBase = 'php/';
     this.getVideos = function(count,currentID){
@@ -60,7 +29,7 @@ Application.Services.service("API", function($http) {
     };
 });
 
-Application.Controllers.controller('Main', function($rootScope, $scope, $timeout, localStorageService, API, Canvas, Util, Player, Videos, FireService, DJ, Global) {
+Application.Controllers.controller('Main', function($rootScope,$scope,$timeout,localStorageService,API,Canvas,Util,Player,Videos,FireService,DJ,Global,AvatarShop) {
     
     // We gonna refactor this shit
     // TODO: Add "meta" service to track things like current DJ
@@ -71,10 +40,9 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
     var init = false, muted;
 
-    $scope.version = 0.352; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.353; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
-    $scope.avatars = avatars; $scope.avatarColors = avatarColors;
     $scope.countProperties = Util.countProperties;
     $scope.getKudos = Global.getKudos;
     $scope.getJackpot = Global.getJackpot;
@@ -131,7 +99,7 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
             //$scope.canvasData = {};
             //$scope.canvasMode = 'polyominoes';
             //Canvas.attachVars(fireRef.child('canvas'),$scope.canvasData,{
-            //    myColor: $scope.avatarColors[$scope.user.avatarColor ? $scope.user.avatarColor : 'normal'][1],
+            //    myColor: AvatarShop.avatarColors[$scope.user.avatarColor ? $scope.user.avatarColor : 'normal'][1],
             //    fireUser: fireUser, api: services, playing: $scope.playing, users: $scope.users, username: username
             //}); 
             //Canvas.changeMode($scope.canvasMode);
@@ -160,51 +128,8 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
     $scope.getUserColor = function(username) {
         if(!$scope.users || !$scope.users[username]) return;
         var user = $scope.users[username]; 
-        return user.avatarColor ? $scope.avatarColors[user.avatarColor][1] : $scope.avatarColors.normal[1]; 
-    };
-
-    $scope.restrictNumber = function(input,min,max) { 
-        input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-',''); 
-        return input > max ? max : input < min ? min : input; 
-    };
-    
-    $scope.hasAvatar = function(avatar) { 
-        return avatar == 'headphones' ? true : $scope.user && $scope.user.avatars ? $scope.user.avatars.hasOwnProperty(avatar) : false; 
-    };
-    $scope.hasAvatarColor = function(color) {
-        return color == 'normal' ? true : $scope.user && $scope.user.avatarColors ? $scope.user.avatarColors.hasOwnProperty(color) : false;
-    };
-    
-    $scope.buyEquipAvatar = function(avatar) {
-        if(avatar == 'headphones' && !$scope.user.avatar) { return; }
-        if(avatar == 'headphones' && $scope.user.avatar) { fireUser.child('avatar').remove(); return; }
-        if((avatar == 'headphones' && $scope.user.avatar) || ($scope.user.avatars && $scope.user.avatars[avatar] && avatar != $scope.user.avatar)) {
-            fireUser.child('avatar').set(avatar); return;
-        }
-        var cost = $scope.avatars[avatar][1];
-        if(!$scope.user.kudos || $scope.user.kudos < cost) { return; }
-        fireUser.child('kudos').transaction(function(userKudos) {
-            return userKudos ? parseInt(userKudos) - cost : -cost;
-        });
-        fireUser.child('avatars/'+avatar).set(true);
-        fireUser.child('avatar').set(avatar);
-        sendEvent(username,'just bought the <strong>'+$scope.avatars[avatar][0]+'</strong> avatar!');
-    };
-
-    $scope.buyEquipAvatarColor = function(color) {
-        if(color == 'normal' && !$scope.user.avatarColor) { return; }
-        if(color == 'normal' && $scope.user.avatarColor) { fireUser.child('avatar').remove(); return; }
-        if((color == 'normal' && $scope.user.avatarColor) || ($scope.user.avatarColors && $scope.user.avatarColors[color] && color != $scope.user.avatarColor)) {
-            fireUser.child('avatarColor').set(color); return;
-        }
-        var cost = $scope.avatarColors[color][2];
-        if(!$scope.user.kudos || $scope.user.kudos < cost) { return; }
-        fireUser.child('kudos').transaction(function(userKudos) {
-            return userKudos ? parseInt(userKudos) - cost : -cost;
-        });
-        fireUser.child('avatarColors/'+color).set(true);
-        fireUser.child('avatarColor').set(color);
-        sendEvent(username,'just bought the <strong>'+$scope.avatarColors[color][0]+'</strong> avatar color!');
+        return user.avatarColor ? 
+            AvatarShop.avatarColors[user.avatarColor][1] : AvatarShop.avatarColors.normal[1]; 
     };
     
     $scope.fillBlankGetTitle = function() {
@@ -373,47 +298,6 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
         }
         $timeout(function(){});
     };
-});
-
-Application.Filters.filter('capitalize', function() {
-    return function(input) {
-        if(!input) { return ''; }
-        var words = input.split(' '), result = '';
-        for(var i = 0; i < words.length; i++) {
-            result += words[i].substring(0,1).toUpperCase()+words[i].substring(1);
-            result += i == words.length - 1 ? '' : ' ';
-        }
-        return result;
-    }
-})
-    .filter('timeUnits', function() {
-    return function(input,exact) {
-        if(!input) { return 0; }
-        var now = new Date().getTime();
-        var seconds = Math.floor((now-input)/1000);
-        if(seconds < 60 && exact) { return seconds; } // seconds
-        if(seconds < 60) { return 0; } // less than a min
-        if(seconds < 3600) { return Math.floor(seconds/60); } // minutes
-        if(seconds < 86400) { return Math.floor(seconds/3600); } // hours
-        else { return Math.floor(seconds/86400); } // days
-    }
-})
-    .filter('timeUnitsLabel', function() {
-    return function(input,exact) {
-        if(!input) { return ''; }
-        var now = new Date().getTime();
-        var seconds = Math.floor((now-input)/1000);
-        if(seconds < 60 && exact) { return seconds > 1 ? 'seconds' : 'second'; } // seconds
-        if(seconds < 60) { return 'minutes'; } // less than a min
-        if(seconds < 3600) { return seconds > 119 ? 'minutes' : 'minute'; } // minutes
-        if(seconds < 86400) { return seconds > 7199 ? 'hours' : 'hour'; } // hours
-        else { return seconds > 172799 ? 'days' : 'day'; } // days
-    }
-}).filter('reverse', function() {
-    return function(items) {
-        if(!items) return items;
-        return items.slice().reverse();
-    }
 });
 
 Application.Directives.directive('letterInput', function() {

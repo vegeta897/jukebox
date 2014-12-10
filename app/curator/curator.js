@@ -75,8 +75,6 @@ Application.Services.factory('Curator',function(Global,FireService,Util,API) {
                 delete curator.curateList;
             });
         },
-        init: function() {
-            curator = { }; return curator; 
-        }
+        init: function() { curator = { }; return curator; }
     };
 });

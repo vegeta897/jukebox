@@ -5,7 +5,7 @@ Application.Directives.directive('bounty',function() {
         templateUrl: 'app/bounty/bounty.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,Bounty,Global,ControlButtons) {
+        controller: function($rootScope,$scope,Bounty,Global,ControlButtons,Util) {
             $scope.control = ControlButtons.addControl('addBounty','Add Bounty',false,false);
             $scope.bounty = Bounty.init();
             $rootScope.$on('newSelection',function() {
@@ -22,6 +22,7 @@ Application.Directives.directive('bounty',function() {
             };
             $scope.getKudos = Global.getKudos;
             $scope.getDJ = Global.getDJ;
+            $scope.restrictNumber = Util.restrictNumber;
         },
         link: function(scope,element,attrs) {
             
@@ -52,7 +53,6 @@ Application.Services.factory('Bounty',function(Videos,Global,FireService,Util) {
             }
         },
         init: function() { 
-            console.log('init bounty',Videos.getSelection());
             bounty = { bountyAmount: 1, bountyIndex: 0, bountySet: false, selection: Videos.getSelection() }; 
             return bounty; 
         }

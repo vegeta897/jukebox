@@ -110,13 +110,57 @@ Application.Services.service('Util', function() {
                 var property = object[key]; array.push(property); } }
             return pickInArray(array);
         },
-    
         flip: function() { return Math.random() > 0.5; }, // Flip a coin
         isInt: function(input) { return parseInt(input) === input; },
 
         buildSubject: function() {
             var adj = pickInArray(adjectives);
             return 'a' + (jQuery.inArray(adj[0],['a','e','i','o','u']) >= 0 ? 'n ' : ' ') + adj + ' ' + pickInArray(nouns);
+        },
+        restrictNumber: function(input,min,max) {
+            input = input.replace(/[^\d.-]/g, '').replace('..','.').replace('..','.').replace('-','');
+            return input > max ? max : input < min ? min : input;
         }
     }
 });
+
+Application.Filters.filter('capitalize', function() {
+    return function(input) {
+        if(!input) { return ''; }
+        var words = input.split(' '), result = '';
+        for(var i = 0; i < words.length; i++) {
+            result += words[i].substring(0,1).toUpperCase()+words[i].substring(1);
+            result += i == words.length - 1 ? '' : ' ';
+        }
+        return result;
+    }
+})
+    .filter('timeUnits', function() {
+        return function(input,exact) {
+            if(!input) { return 0; }
+            var now = new Date().getTime();
+            var seconds = Math.floor((now-input)/1000);
+            if(seconds < 60 && exact) { return seconds; } // seconds
+            if(seconds < 60) { return 0; } // less than a min
+            if(seconds < 3600) { return Math.floor(seconds/60); } // minutes
+            if(seconds < 86400) { return Math.floor(seconds/3600); } // hours
+            else { return Math.floor(seconds/86400); } // days
+        }
+    })
+    .filter('timeUnitsLabel', function() {
+        return function(input,exact) {
+            if(!input) { return ''; }
+            var now = new Date().getTime();
+            var seconds = Math.floor((now-input)/1000);
+            if(seconds < 60 && exact) { return seconds > 1 ? 'seconds' : 'second'; } // seconds
+            if(seconds < 60) { return 'minutes'; } // less than a min
+            if(seconds < 3600) { return seconds > 119 ? 'minutes' : 'minute'; } // minutes
+            if(seconds < 86400) { return seconds > 7199 ? 'hours' : 'hour'; } // hours
+            else { return seconds > 172799 ? 'days' : 'day'; } // days
+        }
+    }).filter('reverse', function() {
+        return function(items) {
+            if(!items) return items;
+            return items.slice().reverse();
+        }
+    });
