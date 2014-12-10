@@ -4,17 +4,16 @@ Application.Directives.directive('controlButtons',function() {
         restrict: 'E',
         templateUrl: 'app/controlbuttons/controlbuttons.html',
         replace: true,
-        scope: true,
-        //require: '^Main',
-        controller: function($rootScope,$scope,$timeout,ControlButtons) {
+        scope: {},
+        controller: function($rootScope,$scope,$timeout,ControlButtons,Global) {
             $scope.controlList = ControlButtons.init();
 
             $scope.showControl = function(name) {
                 ControlButtons.showControl(name);
                 $rootScope.$broadcast('open:'+name);
                 $timeout(function(){ window.scrollTo(0,document.body.scrollHeight); }); // Scroll to bottom
-                
             };
+            $scope.getUsername = Global.getName;
         },
         link: function(scope,element,attrs) {
 
@@ -22,17 +21,15 @@ Application.Directives.directive('controlButtons',function() {
     }
 });
 
-Application.Services.factory('ControlButtons',function(User) {
-    var controlList;
+Application.Services.factory('ControlButtons',function() {
+    var controlList = {};
     return {
         init: function() { 
-            controlList = {
-                //addVideo: {title: 'Add Videos'}, curator: {title: 'Curator'},
-                ///*addBounty: {title: 'Add Bounty'}, titleGamble: {title: 'Title Gamble'},*/
+            //controlList = {
                 //fillBlank: {title: 'Fill the B_ank'}, avatarShop: {title: 'Avatar Shop'},
                 //mumble: {title: 'Mumble'}, changelog: {title: 'Changelog'},
                 //meta: {title: 'Meta'}, admin: {title: 'Admin', admin: true}
-            }; 
+            //}; 
             return controlList;
         },
         addControl: function(name,title,admin,isNew) {
@@ -45,7 +42,6 @@ Application.Services.factory('ControlButtons',function(User) {
             for(var key in controlList) { if(!controlList.hasOwnProperty(key)) continue;
                 controlList[key].show = key == name;
             }
-            console.log(controlList);
             // TODO: Listen for broadcast in mumble and changelog directives
             //if(name == "mumble") {
             //    jQuery.ajax({ // Get mumble server status

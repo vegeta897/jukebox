@@ -1,0 +1,15 @@
+<div class="curator control-panel" ng-show="control.show">
+    <p ng-hide="curator.curateList && curator.curateList.length > 0">Add or correct the artist and track names in the database!</p>
+    <p ng-show="curator.curateList && curator.curateList.length > 0">If you don't know how a video should be tagged, click the X button.</p>
+    <p ng-show="curator.curateList && curator.curateList.length > 0">If a video is already correct, don't click the X or it will not be marked as curated.</p>
+    <button ng-click="beginCurator()" ng-hide="curator.curateList && curator.curateList.length > 0" ng-disabled="curator.fetching">Pull up some videos</button>
+    <ul ng-show="curator.curateList && curator.curateList.length > 0">
+        <li ng-repeat="video in curator.curateList">
+            <button class="close" ng-click="removeFromCurator($index)" ng-disabled="curator.saving"><i class="fa fa-close"></i></button>
+            <h3>{{ video.title }} <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a></h3>
+            <label>Artist</label><input ng-model="video.artist" type="text" size="24" maxlength="120" ng-change="video.artist = video.artist.trim()" ng-disabled="curator.saving" />
+            <label>Track</label><input ng-model="video.track" type="text" size="32" maxlength="120" ng-change="video.track = video.track.trim()" ng-disabled="curator.saving" />
+        </li>
+    </ul>
+    <button ng-show="curator.curateList && curator.curateList.length > 0" ng-click="saveCurated()" ng-disabled="curator.saving">Save these badboys!</button>
+</div>

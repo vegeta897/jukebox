@@ -1,12 +1,12 @@
 <div>
-    <div class="now-playing" ng-show="playing">
+    <div class="now-playing" ng-show="getPlaying()">
         <h3 class="muted">NOW PLAYING</h3>
-        <h2 ng-bind="playing.title"></h2>
-        <h3 class="muted">added by {{ playing.added_by }}</h3>
+        <h2 ng-bind="getPlaying().title"></h2>
+        <h3 class="muted">added by {{ getPlaying().added_by }}</h3>
     </div>
     <div class="video-selection animate-selection" ng-show="videoSelection">
         <h2 ng-show="getUsername()">Pick a video</h2>
-        <div class="vote-timer"><span class="muted">Time Left:</span> {{ voteTimeLeft }}</div>
+        <div class="vote-timer"><span class="muted">Time Left:</span> {{ getVoteTimeLeft() }}</div>
         <table>
             <tr ng-repeat="video in videoSelection" ng-class="'has-'+countProperties(video.votes,false)+'-votes'">
                 <td class="muted" ng-click="vote($index)">{{ $index+1 }}.</td>

@@ -1,5 +1,5 @@
 'use strict';
-Application.Services.factory('DJ',function(User,FireService,Videos,Util,API) {
+Application.Services.factory('DJ',function(Global,FireService,Videos,Util,API) {
     var selfDJ, videoTimeout, voting, gettingVideos;
 
     var getVideos = function() {
@@ -44,9 +44,9 @@ Application.Services.factory('DJ',function(User,FireService,Videos,Util,API) {
     
     return {
         becomeDJ: function() {
-            if(!User.getName()) return;
+            if(!Global.getName()) return;
             selfDJ = true;
-            FireService.set('dj',User.getName());
+            FireService.set('dj',Global.getName());
             FireService.removeOnQuit('dj');
             FireService.remove('timeStampTests'); // Cleanup
             FireService.once('eventLog',function(purged) {

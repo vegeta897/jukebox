@@ -1,20 +1,20 @@
 <div class="add-bounty control-panel" ng-show="control.show">
-    <p ng-hide="dj">You can't place a bounty without a DJ.</p>
-    <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
-    <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
-    <p ng-show="bountySet">You can't place more than one bounty per round.</p>
-    <form ng-submit="addBounty()" ng-show="videoSelection && user.kudos && !bountySet && dj">
+    <p ng-hide="getDJ()">You can't place a bounty without a DJ.</p>
+    <p ng-hide="bounty.selection">You can place a bounty when voting begins.</p>
+    <p ng-show="bounty.selection && !getKudos()">You need to earn some kudos first.</p>
+    <p ng-show="bounty.bountySet">You can't place more than one bounty per round.</p>
+    <form ng-submit="addBounty()" ng-show="bounty.selection && getKudos() && !bounty.bountySet && getDJ()">
         <fieldset>
             <legend>Add a bounty</legend>
             <div class="field">
                 <label for="bountyAmount">Amount</label>
-                <input type="text" id="bountyAmount" name="bountyAmount" ng-change="bounty.bountyAmount = restrictNumber(bounty.bountyAmount,1,user.kudos)" ng-model="bounty.bountyAmount" size="3"><span class="muted hint">kudos</span>
-                <slider floor="1" ceiling="{{user.kudos}}" step="1" precision="0" ng-model="bounty.bountyAmount"></slider>
+                <input type="text" id="bountyAmount" name="bountyAmount" ng-change="bounty.bountyAmount = restrictNumber(bounty.bountyAmount,1,getKudos())" ng-model="bounty.bountyAmount" size="3"><span class="muted hint">kudos</span>
+                <slider floor="1" ceiling="{{getKudos()}}" step="1" precision="0" ng-model="bounty.bountyAmount"></slider>
             </div>
             <div class="field">
                 <label for="bountySelect">Video</label>
                 <select ng-model="bounty.bountyIndex" id="bountySelect" name="bountySelect" size="6" >
-                    <option ng-repeat="option in videoSelection" value="{{ $index }}">{{ $index + 1 }}. {{ option.title }}</option>
+                    <option ng-repeat="option in bounty.selection" value="{{ $index }}">{{ $index + 1 }}. {{ option.title }}</option>
                 </select>
             </div>
         </fieldset>

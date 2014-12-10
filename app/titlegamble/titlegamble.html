@@ -1,17 +1,17 @@
 <div class="title-gamble control-panel" ng-show="control.show">
-    <p ng-hide="dj">You can't place any bets without a DJ.</p>
+    <p ng-hide="getDJ()">You can't place any bets without a DJ.</p>
     <p ng-show="videoSelection">You can't bet on the titles yet!</p>
-    <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
+    <p ng-show="videoSelection && !getKudos()">You need to earn some kudos first.</p>
     <p ng-show="titleGamble.gambleSet">You can't place more than one title bet per round.</p>
-    <form ng-submit="placeTitleBet()" ng-show="!videoSelection && user.kudos && !titleGamble.gambleSet && dj">
+    <form ng-submit="placeTitleBet()" ng-show="!getVideoSelection() && getKudos() && !titleGamble.gambleSet && getDJ()">
         <fieldset>
             <legend>Bet on the titles in the voting pool</legend>
             <p>Type some letters or a word, and if that string appears in one of the video titles, you win!</p>
             <p>The longer your string, the more you win.</p>
             <div class="field">
                 <label for="titleGambleAmount">Amount</label>
-                <input type="text" id="titleGambleAmount" name="titleGambleAmount" ng-change="titleGamble.gambleAmount = restrictNumber(titleGamble.gambleAmount,1,user.kudos)" ng-model="titleGamble.gambleAmount" size="3"><span class="muted hint">kudos</span>
-                <slider floor="1" ceiling="{{user.kudos}}" step="1" precision="0" ng-model="titleGamble.gambleAmount"></slider>
+                <input type="text" id="titleGambleAmount" name="titleGambleAmount" ng-change="titleGamble.gambleAmount = restrictNumber(titleGamble.gambleAmount,1,getKudos())" ng-model="titleGamble.gambleAmount" size="3"><span class="muted hint">kudos</span>
+                <slider floor="1" ceiling="{{getKudos()}}" step="1" precision="0" ng-model="titleGamble.gambleAmount"></slider>
             </div>
             <div class="field">
                 <label for="titleGambleString">String</label>

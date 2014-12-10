@@ -19,7 +19,7 @@
             </fieldset>
             <button type="submit"><span>Log In</span></button>
         </form>
-        <p ng-show="auth">{{ username }}<span><strong>{{ user.kudos || 0 | number }} </strong>kudos</span></p>
+        <p ng-show="auth">{{ username }}<span><strong>{{ getKudos() || 0 | number }} </strong>kudos</span></p>
     </header>
     <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="initializing || needUpdate">
@@ -53,8 +53,8 @@
         </div>
         <videos></videos>
         <div class="dj">
-            <p ng-show="dj"><span class="muted">Current DJ: </span>{{ dj }}</p>
-            <button ng-hide="dj || !auth" ng-click="becomeDJ()">Become DJ</button>
+            <p ng-show="getDJ()"><span class="muted">Current DJ: </span>{{ getDJ() }}</p>
+            <button ng-hide="getDJ() || !auth" ng-click="becomeDJ()">Become DJ</button>
         </div>
         <div class="event-log">
             <ul><li ng-repeat="entry in eventLog" class="animate-repeat">
@@ -76,16 +76,16 @@
             <p ng-class="message.type" ng-bind-html="message.text"></p>
             <p ng-show="message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
         </div>
-        <p ng-show="jackpot" style="text-align: center;">
-            <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(jackpot/10000))+'px'}">{{ jackpot | number }}</strong>
+        <p ng-show="getJackpot()" style="text-align: center;">
+            <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(getJackpot()/10000))+'px'}">{{ getJackpot() | number }}</strong>
         </p>
         <control-buttons></control-buttons>
         <title-gamble></title-gamble>
         <div class="fill-blank control-panel" ng-show="auth && controlList.fillBlank.show">
-            <p ng-show="!user.kudos || user.kudos < 5">You need to earn some more kudos first.</p>
-            <p ng-show="user.kudos >= 5">Fill in the blanks from video titles and win kudos!<br />
+            <p ng-show="!getKudos() || getKudos() < 5">You need to earn some more kudos first.</p>
+            <p ng-show="getKudos() >= 5">Fill in the blanks from video titles and win kudos!<br />
                 <small>The title is a pun, because you'll fill your bank if you win a lot!</small></p>
-            <button ng-hide="fillBlankTitle || user.kudos < 5" ng-click="fillBlankGetTitle()" ng-disabled="gettingFillBlankTitle">Gimme a Title! (5 kudos)</button>
+            <button ng-hide="fillBlankTitle || getKudos() < 5" ng-click="fillBlankGetTitle()" ng-disabled="gettingFillBlankTitle">Gimme a Title! (5 kudos)</button>
             <form ng-show="fillBlankTitle" ng-submit="fillBlankSubmit()">
                 <h3 ng-bind-html="fillBlankTitle.challenge"></h3>
                 <div class="letter-inputs">
@@ -96,63 +96,18 @@
             </form>
         </div>
         <bounty></bounty>
-        <div class="add-video control-panel" ng-show="auth && controlList.addVideo.show">
-            <form ng-submit="addVideo()">
-                <fieldset ng-hide="enableBatch">
-                    <legend>Add a video</legend>
-                    <div class="field">
-                        <label for="url">*URL or video ID</label>
-                        <input name="url" id="url" ng-model="add_url" ng-change="parseURL()" type="text" placeholder="TgoAgYR4584" size="40" ng-required="!enableBatch" ng-disabled="addingVideo" />
-                        <span ng-hide="add_valid || !add_url" class="invalid">Invalid URL or ID</span>
-                        <span ng-show="add_valid && add_url.length > 0" class="valid" ng-bind="parsedIds"></span>
-                    </div>
-                    <div class="field">
-                        <label for="artist">Artist</label>
-                        <input name="artist" id="artist" ng-model="add_artist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="addingVideo" />
-                    </div>
-                    <div class="field">
-                        <label for="track">Track</label>
-                        <input name="track" id="track" ng-model="add_track" type="text" placeholder="Two Rooms" size="30" maxlength="120" ng-disabled="addingVideo" />
-                    </div>
-                </fieldset>
-                <fieldset ng-show="enableBatch">
-                    <legend>Add a list of videos</legend>
-                    <div class="field field-large">
-                        <label for="url-batch">URL or ID list</label>
-                        <textarea name="url-batch" id="url-batch" ng-model="batchList" ng-change="parseURL()" ng-disabled="addingVideo" ng-required="enableBatch"></textarea><br />
-                        <span ng-hide="add_valid || !batchList" class="invalid">Invalid URL or ID</span>
-                        <span ng-show="add_valid && batchList.length > 0" class="valid">List validated</span>
-                    </div>
-                </fieldset>
-                <button type="submit" ng-disabled="addingVideo || (!batchList && !add_url)">Add Video{{ enableBatch ? 's' : '' }}</button>
-                <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
-            </form>
-        </div>
-        <div class="control-panel curator" ng-show="auth && controlList.curator.show">
-            <p ng-hide="curateList && curateList.length > 0">Add or correct the artist and track names in the database!</p>
-            <p ng-show="curateList && curateList.length > 0">If you don't know how a video should be tagged, click the X button.</p>
-            <p ng-show="curateList && curateList.length > 0">If a video is already correct, don't click the X or it will not be marked as curated.</p>
-            <button ng-click="beginCurator()" ng-hide="curateList && curateList.length > 0" ng-disabled="gettingUncurated">Pull up some videos</button>
-            <ul ng-show="curateList && curateList.length > 0">
-                <li ng-repeat="video in curateList">
-                    <button class="close" ng-click="removeFromCurator($index)" ng-disabled="savingCurated"><i class="fa fa-close"></i></button>
-                    <h3>{{ video.title }} <a ng-href="http://www.youtube.com/watch?v={{ video.video_id }}" target="_blank"><i class="fa fa-external-link-square"></i></a></h3>
-                    <label>Artist</label><input ng-model="video.artist" type="text" size="24" maxlength="120" ng-change="video.artist = video.artist.trim()" ng-disabled="savingCurated" />
-                    <label>Track</label><input ng-model="video.track" type="text" size="32" maxlength="120" ng-change="video.track = video.track.trim()" ng-disabled="savingCurated" />
-                </li>
-            </ul>
-            <button ng-show="curateList && curateList.length > 0" ng-click="saveCurated()" ng-disabled="savingCurated">Save these badboys!</button>
-        </div>
+        <add-video></add-video>
+        <curator></curator>
         <div class="avatar-shop control-panel" ng-show="auth && controlList.avatarShop.show">
             <p>Click an avatar or color to purchase and/or wear it</p>
             <div class="clearfix">
                 <div ng-repeat="(colorID, color) in avatarColors" ng-class="{owned: hasAvatarColor(colorID), equipped: (colorID == 'normal' && !user.avatarColor) || user.avatarColor == colorID}" ng-click="buyEquipAvatarColor(colorID)">
-                    <i class="fa" ng-class="listenerClasses(users[username])" ng-style="{color: '#'+color[1]}"></i><span class="price" ng-class="{'cant-buy': !user.kudos || color[2] > user.kudos}">{{ color[2] }}</span> - <span class="name">{{ color[0] }}</span>
+                    <i class="fa" ng-class="listenerClasses(users[username])" ng-style="{color: '#'+color[1]}"></i><span class="price" ng-class="{'cant-buy': !getKudos() || color[2] > getKudos()}">{{ color[2] }}</span> - <span class="name">{{ color[0] }}</span>
                 </div>
             </div>
             <div class="clearfix">
                 <div ng-repeat="(avatarID, avatar) in avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !user.avatar) || user.avatar == avatarID}" ng-click="buyEquipAvatar(avatarID)">
-                    <i class="fa" ng-class="'fa-'+avatarID"></i><span class="price" ng-class="{'cant-buy': !user.kudos || avatar[1] > user.kudos}">{{ avatar[1] }}</span> - <span class="name">{{ avatar[0] }}</span>
+                    <i class="fa" ng-class="'fa-'+avatarID"></i><span class="price" ng-class="{'cant-buy': !getKudos() || avatar[1] > getKudos()}">{{ avatar[1] }}</span> - <span class="name">{{ avatar[0] }}</span>
                 </div>
             </div>
         </div>
@@ -202,7 +157,7 @@
             <button ng-click="requireVersion()">Require Version</button>
             <button ng-click="clearCanvas()">Clear Canvas</button>
         </div>
-        <button ng-hide="username != dj || !auth" ng-click="forceVote()">Force Vote</button>
+        <button ng-hide="username != getDJ() || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.1/angular.min.js"></script>
@@ -216,10 +171,12 @@
     <script src="app/jukebox.js"></script>
     <script src="app/videos/videos.js"></script>
     <script src="app/controlbuttons/controlbuttons.js"></script>
+    <script src="app/addvideo/addvideo.js"></script>
     <script src="app/bounty/bounty.js"></script>
+    <script src="app/curator/curator.js"></script>
     <script src="app/titlegamble/titlegamble.js"></script>
     <script src="app/fireservice.js"></script>
-    <script src="app/user.js"></script>
+    <script src="app/global.js"></script>
     <script src="app/dj.js"></script>
     <script src="app/player/player.js"></script>
     <script src="app/canvas.js"></script>

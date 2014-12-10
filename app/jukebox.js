@@ -60,19 +60,25 @@ Application.Services.service("API", function($http) {
     };
 });
 
-Application.Controllers.controller('Main', function($rootScope, $scope, $timeout, localStorageService, API, Canvas, Util, User, Player, Videos, FireService, DJ) {
+Application.Controllers.controller('Main', function($rootScope, $scope, $timeout, localStorageService, API, Canvas, Util, Player, Videos, FireService, DJ, Global) {
+    
     // We gonna refactor this shit
+    // TODO: Add "meta" service to track things like current DJ
+    
     var username = localStorageService.get('username');
     var passcode = localStorageService.get('passcode');
     var volume = localStorageService.get('volume');
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
     var init = false, muted;
 
-    $scope.version = 0.351; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.352; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.avatars = avatars; $scope.avatarColors = avatarColors;
     $scope.countProperties = Util.countProperties;
+    $scope.getKudos = Global.getKudos;
+    $scope.getJackpot = Global.getJackpot;
+    $scope.getDJ = Global.getDJ;
 
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
@@ -104,7 +110,7 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
         if(!$scope.username || !$scope.passcode) return;
         var initUser = function() {
             $scope.auth = auth;
-            User.setName($scope.username);
+            Global.setName($scope.username);
             localStorageService.set('username',username);
             localStorageService.set('passcode',passcode);
             fireUser = fireRef.child('users/'+username);
@@ -162,57 +168,6 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
         return input > max ? max : input < min ? min : input; 
     };
     
-    $scope.parseURL = function() {
-        if(!$scope.add_url && !$scope.batchList) { return; }
-        var urls = $scope.enableBatch ? $scope.batchList.split('\n') : [$scope.add_url];
-        $scope.parsedIds = '';
-        for(var i = 0, il = urls.length; i < il; i++) {
-            var re = /(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/ig;
-            var parsed = urls[i].replace(re,'$1').replace('http://','').replace('https://','').substr(0,11);
-            if(parsed.length == 11) {
-                $scope.parsedIds += parsed+',';
-                $scope.add_valid = true;
-            } else {
-                $scope.add_valid = false;
-                break;
-            }
-        }
-        $scope.parsedIds = $scope.parsedIds.substring(0,$scope.parsedIds.length-1);
-    };
-    
-    $scope.addVideo = function() {
-        if($scope.parsedIds.length < 11 || !$scope.add_valid) { return; }
-        console.log('adding',$scope.parsedIds);
-        $scope.addingVideo = true;
-        if($scope.add_artist) $scope.add_artist = $scope.add_artist.trim();
-        if($scope.add_track) $scope.add_track = $scope.add_track.trim();
-        if($scope.add_artist == '') delete $scope.add_artist;
-        if($scope.add_track == '') delete $scope.add_track;
-        API.addVideo($scope.parsedIds, $scope.add_artist, $scope.add_track, username).then(function(results) {
-            console.log(results);
-            $scope.parsedIds = '';
-            delete $scope.add_url;
-            delete $scope.batchList;
-            $scope.addingVideo = false;
-            if(typeof results.data == 'string' && results.data.substr(0,9) == 'Duplicate') {
-                console.log('video id already exists!');
-                $scope.message = { type: 'error', text: 'That video has already been added.' };
-            } else {
-                if(!results.data || !results.data.data) {
-                    $scope.message = { type: 'error', text: 'Sorry, there was a server error. Tell Vegeta about it.' }; return;
-                }
-                var justAdded = results.data.data.items.length == 1 ? results.data.data.items[0].snippet.title : 'Videos';
-                var reward = parseInt(results.data.data.items.length * 25);
-                $scope.message = { type: 'success', text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward };
-                var addQuantity = results.data.data.items.length == 1 ? 'a video' : results.data.data.items.length + ' videos';
-                sendEvent(username,'just added ' + addQuantity + '! What ' + Util.buildSubject() + '!');
-                fireUser.child('kudos').transaction(function(userKudos) {
-                    return userKudos ? +userKudos + +reward : reward;
-                });
-            }
-        });
-    };
-    
     $scope.hasAvatar = function(avatar) { 
         return avatar == 'headphones' ? true : $scope.user && $scope.user.avatars ? $scope.user.avatars.hasOwnProperty(avatar) : false; 
     };
@@ -250,58 +205,6 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
         fireUser.child('avatarColors/'+color).set(true);
         fireUser.child('avatarColor').set(color);
         sendEvent(username,'just bought the <strong>'+$scope.avatarColors[color][0]+'</strong> avatar color!');
-    };
-    
-    $scope.beginCurator = function() {
-        $scope.gettingUncurated = true;
-        fireRef.child('curating').once('value',function(snap) {
-            var locked = [];
-            for(var videoID in snap.val()) { if(!snap.val().hasOwnProperty(videoID)) continue;
-                locked.push("'"+videoID+"'");
-            }
-            locked = locked.length == 0 ? "''" : locked.join(',');
-            console.log(locked);
-            API.pullUncurated(locked).then(function(data) {
-                console.log('Videos retrieved to be curated',data.data);
-                if(!data || !data.data || data.data.length != 5) {
-                    $scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; return;
-                }
-                var curating = {}; // Object of video IDs 
-                for(var d = 0, dl = data.data.length; d < dl; d++) {
-                    curating[data.data[d].video_id] = username;
-                    data.data[d].duration = Util.parseUTCtime(data.data[d].duration);
-                    data.data[d].index = d;
-                }
-                fireRef.child('curating').update(curating);
-                $scope.gettingUncurated = false;
-                $scope.curateList = data.data;
-                $timeout(function(){});
-            });
-        });
-    };
-    
-    $scope.removeFromCurator = function(index) {
-        fireRef.child('curating/'+$scope.curateList[index].video_id).remove();
-        $scope.curateList.splice(index,1);
-    };
-
-    $scope.saveCurated = function() {
-        $scope.savingCurated = true;
-        API.saveCurated($scope.curateList, username).then(function(results) {
-            console.log(results);
-            $scope.savingCurated = false;
-            if(!results.data || !results.data.data) {
-                $scope.message = { type: 'error', text: 'Sorry, there was a server error. Tell Vegeta about it.' }; return;
-            }
-            $scope.message = { type: 'success', text: '<strong>Thank you</strong> for your help curating the database!' };
-            var addQuantity = results.data.data.videos.length == 1 ? 'a video' : results.data.data.videos.length + ' videos';
-            sendEvent(username,'just curated ' + addQuantity + '! What ' + Util.buildSubject() + '!');
-            for(var i = 0, il = $scope.curateList.length; i < il; i++) {
-                fireRef.child('curating/'+$scope.curateList[i].video_id).remove();
-            }
-            delete $scope.curateList;
-            $timeout(function(){});
-        });
     };
     
     $scope.fillBlankGetTitle = function() {
@@ -441,17 +344,12 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
             $rootScope.$broadcast('playerReady');
             fireRef.once('value', function(snap) {
                 if($scope.dj && !snap.val().users[$scope.dj].hasOwnProperty('connections')) {
-                    $scope.dj = ''; fireRef.child('dj').remove();
+                    fireRef.child('dj').remove();
                 }
-                fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); $scope.user = snap.val()[username]; }); // Listen for user changes TODO: Move self update stuff to User service
-                fireRef.child('dj').on('value', function(snap) { $scope.dj = snap.val(); }); // Listen for DJ changes
-                fireRef.child('jackpot').on('value', function(snap) { $scope.jackpot = snap.val(); }); // Listen for jackpot changes
+                fireRef.child('users').on('value', function(snap) { $scope.users = snap.val(); }); // Listen for user changes
                 fireRef.child('eventLog').endAt().limit(15).on('child_added',function(snap) { $scope.eventLog.push(snap.val()); $scope.eventLog = $scope.eventLog.slice(Math.max($scope.eventLog.length - 15, 0)); purgeEventLog(); });
                 $timeout(function(){});
             });
-        }
-        if($scope.videoSelection) {
-            $scope.voteTimeLeft = Math.max(0,parseInt((Videos.getVoteEnd() - FireService.getServerTime())/1000));
         }
         if(init && playing && $scope.playing) {
             if(muted != Player.isMuted()) {

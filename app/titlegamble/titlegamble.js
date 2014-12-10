@@ -4,28 +4,22 @@ Application.Directives.directive('titleGamble',function() {
         restrict: 'E',
         templateUrl: 'app/titlegamble/titlegamble.html',
         replace: true,
-        scope: true,
-        //require: '^Main',
-        controller: function($rootScope,$scope,TitleGamble,ControlButtons) {
+        scope: {},
+        controller: function($rootScope,$scope,Global,TitleGamble,ControlButtons,Videos) {
             $scope.control = ControlButtons.addControl('titleGamble','Title Gamble',false,false);
             $scope.titleGamble = TitleGamble.init();
-            $rootScope.$on('newSelection',function() {
-                TitleGamble.awardGamble();
-            });
-            
-            $rootScope.$on('newVideo',function() {
-                $scope.titleGamble = TitleGamble.init();
-            });
-            
+            $rootScope.$on('newSelection',function() { TitleGamble.awardGamble(); });
+            $rootScope.$on('newVideo',function() { $scope.titleGamble = TitleGamble.init(); });
             $rootScope.$on('open:titleGamble',TitleGamble.getWins);
             
             $scope.placeTitleBet = function() {
                 TitleGamble.placeBet();
                 $scope.control.show = false;
             };
-            
             $scope.titleGambleCalcMulti = TitleGamble.calcMulti;
-
+            $scope.getKudos = Global.getKudos;
+            $scope.getDJ = Global.getDJ;
+            $scope.getVideoSelection = Videos.getSelection;
         },
         link: function(scope,element,attrs) {
             
@@ -33,7 +27,7 @@ Application.Directives.directive('titleGamble',function() {
     }
 });
 
-Application.Services.factory('TitleGamble',function(Videos,User,FireService) {
+Application.Services.factory('TitleGamble',function(Videos,Global,FireService) {
     var titleGamble;
     return {
         getWins: function() {
@@ -55,15 +49,15 @@ Application.Services.factory('TitleGamble',function(Videos,User,FireService) {
                 //$scope.message = { type:'error',text:'That ain\'t no valid amount yo' }; 
                 return;
             }
-            if(titleGamble.gambleAmount > User.getKudos()) {
+            if(titleGamble.gambleAmount > Global.getKudos()) {
                 //$scope.message = {
                 //    type:'error',text:'You only have <strong>'+$scope.user.kudos+'</strong> kudos!' };
                 return;
             }
             console.log('betting',titleGamble.gambleAmount,'on title to include "'+titleGamble.string+'"');
-            User.changeKudos(titleGamble.gambleAmount*-1);
+            Global.changeKudos(titleGamble.gambleAmount*-1);
             titleGamble.gambleSet = true;
-            FireService.sendEvent(User.getName(),
+            FireService.sendEvent(Global.getName(),
                 'made a <strong>'+titleGamble.gambleAmount+'</strong> kudo title bet!');
         },
         awardGamble: function() {
@@ -80,15 +74,15 @@ Application.Services.factory('TitleGamble',function(Videos,User,FireService) {
                     videoList[i].title.substring(theIndex,theIndex+gambleString.length) + '</strong>' +
                     videoList[i].title.substring(theIndex+gambleString.length,videoList[i].title.length);
                     //$scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+videoList[i].title+'</strong>"!', kudos: winnings };
-                    FireService.sendEvent(User.getName(),'won <strong>'+(winnings-titleGamble.gambleAmount)+'</strong> kudos by betting '+titleGamble.gambleAmount+' on "'+gambleString+'"!');
-                    User.changeKudos(winnings);
+                    FireService.sendEvent(Global.getName(),'won <strong>'+(winnings-titleGamble.gambleAmount)+'</strong> kudos by betting '+titleGamble.gambleAmount+' on "'+gambleString+'"!');
+                    Global.changeKudos(winnings);
                     FireService.transact('titleGamble/wins/'+gambleString,1);
                     break;
                 }
             }
             if(!won) {
                 //$scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' };
-                FireService.sendEvent(User.getName(),'lost <strong>'+titleGamble.gambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
+                FireService.sendEvent(Global.getName(),'lost <strong>'+titleGamble.gambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
                 FireService.transact('jackpot',titleGamble.gambleAmount);
             }
         },

@@ -5,7 +5,6 @@
 //        templateUrl: 'app/player/player.html',
 //        replace: true,
 //        scope: true,
-//        //require: '^Main',
 //        controller: function($scope) {
 //
 //        },

@@ -1,0 +1,32 @@
+<div class="add-video control-panel" ng-show="control.show">
+    <form ng-submit="addVideo()">
+        <fieldset ng-hide="adding.batchMode">
+            <legend>Add a video</legend>
+            <div class="field">
+                <label for="url">*URL or video ID</label>
+                <input name="url" id="url" ng-model="adding.urlSingle" ng-change="parseURL()" type="text" placeholder="TgoAgYR4584" size="40" ng-required="!enableBatch" ng-disabled="adding.processing" />
+                <span ng-hide="adding.valid || !adding.urlSingle" class="invalid">Invalid URL or ID</span>
+                <span ng-show="adding.valid && adding.urlSingle.length > 0" class="valid" ng-bind="adding.parsedIds"></span>
+            </div>
+            <div class="field">
+                <label for="artist">Artist</label>
+                <input name="artist" id="artist" ng-model="adding.artist" type="text" placeholder="Plaid" size="30" maxlength="120" ng-disabled="adding.processing" />
+            </div>
+            <div class="field">
+                <label for="track">Track</label>
+                <input name="track" id="track" ng-model="adding.track" type="text" placeholder="Two Rooms" size="30" maxlength="120" ng-disabled="adding.processing" />
+            </div>
+        </fieldset>
+        <fieldset ng-show="adding.batchMode">
+            <legend>Add a list of videos</legend>
+            <div class="field field-large">
+                <label for="url-batch">URL or ID list</label>
+                <textarea name="url-batch" id="url-batch" ng-model="adding.urlBatch" ng-change="parseURL()" ng-disabled="adding.processing" ng-required="enableBatch"></textarea><br />
+                <span ng-hide="adding.valid || !adding.urlBatch" class="invalid">Invalid URL or ID</span>
+                <span ng-show="adding.valid && adding.urlBatch.length > 0" class="valid">List validated</span>
+            </div>
+        </fieldset>
+        <button type="submit" ng-disabled="adding.processing || (!adding.urlBatch && !adding.urlSingle)">Add Video{{ adding.batchMode ? 's' : '' }}</button>
+        <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
+    </form>
+</div>

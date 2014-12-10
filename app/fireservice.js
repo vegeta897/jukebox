@@ -28,7 +28,7 @@ Application.Services.factory('FireService',function() {
         },
         transact: function(path, amount) {
             fireRef.child(path).transaction(function(orig) {
-                return !orig || +orig + +amount == 0 ? null : +orig + +amount
+                return !orig ? +amount : +orig + +amount == 0 ? null : +orig + +amount
             });
         },
         once: function(path, callback) {
