@@ -31,9 +31,6 @@ Application.Services.factory('FireService',function() {
                 return !orig || +orig + +amount == 0 ? null : +orig + +amount
             });
         },
-        syncVariable: function(path, variable) {
-            fireRef.child(path).on('value',function(snap) { variable = snap.val(); })
-        },
         once: function(path, callback) {
             fireRef.child(path).once('value', function(snap) { callback(snap.val()); });
         },

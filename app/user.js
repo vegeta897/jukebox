@@ -1,6 +1,6 @@
 'use strict';
 Application.Services.factory('User',function($rootScope,FireService) {
-    var username, user;
+    var username, user = {};
     $rootScope.$on('newVideo',function() {
         if(!username) return;
         FireService.remove('users/'+username+'/vote');
@@ -8,7 +8,7 @@ Application.Services.factory('User',function($rootScope,FireService) {
     return {
         setName: function(name) {
             username = name;
-            FireService.syncVariable('users/'+username,user);
+            FireService.onValue('users/'+username,function(data){ user = data; });
         },
         changeKudos: function(amount) {
             FireService.transact('users/'+username+'/kudos',parseInt(amount));

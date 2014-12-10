@@ -1,0 +1,3 @@
+<div class="control-buttons" ng-show="auth">
+    <button ng-repeat="(name,control) in controlList" ng-click="showControl(name)" ng-class="{'selected': control.show}" ng-show="!control.admin || (username == 'vegeta897' || username == 'tester')" ng-disabled="control.disabled"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
+</div>

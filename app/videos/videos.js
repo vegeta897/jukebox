@@ -34,36 +34,6 @@ Application.Services.factory('Videos',function($rootScope,FireService,User,Playe
                 console.log('new video list');
                 videoList = newList;
                 $rootScope.$broadcast('newSelection');
-                //if(!$scope.titleGambleSet || !$scope.titleGambleString) return;
-                //var won = false;
-                //var gambleString = ($scope.titleGambleString+'').toLowerCase(); // Cast as string, lowercase
-                //var gambleWinnings = Math.floor(+$scope.titleGambleAmount + ($scope.titleGambleAmount * $scope.titleGambleMulti));
-                //for(var i = 0, il = videoList.length; i < il; i++) {
-                //    var theIndex = videoList[i].title.toUpperCase().indexOf(gambleString.toUpperCase());
-                //    if(theIndex >= 0) {
-                //        videoList[i].title = videoList[i].title.substring(0,theIndex) + '<strong>' +
-                //        videoList[i].title.substring(theIndex,theIndex+gambleString.length) + '</strong>' +
-                //        videoList[i].title.substring(theIndex+gambleString.length,videoList[i].title.length);
-                //        $scope.message = { type: 'success', text: 'String "<strong>'+gambleString+'</strong>" found in title "<strong>'+videoList[i].title+'</strong>"!',
-                //            kudos: gambleWinnings };
-                //        won = true;
-                //        sendEvent(username,'won <strong>'+(gambleWinnings-$scope.titleGambleAmount)+'</strong> kudos by betting '+$scope.titleGambleAmount+' on "'+gambleString+'"!');
-                //        fireUser.child('kudos').transaction(function(userKudos) {
-                //            return userKudos ? +userKudos + +gambleWinnings : +gambleWinnings;
-                //        });
-                //        fireRef.child('titleGamble/wins/'+gambleString).transaction(function(winCount) {
-                //            return winCount ? +winCount + 1 : 1;
-                //        });
-                //        break;
-                //    }
-                //}
-                //if(!won) {
-                //    $scope.message = { type: 'default', text: 'Sorry, no titles contained "'+gambleString+'".' };
-                //    sendEvent(username,'lost <strong>'+$scope.titleGambleAmount+'</strong> kudos by betting on "'+gambleString+'"!');
-                //    fireRef.child('jackpot').transaction(function(jack) {
-                //        return jack ? +jack + +$scope.titleGambleAmount : +$scope.titleGambleAmount;
-                //    });
-                //}
             } else { // Vote or bounty change
                 for(var j = 0, jl = videoList.length; j < jl; j++) {
                     if(newList[j].bounty) { videoList[j].bounty = newList[j].bounty; } else {
@@ -75,7 +45,6 @@ Application.Services.factory('Videos',function($rootScope,FireService,User,Playe
                 }
             }
             return videoList;
-            //delete $scope.titleGambleSet; delete $scope.titleGambleString; $scope.titleGambleAmount = 1; $scope.controlTitleGamble = false;
         },
         changeVideo: function(newVideo) {
             if(newVideo == null) { playing = null; return null; }

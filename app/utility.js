@@ -3,7 +3,7 @@
 Application.Services.service('Util', function() {
 
     var nouns = ['person','dude','bro','civilian','player','individual','guy','trooper','dancer','user','netizen','groupie','jammer','juker','jukester','jukeman','cyborg','savior','master','peon','knight','human','character','creature','spirit','soul','fellow','critter','friend','comrade','peer','client','fan','buddy','hero','pal','submitter','giver','contributor','philanthropist','giver','patron','guest','supporter'];
-    var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish','elegant','glamorous'];
+    var adjectives = ['cool','awesome','super','excellent','great','good','wonderful','amazing','terrific','tremendous','extreme','formidable','thunderous','hip','jive','jazzing','jamming','rocking','grooving','immense','astonishing','beautiful','cute','impressive','magnificent','stunning','kawaii','pleasant','comforting','nice','friendly','lovely','charming','amiable','benevolent','helpful','constructive','cooperative','productive','supportive','valuable','useful','considerate','caring','serendipitous','neighborly','humble','lavish','elegant','glamorous','glowing','heroic'];
     
     var pickInArray = function(array) { return array[Math.floor(Math.random()*array.length)]; };
     var hsvToHex = function(hsv) {

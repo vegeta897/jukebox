@@ -6,7 +6,8 @@ Application.Directives.directive('bounty',function() {
         replace: true,
         scope: true,
         //require: '^Main',
-        controller: function($rootScope,$scope,Bounty) {
+        controller: function($rootScope,$scope,Bounty,ControlButtons) {
+            $scope.control = ControlButtons.addControl('addBounty','Add Bounty',false,false);
             $scope.bounty = Bounty.init();
             $rootScope.$on('newSelection',function() {
                 $scope.bounty = Bounty.init();
@@ -18,7 +19,7 @@ Application.Directives.directive('bounty',function() {
             
             $scope.addBounty = function() {
                 Bounty.addBounty();
-                $scope.controlAddBounty = false;
+                $scope.control.show = false;
             };
             
         },
@@ -28,14 +29,12 @@ Application.Directives.directive('bounty',function() {
     }
 });
 
-Application.Services.factory('Bounty',function($rootScope,Videos,User,FireService,Util) {
+Application.Services.factory('Bounty',function(Videos,User,FireService,Util) {
     var bounty;
-    
     return {
         addBounty: function() {
-            var amount = bounty.bountyAmount, index = bounty.bountyIndex;
+            var amount = parseInt(bounty.bountyAmount), index = bounty.bountyIndex;
             if(!amount || amount < 0 || amount > User.getKudos()) return;
-            amount = parseInt(amount);
             bounty = { bountyAmount: amount, bountyIndex: index, bountySet: true };
             FireService.transact('selection/'+index+'/bounty',amount);
             User.changeKudos(amount*-1);
@@ -52,8 +51,6 @@ Application.Services.factory('Bounty',function($rootScope,Videos,User,FireServic
                 User.changeKudos(playing.bounty / Math.max(1,Util.countProperties(playing.votes,false)-1));
             }
         },
-        init: function() {
-            bounty = { bountyAmount: 1, bountyIndex: 0, bountySet: false }; return bounty;
-        }
+        init: function() { bounty = { bountyAmount: 1, bountyIndex: 0, bountySet: false }; return bounty; }
     };
 });

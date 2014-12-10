@@ -8,7 +8,7 @@ h1 { color: #d3d9b9; -webkit-text-fill-color: transparent;
 
 input[type="text"], select { background: #ddd; }
 button { background: #549816; color: white; border: none; transition: all 0.3s; padding: 3px 10px; }
-button:hover { background: #397114; }
+button:hover { background: #397114; transition: none; }
 button[disabled] { background: #444 !important; color: #777 !important; cursor: default; }
 
 header p:last-child { color: #858a71; }
@@ -26,8 +26,8 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 
 .isketch h3 strong { color: #DEFF7C; }
 
-.video-selection table tr { border-color: #222; transition: all 0.1s; }
-.video-selection table tr td { transition: all 0.1s; }
+.video-selection table tr { border-color: #222; transition: all 0.2s; }
+.video-selection table tr td { transition: all 0.2s; }
 .video-selection table tr.has-1-votes { background: rgba(222, 255, 124, 0.06); }
 .video-selection table tr.has-2-votes { background: rgba(222, 255, 124, 0.12); }
 .video-selection table tr.has-3-votes { background: rgba(222, 255, 124, 0.18); }
@@ -36,15 +36,15 @@ p:not(.error) strong, dt strong { color: #f2f5eb; }
 .video-selection table tr.has-6-votes { background: rgba(222, 255, 124, 0.36); }
 .video-selection table tr.has-7-votes { background: rgba(222, 255, 124, 0.42); }
 .video-selection table tr.has-8-votes { background: rgba(222, 255, 124, 0.48); }
-.video-selection table tr:hover { background: #4e5150; color: white; }
+.video-selection table tr:hover { background: #3E413F; color: white; transition: none; }
 .video-selection table tr td .bounty { color: #DEFF7C; }
 .video-selection table tr td:first-child + td + td { color: #D7EDA9; }
 .video-selection table tr td:first-child + td + td strong { color: #f1fbe1; }
-.video-selection table tr:hover td:first-child + td + td { color: white; }
+.video-selection table tr:hover td:first-child + td + td { color: white; transition: none; }
 .video-selection table tr td:first-child + td + td div i { color: rgba(245, 255, 216, 0.3); }
 .video-selection table tr td:first-child + td + td div i.mine { color: rgba(222, 255, 124, 0.45); }
 .video-selection table tr td.control a { color: #d3d9b9; }
-.video-selection table tr td.control:hover a { color: #f2f5eb; }
+.video-selection table tr td.control:hover a { color: #f2f5eb; transition: none; }
 .video-selection table tr td.votes { color: #70cb1b; }
 
 .event-log ul li span:first-child { color: #858a71; }

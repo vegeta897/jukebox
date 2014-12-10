@@ -1,4 +1,4 @@
-<div class="add-bounty control-panel" ng-show="auth && controlAddBounty">
+<div class="add-bounty control-panel" ng-show="control.show">
     <p ng-hide="dj">You can't place a bounty without a DJ.</p>
     <p ng-hide="videoSelection">You can place a bounty when voting begins.</p>
     <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>

@@ -79,34 +79,9 @@
         <p ng-show="jackpot" style="text-align: center;">
             <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(jackpot/10000))+'px'}">{{ jackpot | number }}</strong>
         </p>
-        <div class="control-buttons" ng-show="auth">
-            <button ng-repeat="control in controlList" ng-click="showControl(control.name)" ng-class="{'selected': controlEnabled(control.name)}" ng-hide="control.name == 'controlAdmin' && !(username == 'vegeta897' || username == 'tester')" ng-disabled="control.disabled"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
-        </div>
-        <div class="title-gamble control-panel" ng-show="auth && controlTitleGamble">
-            <p ng-hide="dj">You can't place any bets without a DJ.</p>
-            <p ng-show="videoSelection">You can't bet on the titles yet!</p>
-            <p ng-show="videoSelection && !user.kudos">You need to earn some kudos first.</p>
-            <p ng-show="titleGambleSet">You can't place more than one title bet per round.</p>
-            <form ng-submit="titleGamble()" ng-show="!videoSelection && user.kudos && !titleGambleSet && dj">
-                <fieldset>
-                    <legend>Bet on the titles in the voting pool</legend>
-                    <p>Type some letters or a word, and if that string appears in one of the video titles, you win!</p>
-                    <p>The longer your string, the more you win.</p>
-                    <div class="field">
-                        <label for="titleGambleAmount">Amount</label>
-                        <input type="text" id="titleGambleAmount" name="titleGambleAmount" ng-change="titleGambleAmount = restrictNumber(titleGambleAmount,1,user.kudos)" ng-model="titleGambleAmount" size="3"><span class="muted hint">kudos</span>
-                        <slider floor="1" ceiling="{{user.kudos}}" step="1" precision="0" ng-model="titleGambleAmount"></slider>
-                    </div>
-                    <div class="field">
-                        <label for="titleGambleString">String</label>
-                        <input type="text" id="titleGambleString" name="titleGambleString" ng-change="titleGambleCalcMulti()" ng-model="titleGambleString" size="5" maxlength="30"><span class="muted hint"></span>
-                    </div>
-                    <p>Win multiplier: <strong>{{ titleGambleMulti || 0 | number : 2 }}</strong>x</p>
-                </fieldset>
-                <button type="submit" ng-disabled="titleGambleAmount < 1 || !titleGambleString || titleGambleString.length < 2" >Place ya' bet!</button>
-            </form>
-        </div>
-        <div class="fill-blank control-panel" ng-show="auth && controlFillBlank">
+        <control-buttons></control-buttons>
+        <title-gamble></title-gamble>
+        <div class="fill-blank control-panel" ng-show="auth && controlList.fillBlank.show">
             <p ng-show="!user.kudos || user.kudos < 5">You need to earn some more kudos first.</p>
             <p ng-show="user.kudos >= 5">Fill in the blanks from video titles and win kudos!<br />
                 <small>The title is a pun, because you'll fill your bank if you win a lot!</small></p>
@@ -121,7 +96,7 @@
             </form>
         </div>
         <bounty></bounty>
-        <div class="add-video control-panel" ng-show="auth && controlAddVideo">
+        <div class="add-video control-panel" ng-show="auth && controlList.addVideo.show">
             <form ng-submit="addVideo()">
                 <fieldset ng-hide="enableBatch">
                     <legend>Add a video</legend>
@@ -153,7 +128,7 @@
                 <input type="checkbox" name="batch" id="batch" value="batch" ng-model="enableBatch" /><label for="batch">Add a list</label>
             </form>
         </div>
-        <div class="control-panel curator" ng-show="auth && controlCurator">
+        <div class="control-panel curator" ng-show="auth && controlList.curator.show">
             <p ng-hide="curateList && curateList.length > 0">Add or correct the artist and track names in the database!</p>
             <p ng-show="curateList && curateList.length > 0">If you don't know how a video should be tagged, click the X button.</p>
             <p ng-show="curateList && curateList.length > 0">If a video is already correct, don't click the X or it will not be marked as curated.</p>
@@ -168,7 +143,7 @@
             </ul>
             <button ng-show="curateList && curateList.length > 0" ng-click="saveCurated()" ng-disabled="savingCurated">Save these badboys!</button>
         </div>
-        <div class="avatar-shop control-panel" ng-show="auth && controlAvatarShop">
+        <div class="avatar-shop control-panel" ng-show="auth && controlList.avatarShop.show">
             <p>Click an avatar or color to purchase and/or wear it</p>
             <div class="clearfix">
                 <div ng-repeat="(colorID, color) in avatarColors" ng-class="{owned: hasAvatarColor(colorID), equipped: (colorID == 'normal' && !user.avatarColor) || user.avatarColor == colorID}" ng-click="buyEquipAvatarColor(colorID)">
@@ -181,14 +156,14 @@
                 </div>
             </div>
         </div>
-        <div class="changelog control-panel" ng-show="auth && controlChangelog">
+        <div class="changelog control-panel" ng-show="auth && controlList.changelog.show">
             <p class="muted" ng-show="!commits">Loading changelog from GitHub...</p>
             <table><tr ng-repeat="commit in commits">
                 <td class="muted">{{ commit.date | timeUnits }} {{ commit.date | timeUnitsLabel }} ago</td>
                 <td>{{ commit.message }}</td>
             </tr></table>
         </div>
-        <div class="mumble control-panel" ng-show="auth && controlMumble">
+        <div class="mumble control-panel" ng-show="auth && controlList.mumble.show">
             <p class="muted" ng-show="!mumble">Loading Mumble server info...</p>
             <p class="muted" ng-show="mumble.empty">Nobody's in the Mumble server :(</p>
             <ul ng-hide="mumble.empty">
@@ -198,7 +173,7 @@
                 </li>
             </ul>
         </div>
-        <div class="meta control-panel" ng-show="auth && controlMeta">
+        <div class="meta control-panel" ng-show="auth && controlList.meta.show">
             <button ng-click="metaGetVideoCount()" ng-hide="metaVideoCount" ng-disabled="gettingMetaVideoCount">Video Count</button>
             <h3 ng-show="metaVideoCount">Total Videos: <strong>{{ metaVidCountTotal }}</strong></h3>
             <div class="graph" ng-show="metaVideoCount">
@@ -223,7 +198,7 @@
                 </div>
             </div>
         </div>
-        <div class="control-panel" ng-show="auth && controlAdmin">
+        <div class="control-panel" ng-show="auth && controlList.admin.show">
             <button ng-click="requireVersion()">Require Version</button>
             <button ng-click="clearCanvas()">Clear Canvas</button>
         </div>
@@ -239,8 +214,10 @@
     <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script>
     <script src="app/app.js"></script> <!-- My Stuff -->
     <script src="app/jukebox.js"></script>
-    <script src="app/bounty/bounty.js"></script>
     <script src="app/videos/videos.js"></script>
+    <script src="app/controlbuttons/controlbuttons.js"></script>
+    <script src="app/bounty/bounty.js"></script>
+    <script src="app/titlegamble/titlegamble.js"></script>
     <script src="app/fireservice.js"></script>
     <script src="app/user.js"></script>
     <script src="app/dj.js"></script>

@@ -66,22 +66,13 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
     var passcode = localStorageService.get('passcode');
     var volume = localStorageService.get('volume');
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
-    var init = false;
-    var gettingVideos = false, voting, voteEnd, muted, myVote, videoTimeout;
+    var init = false, muted;
 
-    $scope.version = 0.35; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.351; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.thetime = new Date().getTime(); $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
-    $scope.controlList = [{name:'controlAddVideo',title:'Add Videos'},{name:'controlCurator',title:'Curator'},
-        {name:'controlAddBounty',title:'Add Bounty'},{name:'controlTitleGamble',title:'Title Gamble',disabled:true},
-        {name:'controlFillBlank',title:'Fill the B_ank'},{name:'controlAvatarShop',title:'Avatar Shop'},
-        {name:'controlMumble',title:'Mumble'},{name:'controlChangelog',title:'Changelog'},
-        {name:'controlMeta',title:'Meta'},{name:'controlAdmin',title:'Admin'}];
-    $scope.titleGambleAmount = 1;
     $scope.avatars = avatars; $scope.avatarColors = avatarColors;
     $scope.countProperties = Util.countProperties;
-
-    //function getServerTime() { return localTimeOffset ? new Date().getTime() + localTimeOffset : new Date().getTime(); }
 
     fireRef.parent().child('version').once('value', function(snap) {
         $scope.initializing = false;
@@ -164,75 +155,6 @@ Application.Controllers.controller('Main', function($rootScope, $scope, $timeout
         if(!$scope.users || !$scope.users[username]) return;
         var user = $scope.users[username]; 
         return user.avatarColor ? $scope.avatarColors[user.avatarColor][1] : $scope.avatarColors.normal[1]; 
-    };
-    
-    $scope.showControl = function(control) {
-        if($scope[control]) { $scope[control] = false; return; }
-        for(var i = 0, il = $scope.controlList.length; i < il; i++) {
-            $scope[$scope.controlList[i].name] = control == $scope.controlList[i].name;
-        }
-        $timeout(function(){ window.scrollTo(0,document.body.scrollHeight); }); // Scroll to bottom
-        if(control == "controlTitleGamble" && !$scope.titleGambleSet) {
-            fireRef.child('titleGamble/wins').once('value',function(snap) {
-                $scope.titleGambleWins = snap.val() ? snap.val() : {};
-            });
-        }
-        if(control == "controlMumble") {
-            jQuery.ajax({ // Get mumble server status
-                url: 'http://api.commandchannel.com/cvp.json?email=vegeta897@gmail.com&apiKey=4BC693B4-11FD-4E9E-8BA5-E3B39D5A04B9&callback=?', dataType: 'jsonp',
-                success: function(results) {
-                    if(results.name) {
-                        $scope.mumble = { empty: true };
-                        for(var i = 0, il = results.root.channels.length; i < il; i++) {
-                            var channel = results.root.channels[i];
-                            if(channel.users.length == 0) { continue; }
-                            $scope.mumble.empty = false;
-                            $scope.mumble[channel.name] = channel.users;
-                        }
-                    }
-                }
-            });
-        }
-        if(control == "controlChangelog") {
-            jQuery.ajax({ // Get last 8 commits from github
-                url: 'https://api.github.com/repos/vegeta897/jukebox/commits', dataType: 'jsonp',
-                success: function (results) {
-                    $scope.commits = [];
-                    if (!results.data) return;
-                    for (var i = 0; i < results.data.length; i++) {
-                        $scope.commits.push({
-                            message: results.data[i].commit.message,
-                            date: Date.parse(results.data[i].commit.committer.date)
-                        });
-                        if ($scope.commits.length > 9) break;
-                    }
-                }
-            });
-        }
-    };
-    $scope.controlEnabled = function(control) { return $scope[control]; };
-    
-    $scope.titleGamble = function() {
-        $scope.titleGambleAmount = parseInt($scope.titleGambleAmount);
-        if(!$scope.titleGambleAmount || $scope.titleGambleAmount < 0) { $scope.message = { type:'error',text:'That ain\'t no valid amount yo' }; return; }
-        if(!$scope.user.kudos || $scope.titleGambleAmount > $scope.user.kudos) { $scope.message = { type:'error',text:'You only have <strong>'+$scope.user.kudos+'</strong> kudos!' }; return; }
-        console.log('betting',$scope.titleGambleAmount,'kudos on title to include string "'+$scope.titleGambleString+'"');
-        fireUser.child('kudos').transaction(function(userKudos) {
-            return !userKudos ? 0 : userKudos-$scope.titleGambleAmount == 0 ? null : userKudos-$scope.titleGambleAmount;
-        });
-        $scope.controlTitleGamble = false;
-        $scope.titleGambleSet = true;
-        sendEvent(username,'made a <strong>'+$scope.titleGambleAmount+'</strong> kudo title bet!');
-    };
-    
-    $scope.titleGambleCalcMulti = function() {
-        if(!$scope.titleGambleString) return;
-        $scope.titleGambleString = $scope.titleGambleString.trim(); // Remove leading and trailing spaces
-        if($scope.titleGambleString.length < 2) { $scope.titleGambleMulti = null; return; }
-        var multi = [0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 8, 10, 15, 20, 25, 30, 50, 75, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 2000, 2500];
-        var gambleReduction = $scope.titleGambleWins.hasOwnProperty($scope.titleGambleString) ? 1/($scope.titleGambleWins[$scope.titleGambleString]+1) : 1;
-        $scope.titleGambleMulti = multi[$scope.titleGambleString.length-2] * gambleReduction;
-        $timeout(function(){});
     };
 
     $scope.restrictNumber = function(input,min,max) { 
