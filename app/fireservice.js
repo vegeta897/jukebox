@@ -17,15 +17,9 @@ Application.Services.factory('FireService',function() {
     };
     
     return {
-        set: function(path, value) {
-            fireRef.child(path).set(value);
-        },
-        remove: function(path) {
-            fireRef.child(path).remove();
-        },
-        update: function(path, properties) {
-            fireRef.child(path).update(properties);
-        },
+        set: function(path, value) { fireRef.child(path).set(value); },
+        remove: function(path) { fireRef.child(path).remove(); },
+        update: function(path, properties) { fireRef.child(path).update(properties); },
         transact: function(path, amount) {
             fireRef.child(path).transaction(function(orig) {
                 return !orig ? +amount : +orig + +amount == 0 ? null : +orig + +amount
@@ -44,6 +38,13 @@ Application.Services.factory('FireService',function() {
         removeOnQuit: function(path) {
             fireRef.child(path).onDisconnect().remove();
         },
-        getServerTime: getServerTime
+        setGlobal: function(path,value) { fireRef.parent().child(path).set(value); },
+        onceGlobal: function(path, callback) {
+            fireRef.parent().child(path).once('value', function(snap) { callback(snap.val()); });
+        },
+        onGlobal: function(path, handler) {
+            fireRef.parent().child(path).on('value',function(snap) { handler(snap.val()); });
+        },
+        ref: fireRef, getServerTime: getServerTime
     };
 });

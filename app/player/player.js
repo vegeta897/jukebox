@@ -36,16 +36,32 @@ function onPlayerStateChange(event) {
 }
 function stopVideo() { player.stopVideo(); }
 
-Application.Services.factory('Player',function() {
+Application.Services.factory('Player',function($rootScope,Global,localStorageService) {
+    var interval, muted, volume = localStorageService.get('volume');
+    
+    interval = setInterval(function(){
+        if(player && player.hasOwnProperty('loadVideoById')) {
+            Global.initialize(); clearInterval(interval);
+        }
+    },100);
+    
+    $rootScope.$on('interval',function() {
+        if(!playing) return;
+        if(muted != player.isMuted()) {
+            Global.setUserProperty('muted',player.isMuted());
+        }
+        if(parseInt(player.getVolume()) != volume) {
+            volume = parseInt(player.getVolume()) || 0;
+            Global.setUserProperty('volume',volume);
+            localStorageService.set('volume',volume);
+        }
+    });
     
     return {
         loadVideo: function(videoID,start,quality) {
             if(!player) return;
             player.loadVideoById(videoID,start,quality);
             player.setPlaybackQuality('large');
-        },
-        isReady: function() {
-            return player && player.hasOwnProperty('loadVideoById');
         },
         isMuted: function() { return player ? player.isMuted() : false; }, 
         getVolume: function() { return player ? player.getVolume() : 0; } 

@@ -5,13 +5,14 @@ Application.Directives.directive('videos',function() {
         templateUrl: 'app/videos/videos.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,Videos,FireService,Player,Global) {
+        controller: function($timeout,$rootScope,$scope,Videos,FireService,Player,Global) {
             $rootScope.$on('playerReady',function() {
                 FireService.onValue('selection',function(newSelection) {
                     $scope.videoSelection = Videos.changeSelection(newSelection);
                 });
                 FireService.onValue('playing',function(newVideo) {
                     $scope.playing = Videos.changeVideo(newVideo);
+                    $timeout(function(){});
                 });
                 FireService.onValue('voting',Videos.setVoteEnd);
             });

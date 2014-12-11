@@ -1,7 +1,39 @@
 'use strict';
-Application.Services.factory('DJ',function(Global,FireService,Videos,Util,API) {
+Application.Services.factory('DJ',function($rootScope,Global,FireService,Videos,Util,API) {
     var selfDJ, videoTimeout, voting, gettingVideos;
-
+    
+    $rootScope.$on('interval',function() {
+        if(!selfDJ || gettingVideos) return;
+        var playing = Videos.getPlaying();
+        var selection = Videos.getSelection();
+        if(!playing && !voting) { console.log('nothing playing, get list');
+            if(!selection) { getVideos(); return; }
+            console.log('nothing playing, have list, voting ends in 10 seconds');
+            videoTimeout = setTimeout(playVideo, 10000); // Voting for 10 seconds
+            FireService.set('voting',FireService.getServerTime() + 10000);
+            voting = true;
+        }
+        var elapsed = parseInt((FireService.getServerTime() - playing.startTime) / 1000);
+        if (elapsed > playing.duration.totalSec && !voting) { // Video expired
+            console.log('video expired');
+            if(!selection) getVideos();
+            voting = true;
+            videoTimeout = setTimeout(playVideo, 15000); // Voting for 15 seconds
+            FireService.set('voting',FireService.getServerTime() + 15000);
+        }
+        if (elapsed + 90 > playing.duration.totalSec && !voting) {
+            console.log('video close to ending or ended');
+            if(!selection) getVideos();
+            // Voting for 89 seconds
+            videoTimeout = setTimeout(playVideo, Math.min(playing.duration.totalSec*1000,90000)-1000); 
+            FireService.set('voting',
+                FireService.getServerTime() + Math.min(playing.duration.totalSec*1000,90000));
+            voting = true;
+        } else if (!voting) { // Video not expired or close to being over, remove selection list
+            FireService.remove('selection');
+        }
+    });
+    
     var getVideos = function() {
         FireService.remove('votes');
         gettingVideos = true;
@@ -57,35 +89,6 @@ Application.Services.factory('DJ',function(Global,FireService,Videos,Util,API) {
                     FireService.remove('eventLog/'+key);
                 }
             });
-        },
-        interval: function() {
-            if(!selfDJ || gettingVideos) return;
-            var playing = Videos.getPlaying();
-            var selection = Videos.getSelection();
-            if(!playing && !voting) { console.log('nothing playing, get list');
-                if(!selection) { getVideos(); return; }
-                console.log('nothing playing, have list, voting ends in 10 seconds');
-                videoTimeout = setTimeout(playVideo, 10000); // Voting for 10 seconds
-                FireService.set('voting',FireService.getServerTime() + 10000);
-                voting = true;
-            }
-            var elapsed = parseInt((FireService.getServerTime() - playing.startTime) / 1000);
-            if (elapsed > playing.duration.totalSec && !voting) { // Video expired
-                console.log('video expired');
-                if(!selection) getVideos();
-                voting = true;
-                videoTimeout = setTimeout(playVideo, 15000); // Voting for 15 seconds
-                FireService.set('voting',FireService.getServerTime() + 15000);
-            }
-            if (elapsed + 90 > playing.duration.totalSec && !voting) {
-                console.log('video close to ending or ended');
-                if(!selection) getVideos();
-                videoTimeout = setTimeout(playVideo, Math.min(playing.duration.totalSec*1000,90000)-1000); // Voting for 89 seconds
-                FireService.set('voting',FireService.getServerTime() + Math.min(playing.duration.totalSec*1000,90000));
-                voting = true;
-            } else if (!voting) { // Video not expired or close to being over, remove selection list
-                FireService.remove('selection');
-            }
         },
         forceVote: function() {
             if(!Videos.getSelection()) getVideos();

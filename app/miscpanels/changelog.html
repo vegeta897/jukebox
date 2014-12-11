@@ -1,0 +1,7 @@
+<div class="changelog control-panel" ng-show="control.show">
+    <p class="muted" ng-show="changelog.loading">Loading changelog from GitHub...</p>
+    <table><tr ng-repeat="commit in changelog.commits">
+        <td class="muted">{{ commit.date | timeUnits }} {{ commit.date | timeUnitsLabel }} ago</td>
+        <td>{{ commit.message }}</td>
+    </tr></table>
+</div>

@@ -1,0 +1,10 @@
+<div class="mumble control-panel" ng-show="control.show">
+    <p class="muted" ng-show="mumble.loading">Loading Mumble server info...</p>
+    <p class="muted" ng-show="mumble.empty">Nobody's in the Mumble server :(</p>
+    <ul ng-hide="mumble.empty">
+        <li ng-repeat="(channelName, users) in mumble.channels" ng-show="users">
+            <h3>{{ channelName }}</h3>
+            <ul><li ng-repeat="user in users">{{ user.name }}</li></ul>
+        </li>
+    </ul>
+</div>

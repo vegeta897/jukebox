@@ -12,7 +12,7 @@
     <header>
         <h1>Jukebox</h1>
         <p><strong>v{{ version }}</strong> - <span class="muted">{{ versionName }}</span></p>
-        <form ng-submit="login()" ng-hide="auth || initializing || needUpdate">
+        <form ng-submit="login()" ng-hide="auth || !isInit() || needUpdate()">
             <fieldset>
                 <input type="text" name="username" id="username" ng-model="username" size="10" placeholder="username" />
                 <input type="text" name="passcode" id="passcode" ng-model="passcode" size="5" placeholder="passcode" />
@@ -21,8 +21,8 @@
         </form>
         <p ng-show="auth">{{ username }}<span><strong>{{ getKudos() || 0 | number }} </strong>kudos</span></p>
     </header>
-    <p ng-show="needUpdate" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
-    <section ng-hide="initializing || needUpdate">
+    <p ng-show="needUpdate()" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
+    <section ng-hide="!isInit() || needUpdate()">
         <div class="canvas-header">
             <span ng-repeat="mode in canvasModes" ng-click="changeCanvasMode(mode)" ng-class="{selected: canvasData.canvasMode == mode}" ng-show="auth">{{ mode }}</span>
         </div>
@@ -56,15 +56,7 @@
             <p ng-show="getDJ()"><span class="muted">Current DJ: </span>{{ getDJ() }}</p>
             <button ng-hide="getDJ() || !auth" ng-click="becomeDJ()">Become DJ</button>
         </div>
-        <div class="event-log">
-            <ul><li ng-repeat="entry in eventLog" class="animate-repeat">
-                <div ng-style="{opacity: (300000 - entry.age)/300000}">
-                    <span>{{ entry.time | date:'H:mm:ss' }}</span>
-                    <strong ng-style="{color: '#'+getUserColor(entry.user)}">{{ entry.user }} </strong>
-                    <span ng-bind-html="entry.text"></span>
-                </div>
-            </li></ul>
-        </div>
+        <event-log></event-log>
         <div ng-show="getUsers()" class="listeners">
             <h3 class="muted">Listeners</h3>
             <div class="listener" ng-repeat="(name,listener) in getUsers()" ng-show="listener.connections">
@@ -76,7 +68,7 @@
             <p ng-class="message.type" ng-bind-html="message.text"></p>
             <p ng-show="message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
         </div>
-        <p ng-show="getJackpot()" style="text-align: center;">
+        <p ng-show="getJackpot() && auth" style="text-align: center;">
             <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(getJackpot()/10000))+'px'}">{{ getJackpot() | number }}</strong>
         </p>
         <control-buttons></control-buttons>
@@ -86,28 +78,10 @@
         <add-video></add-video>
         <curator></curator>
         <avatar-shop></avatar-shop>
-        <div class="changelog control-panel" ng-show="auth && controlList.changelog.show">
-            <p class="muted" ng-show="!commits">Loading changelog from GitHub...</p>
-            <table><tr ng-repeat="commit in commits">
-                <td class="muted">{{ commit.date | timeUnits }} {{ commit.date | timeUnitsLabel }} ago</td>
-                <td>{{ commit.message }}</td>
-            </tr></table>
-        </div>
-        <div class="mumble control-panel" ng-show="auth && controlList.mumble.show">
-            <p class="muted" ng-show="!mumble">Loading Mumble server info...</p>
-            <p class="muted" ng-show="mumble.empty">Nobody's in the Mumble server :(</p>
-            <ul ng-hide="mumble.empty">
-                <li ng-repeat="(channelName, users) in mumble" ng-show="users">
-                    <h3>{{ channelName }}</h3>
-                    <ul><li ng-repeat="user in users">{{ user.name }}</li></ul>
-                </li>
-            </ul>
-        </div>
+        <changelog></changelog>
+        <mumble></mumble>
         <meta-stats></meta-stats>
-        <div class="control-panel" ng-show="auth && controlList.admin.show">
-            <button ng-click="requireVersion()">Require Version</button>
-            <button ng-click="clearCanvas()">Clear Canvas</button>
-        </div>
+        <admin></admin>
         <button ng-hide="username != getDJ() || !auth" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->
@@ -119,6 +93,7 @@
     <script src="js/vendor/localStorageModule.js"></script>
     <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script>
     <script src="app/app.js"></script> <!-- My Stuff -->
+    <script src="app/api.js"></script>
     <script src="app/jukebox.js"></script>
     <script src="app/videos/videos.js"></script>
     <script src="app/controlbuttons/controlbuttons.js"></script>
@@ -128,7 +103,9 @@
     <script src="app/curator/curator.js"></script>
     <script src="app/fillblank/fillblank.js"></script>
     <script src="app/metastats/metastats.js"></script>
+    <script src="app/miscpanels/miscpanels.js"></script>
     <script src="app/titlegamble/titlegamble.js"></script>
+    <script src="app/eventlog/eventlog.js"></script>
     <script src="app/fireservice.js"></script>
     <script src="app/global.js"></script>
     <script src="app/dj.js"></script>

@@ -1,6 +1,29 @@
 'use strict';
 Application.Services.factory('Global',function($rootScope,FireService) {
-    var username, user = {}, dj, jackpot, users;
+    var username, user = {}, // TODO: Move user stuff into user directive/service
+        init, needUpdate, users, dj, jackpot;
+    var version = 0.356, versionName = 'Jukes of Hazzard';
+    FireService.onceGlobal('version',function(ver) {
+        if(version < ver) {
+            needUpdate = true;
+        } else {
+            FireService.onGlobal('version',function(newVer){
+                needUpdate = newVer > version;
+            });
+        }
+    });
+
+    var everyThirtySeconds = 30;
+    var interval = function() {
+        $rootScope.$broadcast('interval');
+        everyThirtySeconds += 0.5;
+        if(everyThirtySeconds >= 30) {
+            everyThirtySeconds = 0;
+            // TODO: Chance for bird to fly in for everyone
+            // Not just DJ, so that the more people around, the higher the chance
+        }
+    };
+    
     $rootScope.$on('newVideo',function() {
         if(!username) return;
         FireService.remove('users/'+username+'/vote');
@@ -10,6 +33,20 @@ Application.Services.factory('Global',function($rootScope,FireService) {
     FireService.onValue('users',function(theUsers) { users = theUsers; });
     
     return {
+        initialize: function() {
+            init = true;
+            setInterval(interval,500);
+            console.log('Jukebox initializing...');
+            $rootScope.$broadcast('playerReady');
+            FireService.ref.once('value', function(snap) {
+                dj = snap.val().dj;
+                if(dj && !snap.val().users[dj].hasOwnProperty('connections')) {
+                    FireService.remove('dj');
+                }
+            });
+        },
+        isInit: function() { return init; },
+        needUpdate: function() { return needUpdate; },
         setName: function(name) {
             username = name;
             FireService.onValue('users/'+username,function(data){ user = data; });
@@ -35,6 +72,7 @@ Application.Services.factory('Global',function($rootScope,FireService) {
         hasAvatarColor: function(color) {
             return color == 'normal' ? true : user && user.avatarColors ? 
                 user.avatarColors.hasOwnProperty(color) : false;
-        }
+        },
+        version: version, versionName: versionName
     };
 });

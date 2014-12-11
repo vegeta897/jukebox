@@ -1,7 +1,7 @@
 <div class="title-gamble control-panel" ng-show="control.show">
     <p ng-hide="getDJ()">You can't place any bets without a DJ.</p>
-    <p ng-show="videoSelection">You can't bet on the titles yet!</p>
-    <p ng-show="videoSelection && !getKudos()">You need to earn some kudos first.</p>
+    <p ng-show="getVideoSelection()">You can't bet on the titles yet!</p>
+    <p ng-show="getVideoSelection() && !getKudos()">You need to earn some kudos first.</p>
     <p ng-show="titleGamble.gambleSet">You can't place more than one title bet per round.</p>
     <form ng-submit="placeTitleBet()" ng-show="!getVideoSelection() && getKudos() && !titleGamble.gambleSet && getDJ()">
         <fieldset>

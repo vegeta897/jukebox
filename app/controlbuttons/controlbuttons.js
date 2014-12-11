@@ -10,7 +10,6 @@ Application.Directives.directive('controlButtons',function() {
 
             $scope.showControl = function(name) {
                 ControlButtons.showControl(name);
-                $rootScope.$broadcast('open:'+name);
                 $timeout(function(){ window.scrollTo(0,document.body.scrollHeight); }); // Scroll to bottom
             };
             $scope.getUsername = Global.getName;
@@ -41,40 +40,8 @@ Application.Services.factory('ControlButtons',function() {
             if(control.show) { control.show = false; return; }
             for(var key in controlList) { if(!controlList.hasOwnProperty(key)) continue;
                 controlList[key].show = key == name;
+                if(key == name && controlList[key].hasOwnProperty('openPanel')) controlList[key].openPanel();
             }
-            // TODO: Listen for broadcast in mumble and changelog directives
-            //if(name == "mumble") {
-            //    jQuery.ajax({ // Get mumble server status
-            //        url: 'http://api.commandchannel.com/cvp.json?email=vegeta897@gmail.com&apiKey=4BC693B4-11FD-4E9E-8BA5-E3B39D5A04B9&callback=?', dataType: 'jsonp',
-            //        success: function(results) {
-            //            if(results.name) {
-            //                $scope.mumble = { empty: true };
-            //                for(var i = 0, il = results.root.channels.length; i < il; i++) {
-            //                    var channel = results.root.channels[i];
-            //                    if(channel.users.length == 0) { continue; }
-            //                    $scope.mumble.empty = false;
-            //                    $scope.mumble[channel.name] = channel.users;
-            //                }
-            //            }
-            //        }
-            //    });
-            //}
-            //if(name == "changelog") {
-            //    jQuery.ajax({ // Get last 8 commits from github
-            //        url: 'https://api.github.com/repos/vegeta897/jukebox/commits', dataType: 'jsonp',
-            //        success: function (results) {
-            //            $scope.commits = [];
-            //            if (!results.data) return;
-            //            for (var i = 0; i < results.data.length; i++) {
-            //                $scope.commits.push({
-            //                    message: results.data[i].commit.message,
-            //                    date: Date.parse(results.data[i].commit.committer.date)
-            //                });
-            //                if ($scope.commits.length > 9) break;
-            //            }
-            //        }
-            //    });
-            //}
         }
     };
 });

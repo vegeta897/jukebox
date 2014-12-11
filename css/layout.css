@@ -75,18 +75,18 @@ header form button { float: left; width: 66px; height: 24px; }
 .control-buttons button.selected { }
 .control-buttons button:focus { outline-width: 0; }
 .control-buttons button i { position: absolute; top: -3px; right: -5px; }
-.control-panel { margin: 16px 32px 32px; }
+.control-panel { margin: 16px 16px 32px; }
 .control-panel h2, .control-panel legend { text-align: center; margin-bottom: 10px; font-size: 1.5em; }
 
 .field { height: 32px; margin-bottom: 6px; clear: both; }
-.field label { display: block; float: left; width: 120px; padding: 3px 10px 0 0; text-align: right; }
+.field label { display: block; float: left; width: 136px; padding: 3px 10px 0 0; text-align: right; }
 .field input { float: left; }
 
 .add-bounty, .title-gamble { text-align: center; }
 .add-bounty input, .title-gamble .field:first-of-type input { text-align: right; }
 .title-gamble .field:first-of-type, .add-bounty .field:first-of-type { height: 56px; }
 .title-gamble .field:last-of-type input { text-align: center; }
-.title-gamble .field label { width: 240px; }
+.title-gamble .field label { width: 256px; }
 .title-gamble form p { margin-bottom: 0.5em; }
 .title-gamble slider, .add-bounty slider { width: 300px; }
 .add-bounty slider { top: -6px; }
@@ -98,7 +98,7 @@ header form button { float: left; width: 66px; height: 24px; }
 .add-video textarea ~ span { margin-left: 130px !important; }
 .field .valid, .field .invalid, .field .hint { margin-left: 8px; line-height: 20px; }
 .field .valid, .field .invalid { font-weight: bold; }
-.add-video form button { float: left; margin-left: 130px; }
+.add-video form button { float: left; margin-left: 146px; }
 .add-video input[type="checkbox"] { margin-left: 10px; margin-top: 4px; float: left; }
 .add-video input[type="checkbox"] + label { top: 3px; position: relative; }
 
@@ -124,10 +124,11 @@ header form button { float: left; width: 66px; height: 24px; }
 
 .avatar-shop p { text-align: center; }
 .avatar-shop > div:first-of-type { margin-bottom: 16px; }
-.avatar-shop > div > div { width: 192px; height: 22px; float: left; cursor: pointer; }
+.avatar-shop > div > div { width: 202px; height: 22px; float: left; cursor: pointer; }
 .avatar-shop > div > div > i { display: inline-block; width: 30px; font-size: 1.1em; text-align: center; }
 .avatar-shop .price { display: inline-block; width: 48px; text-align: right; }
 
+.changelog p { text-align: center; }
 .changelog table tr td { padding: 4px 0; }
 .changelog table tr td:first-child { width: 110px; }
 

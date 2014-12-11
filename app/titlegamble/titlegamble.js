@@ -7,11 +7,10 @@ Application.Directives.directive('titleGamble',function() {
         scope: {},
         controller: function($rootScope,$scope,Global,TitleGamble,ControlButtons,Videos,Util) {
             $scope.control = ControlButtons.addControl('titleGamble','Title Gamble',false,false);
+            $scope.control.showPanel = TitleGamble.getWins;
             $scope.titleGamble = TitleGamble.init();
             $rootScope.$on('newSelection',function() { TitleGamble.awardGamble(); });
             $rootScope.$on('newVideo',function() { $scope.titleGamble = TitleGamble.init(); });
-            $rootScope.$on('open:titleGamble',TitleGamble.getWins);
-            
             $scope.placeTitleBet = function() {
                 TitleGamble.placeBet();
                 $scope.control.show = false;
