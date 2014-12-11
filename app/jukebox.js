@@ -1,5 +1,5 @@
 'use strict';
-Application.Controllers.controller('Main', function($rootScope,$scope,$timeout,localStorageService,Canvas,FireService,DJ,Global) {
+Application.Controllers.controller('Main', function($rootScope,$scope,$timeout,localStorageService,Canvas,FireService,DJ,Global,AvatarShop) {
     
     // We gonna refactor this shit
     
@@ -18,6 +18,7 @@ Application.Controllers.controller('Main', function($rootScope,$scope,$timeout,l
     $scope.needUpdate = Global.needUpdate;
     $scope.becomeDJ = DJ.becomeDJ;
     $scope.forceVote = DJ.forceVote;
+    $scope.getUserColor = AvatarShop.getUserColor;
     $scope.getListenerClasses = function(listener) {
         if(!listener) return; return 'fa-' + (listener.avatar ? listener.avatar : 'headphones');
     };
