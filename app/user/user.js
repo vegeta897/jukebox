@@ -5,11 +5,11 @@ Application.Directives.directive('user',function() {
         templateUrl: 'app/user/user.html',
         replace: true,
         scope: {},
-        controller: function($scope,User,Global) {
+        controller: function($scope,User,Jukebox) {
             $scope.user = User.init();
             $scope.getKudos = User.getKudos;
-            $scope.isInit = Global.isInit;
-            $scope.needUpdate = Global.needUpdate;
+            $scope.isInit = Jukebox.isInit;
+            $scope.needUpdate = Jukebox.needUpdate;
             $scope.login = User.login;
             $scope.isAuthed = User.isAuthed;
         },
@@ -19,7 +19,7 @@ Application.Directives.directive('user',function() {
     }
 });
 
-Application.Services.factory('User',function($rootScope,FireService,localStorageService,Global) {
+Application.Services.factory('User',function($rootScope,FireService,localStorageService,Jukebox) {
     var user, auth;
 
     $rootScope.$on('newVideo',function() {
@@ -32,7 +32,7 @@ Application.Services.factory('User',function($rootScope,FireService,localStorage
         localStorageService.set('username',user.username);
         localStorageService.set('passcode',user.passcode);
         var fireUser = FireService.ref.child('users/'+user.username);
-        fireUser.child('version').set(Global.version);
+        fireUser.child('version').set(Jukebox.version);
         var lastOnlineRef = fireUser.child('lastOnline');
         var fireAuths = FireService.ref.child('auths');
         fireAuths.child(auth.uid).set({username:user.username,passcode:user.passcode});
@@ -50,7 +50,7 @@ Application.Services.factory('User',function($rootScope,FireService,localStorage
         //$scope.canvasMode = 'polyominoes';
         //Canvas.attachVars(fireRef.child('canvas'),$scope.canvasData,{
         //    myColor: AvatarShop.avatarColors[$scope.user.avatarColor ? $scope.user.avatarColor : 'normal'][1],
-        //    fireUser: fireUser, api: services, playing: $scope.playing, users: Global.getUsers(), username: username
+        //    fireUser: fireUser, api: services, playing: $scope.playing, users: Jukebox.getUsers(), username: username
         //}); 
         //Canvas.changeMode($scope.canvasMode);
         //$scope.changeCanvasMode = Canvas.changeMode;

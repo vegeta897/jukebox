@@ -5,7 +5,7 @@ Application.Directives.directive('videos',function() {
         templateUrl: 'app/videos/videos.html',
         replace: true,
         scope: {},
-        controller: function($timeout,$rootScope,$scope,Videos,FireService,Global,User) {
+        controller: function($timeout,$rootScope,$scope,Videos,FireService,Jukebox,User) {
             $rootScope.$on('playerReady',function() {
                 FireService.onValue('selection',function(newSelection) {
                     $scope.videoSelection = Videos.changeSelection(newSelection);
@@ -20,7 +20,7 @@ Application.Directives.directive('videos',function() {
             $scope.getPlaying = Videos.getPlaying;
             $scope.getUsername = User.getName;
             $scope.isAuthed = User.isAuthed;
-            $scope.getDJ = Global.getDJ;
+            $scope.getDJ = Jukebox.getDJ;
             $scope.getVoteTimeLeft = function() {
                 return Math.max(0,parseInt((Videos.getVoteEnd() - FireService.getServerTime())/1000));
             };

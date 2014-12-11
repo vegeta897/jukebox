@@ -5,7 +5,7 @@ Application.Directives.directive('bounty',function() {
         templateUrl: 'app/bounty/bounty.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,Bounty,Global,ControlButtons,Util,User) {
+        controller: function($rootScope,$scope,Bounty,Jukebox,ControlButtons,Util,User) {
             $scope.control = ControlButtons.addControl('addBounty','Add Bounty',false,false);
             $scope.bounty = Bounty.init();
             $rootScope.$on('newSelection',function() {
@@ -21,7 +21,7 @@ Application.Directives.directive('bounty',function() {
                 $scope.control.show = false;
             };
             $scope.getKudos = User.getKudos;
-            $scope.getDJ = Global.getDJ;
+            $scope.getDJ = Jukebox.getDJ;
             $scope.restrictNumber = Util.restrictNumber;
         },
         link: function(scope,element,attrs) {

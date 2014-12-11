@@ -39,10 +39,10 @@ Application.Directives.directive('admin',function() {
         templateUrl: 'app/miscpanels/admin.html',
         replace: true,
         scope: {},
-        controller: function($scope,MiscPanels,ControlButtons,FireService,Global) {
+        controller: function($scope,MiscPanels,ControlButtons,FireService,Jukebox) {
             $scope.control = ControlButtons.addControl('admin','Admin',true,false);
             $scope.requireVersion = function() { // Set firebase version
-                FireService.setGlobal('version',Global.version);
+                FireService.setGlobal('version',Jukebox.version);
             };
             $scope.clearCanvas = function() { FireService.remove('canvas'); /*Canvas.clear();*/ };
         },

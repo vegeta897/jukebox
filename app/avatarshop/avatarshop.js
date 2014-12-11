@@ -17,13 +17,13 @@ Application.Directives.directive('avatarShop',function() {
         templateUrl: 'app/avatarshop/avatarshop.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,AvatarShop,Global,ControlButtons,User) {
+        controller: function($rootScope,$scope,AvatarShop,Jukebox,ControlButtons,User) {
             $scope.control = ControlButtons.addControl('avatarShop','Avatar Shop',false,false);
             $scope.shop = AvatarShop.init();
             $scope.getKudos = User.getKudos;
             $scope.getUserData = User.getUserData;
             $scope.hasAvatar = User.hasAvatar;
-            $scope.hasAvatarColor = Global.hasAvatarColor;
+            $scope.hasAvatarColor = Jukebox.hasAvatarColor;
             $scope.buyEquip = AvatarShop.buyEquip;
         },
         link: function(scope,element,attrs) {
@@ -32,7 +32,7 @@ Application.Directives.directive('avatarShop',function() {
     }
 });
 
-Application.Services.factory('AvatarShop',function(Global,FireService,User) {
+Application.Services.factory('AvatarShop',function(Jukebox,FireService,User) {
     var shop;
     return {
         buyEquip: function(type,item) {
@@ -51,8 +51,8 @@ Application.Services.factory('AvatarShop',function(Global,FireService,User) {
                 '</strong> avatar'+(type == 'avatar' ? '' : ' color')+'!');
         },
         getUserColor: function(username) {
-            if(!Global.getUsers() || !Global.getUsers()[username]) return;
-            var user = Global.getUsers()[username];
+            if(!Jukebox.getUsers() || !Jukebox.getUsers()[username]) return;
+            var user = Jukebox.getUsers()[username];
             return user.avatarColor ? avatarColors[user.avatarColor][1] : avatarColors.normal[1];
         },
         init: function() { shop = { avatars: avatars, avatarColors: avatarColors }; return shop; },

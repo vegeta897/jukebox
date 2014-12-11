@@ -36,12 +36,12 @@ function onPlayerStateChange(event) {
 }
 function stopVideo() { player.stopVideo(); }
 
-Application.Services.factory('Player',function($rootScope,Global,localStorageService,User) {
+Application.Services.factory('Player',function($rootScope,Jukebox,localStorageService,User) {
     var interval, muted, volume = localStorageService.get('volume');
     
     interval = setInterval(function(){
         if(player && player.hasOwnProperty('loadVideoById')) {
-            Global.initialize(); clearInterval(interval);
+            Jukebox.initialize(); clearInterval(interval);
         }
     },100);
     
