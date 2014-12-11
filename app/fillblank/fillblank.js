@@ -93,7 +93,7 @@ Application.Services.factory('FillBlank',function(Global,Videos,FireService,Util
                 var reward = fillBlank.title.missing.length * 5;
                 //$scope.message = { type: 'success', 
                 //    text: 'You guessed <strong>correctly!</strong> Nice one.', kudos: reward };
-                FireService.sendEvent(Global.getUser(),
+                FireService.sendEvent(Global.getName(),
                     'just won <strong>' + reward + '</strong> kudos by filling in the blank!');
                 Global.changeKudos(reward);
             } else {

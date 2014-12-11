@@ -17,7 +17,10 @@ Application.Services.factory('Global',function($rootScope,FireService) {
         changeKudos: function(amount) {
             FireService.transact('users/'+username+'/kudos',parseInt(amount));
         },
-        setUserProperty: function(property,value) { FireService.set('users/'+username+'/'+property,value); },
+        setUserProperty: function(property,value) { 
+            if(!username) return;
+            FireService.set('users/'+username+'/'+property,value); 
+        },
         getKudos: function() { return user && user.kudos ? user.kudos : 0; }, 
         getVote: function() { return user && user.vote ? user.vote : -1; },
         getUser: function() { return user ? user : false; },

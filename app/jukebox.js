@@ -46,7 +46,7 @@ Application.Controllers.controller('Main', function($rootScope,$scope,$timeout,l
     var fireRef = new Firebase('https://jukebox897.firebaseio.com/box1'), fireUser;
     var init = false, muted;
 
-    $scope.version = 0.354; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
+    $scope.version = 0.355; $scope.versionName = 'Jukes of Hazzard'; $scope.needUpdate = false;
     $scope.initializing = true; $scope.eventLog = [];
     $scope.username = username; $scope.passcode = passcode;
     $scope.countProperties = Util.countProperties;
@@ -149,14 +149,13 @@ Application.Controllers.controller('Main', function($rootScope,$scope,$timeout,l
                 $timeout(function(){});
             });
         }
-        if(init && playing && $scope.playing) {
+        if(init && Videos.getPlaying()) {
             if(muted != Player.isMuted()) {
-                muted = Player.isMuted() ? true : false;
-                if($scope.auth) fireUser.child('muted').set(muted);
+                Global.setUserProperty('muted',Player.isMuted());
             }
             if(parseInt(Player.getVolume()) != volume) {
                 volume = parseInt(Player.getVolume()) || 0;
-                if($scope.auth) fireUser.child('volume').set(volume);
+                Global.setUserProperty('volume',volume);
                 localStorageService.set('volume',volume);
             }
         }
