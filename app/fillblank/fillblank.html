@@ -1,0 +1,14 @@
+<div class="fill-blank control-panel" ng-show="control.show">
+    <p ng-show="!getKudos() || getKudos() < 5">You need to earn some more kudos first.</p>
+    <p ng-show="getKudos() >= 5">Fill in the blanks from video titles and win kudos!<br />
+        <small>The title is a pun, because you'll fill your bank if you win a lot!</small></p>
+    <button ng-hide="fillBlank.title || getKudos() < 5" ng-click="fillBlankGetTitle()" ng-disabled="fillBlank.loading">Gimme a Title! (5 kudos)</button>
+    <form ng-show="fillBlank.title" ng-submit="fillBlankSubmit()">
+        <h3 ng-bind-html="fillBlank.title.challenge"></h3>
+        <div class="letter-inputs">
+            <input class="letter-input" ng-repeat="inputLetter in fillBlank.inputLetters" ng-model="inputLetter.value" ng-change="fillBlankInputChange()" ng-disabled="inputLetter.disabled" size="2" maxlength="1" type="text">
+        </div>
+        <p>Reward: <strong>{{ fillBlank.title.missing.length * 5 }} kudos</strong></p>
+        <button ng-disabled="fillBlank.incomplete">Submit Guess</button>
+    </form>
+</div>

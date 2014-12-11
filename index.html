@@ -65,10 +65,10 @@
                 </div>
             </li></ul>
         </div>
-        <div ng-show="users" class="listeners">
+        <div ng-show="getUsers()" class="listeners">
             <h3 class="muted">Listeners</h3>
-            <div class="listener" ng-repeat="(name,listener) in users" ng-show="listener.connections">
-                <div><i class="fa" ng-class="listenerClasses(listener)" ng-style="{color: '#'+getUserColor(name)}"></i> {{ name }}</div>
+            <div class="listener" ng-repeat="(name,listener) in getUsers()" ng-show="listener.connections">
+                <div><i class="fa" ng-class="getListenerClasses(listener)" ng-style="{color: '#'+getUserColor(name)}"></i> {{ name }}</div>
                 <div class="volume" ng-class="{muted:listener.muted}"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
@@ -81,20 +81,7 @@
         </p>
         <control-buttons></control-buttons>
         <title-gamble></title-gamble>
-        <div class="fill-blank control-panel" ng-show="auth && controlList.fillBlank.show">
-            <p ng-show="!getKudos() || getKudos() < 5">You need to earn some more kudos first.</p>
-            <p ng-show="getKudos() >= 5">Fill in the blanks from video titles and win kudos!<br />
-                <small>The title is a pun, because you'll fill your bank if you win a lot!</small></p>
-            <button ng-hide="fillBlankTitle || getKudos() < 5" ng-click="fillBlankGetTitle()" ng-disabled="gettingFillBlankTitle">Gimme a Title! (5 kudos)</button>
-            <form ng-show="fillBlankTitle" ng-submit="fillBlankSubmit()">
-                <h3 ng-bind-html="fillBlankTitle.challenge"></h3>
-                <div class="letter-inputs">
-                    <input class="letter-input" ng-repeat="inputLetter in fillBlankInputLetters" ng-model="inputLetter.value" ng-change="fillBlankInputChange()" ng-disabled="inputLetter.disabled" size="2" maxlength="1" type="text">
-                </div>
-                <p>Reward: <strong>{{ fillBlankTitle.missing.length * 5 }} kudos</strong></p>
-                <button ng-disabled="fillBlankIncomplete">Submit Guess</button>
-            </form>
-        </div>
+        <fill-blank></fill-blank>
         <bounty></bounty>
         <add-video></add-video>
         <curator></curator>
@@ -116,31 +103,7 @@
                 </li>
             </ul>
         </div>
-        <div class="meta control-panel" ng-show="auth && controlList.meta.show">
-            <button ng-click="metaGetVideoCount()" ng-hide="metaVideoCount" ng-disabled="gettingMetaVideoCount">Video Count</button>
-            <h3 ng-show="metaVideoCount">Total Videos: <strong>{{ metaVidCountTotal }}</strong></h3>
-            <div class="graph" ng-show="metaVideoCount">
-                <div class="y-axis">
-                    <div class="label" ng-repeat="yLabel in metaVidCountYAxisLabels">{{yLabel}} -</div>
-                </div>
-                <div class="data">
-                    <div class="data-point" ng-repeat="dayCount in metaVideoCount" ng-style="{width: metaVidCountBarWidth+'%',paddingRight: metaVidCountBarMargin+'%',paddingLeft: metaVidCountBarMargin+'%'}" ng-mouseenter="metaViewVidCountDay($index)" ng-mouseleave="metaViewVidCountDay(false)">
-                        <div class="bar">
-                            <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}">
-                            </div>
-                        </div>
-                        <div class="label" ng-show="dayCount.showLabel">{{ dayCount.add_date | date:'shortDate' }}</div>
-                    </div>
-                </div>
-                <div class="clearfix legend">
-                    <dl ng-show="metaVidCountDay">
-                        <dt class="label">Day:</dt><dd>{{ metaVidCountDay.add_date | date:'shortDate' }}</dd>
-                        <dt class="label">Video Count:</dt><dd class="small">{{ metaVidCountDay.vidCount }}</dd>
-                        <dt class="label">Top Submitter:</dt><dd>{{ metaVidCountDay.topSubmitter }}</dd>
-                    </dl>
-                </div>
-            </div>
-        </div>
+        <meta-stats></meta-stats>
         <div class="control-panel" ng-show="auth && controlList.admin.show">
             <button ng-click="requireVersion()">Require Version</button>
             <button ng-click="clearCanvas()">Clear Canvas</button>
@@ -163,6 +126,8 @@
     <script src="app/avatarshop/avatarshop.js"></script>
     <script src="app/bounty/bounty.js"></script>
     <script src="app/curator/curator.js"></script>
+    <script src="app/fillblank/fillblank.js"></script>
+    <script src="app/metastats/metastats.js"></script>
     <script src="app/titlegamble/titlegamble.js"></script>
     <script src="app/fireservice.js"></script>
     <script src="app/global.js"></script>

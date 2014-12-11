@@ -1,13 +1,14 @@
 'use strict';
 Application.Services.factory('Global',function($rootScope,FireService) {
-    var username, user = {}, dj, jackpot;
+    var username, user = {}, dj, jackpot, users;
     $rootScope.$on('newVideo',function() {
         if(!username) return;
         FireService.remove('users/'+username+'/vote');
     });
     FireService.onValue('dj',function(theDJ) { dj = theDJ; });
     FireService.onValue('jackpot',function(theJackpot) { jackpot = theJackpot; });
-    // TODO: Maybe move dj, jackpot, and users back into jukebox.js, use scope bindings in directives
+    FireService.onValue('users',function(theUsers) { users = theUsers; });
+    
     return {
         setName: function(name) {
             username = name;
@@ -23,6 +24,7 @@ Application.Services.factory('Global',function($rootScope,FireService) {
         getName: function() { return username ? username : false; },
         getDJ: function() { return dj ? dj : false; },
         getJackpot: function() { return jackpot ? jackpot : 0; },
+        getUsers: function() { return users ? users : 0; },
         hasAvatar: function(avatar) {
             return avatar == 'headphones' ? true : user && user.avatars ? 
                 user.avatars.hasOwnProperty(avatar) : false;

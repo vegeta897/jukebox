@@ -50,6 +50,11 @@ Application.Services.factory('AvatarShop',function(Global,FireService) {
                 'just bought the <strong>'+shop[type+'s'][item][0]+
                 '</strong> avatar'+(type == 'avatar' ? '' : ' color')+'!');
         },
+        getUserColor: function(username) {
+            if(!Global.getUsers() || !Global.getUsers()[username]) return;
+            var user = Global.getUsers()[username];
+            return user.avatarColor ? avatarColors[user.avatarColor][1] : avatarColors.normal[1];
+        },
         init: function() { shop = { avatars: avatars, avatarColors: avatarColors }; return shop; },
         avatars: avatars, avatarColors: avatarColors
     };

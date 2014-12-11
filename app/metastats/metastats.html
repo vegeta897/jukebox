@@ -1,0 +1,25 @@
+<div class="meta control-panel" ng-show="control.show">
+    <button ng-click="getVidCount()" ng-hide="meta.vidCount.data" ng-disabled="meta.loading">Video Count</button>
+    <h3 ng-show="meta.vidCount.data">Total Videos: <strong>{{ meta.vidCount.total }}</strong></h3>
+    <div class="graph" ng-show="meta.vidCount.data">
+        <div class="y-axis">
+            <div class="label" ng-repeat="yLabel in meta.vidCount.yAxisLabels">{{yLabel}} -</div>
+        </div>
+        <div class="data">
+            <div class="data-point" ng-repeat="dayCount in meta.vidCount.data" ng-style="{width: meta.vidCount.barWidth+'%',paddingRight: meta.vidCount.barMargin+'%',paddingLeft: meta.vidCount.barMargin+'%'}" ng-mouseenter="viewVidCountDay($index)" ng-mouseleave="viewVidCountDay(false)">
+                <div class="bar">
+                    <div class="bar-whitespace" ng-style="{height:(100-dayCount.barHeight)+'px'}">
+                    </div>
+                </div>
+                <div class="label" ng-show="dayCount.showLabel">{{ dayCount.add_date | date:'shortDate' }}</div>
+            </div>
+        </div>
+        <div class="clearfix legend">
+            <dl ng-show="meta.vidCount.day">
+                <dt class="label">Day:</dt><dd>{{ meta.vidCount.day.add_date | date:'shortDate' }}</dd>
+                <dt class="label">Video Count:</dt><dd class="small">{{ meta.vidCount.day.vidCount }}</dd>
+                <dt class="label">Top Submitter:</dt><dd>{{ meta.vidCount.day.topSubmitter }}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
