@@ -1,0 +1,10 @@
+<div ng-hide="!isInit() || needUpdate()">
+    <form ng-submit="login()" ng-hide="isAuthed()">
+        <fieldset>
+            <input type="text" name="username" id="username" ng-model="user.username" size="10" placeholder="username" />
+            <input type="text" name="passcode" id="passcode" ng-model="user.passcode" size="5" placeholder="passcode" />
+        </fieldset>
+        <button type="submit"><span>Log In</span></button>
+    </form>
+    <p ng-show="isAuthed()">{{ user.username }}<span><strong>{{ getKudos() || 0 | number }} </strong>kudos</span></p>
+</div>

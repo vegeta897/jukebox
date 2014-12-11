@@ -17,7 +17,7 @@ Application.Directives.directive('addVideo',function() {
     }
 });
 
-Application.Services.factory('AddVideo',function(Videos,Global,FireService,API,Util) {
+Application.Services.factory('AddVideo',function(Videos,User,FireService,API,Util,Message) {
     var adding;
     return {
         parseURL: function() {
@@ -44,28 +44,28 @@ Application.Services.factory('AddVideo',function(Videos,Global,FireService,API,U
             if(adding.track) adding.track = adding.track.trim();
             if(adding.artist == '') delete adding.artist;
             if(adding.track == '') delete adding.track;
-            API.addVideo(adding.parsedIds, adding.artist, adding.track, Global.getName()).then(function(results) {
+            API.addVideo(adding.parsedIds, adding.artist, adding.track, User.getName()).then(function(results) {
                 console.log(results);
                 adding.parsedIds = adding.urlSingle = adding.urlBatch = '';
                 adding.processing = false;
                 if(typeof results.data == 'string' && results.data.substr(0,9) == 'Duplicate') {
                     console.log('video id already exists!');
-                    //$scope.message = { type: 'error', text: 'That video has already been added.' };
+                    Message.set({ type: 'error', text: 'That video has already been added.' });
                 } else {
                     if(!results.data || !results.data.data) {
-                        //$scope.message = { type: 'error', 
-                        //    text: 'Sorry, there was a server error. Tell Vegeta about it.' }; 
+                        Message.set({ type: 'error', 
+                            text: 'Sorry, there was a server error. Tell Vegeta about it.' }); 
                         return;
                     }
                     var justAdded = results.data.data.items.length == 1 ? 
                         results.data.data.items[0].snippet.title : 'Videos';
                     var reward = parseInt(results.data.data.items.length * 25);
-                    //$scope.message = { type: 'success', 
-                    //    text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward };
+                    Message.set({ type: 'success', 
+                        text: '<strong>'+justAdded + '</strong> added successfully!', kudos: reward });
                     var addQuantity = results.data.data.items.length == 1 ? 'a video' : results.data.data.items.length + ' videos';
-                    FireService.sendEvent(Global.getName(),'just added ' + addQuantity + '! What ' + 
+                    FireService.sendEvent(User.getName(),'just added ' + addQuantity + '! What ' + 
                         Util.buildSubject() + '!');
-                    Global.changeKudos(reward);
+                    User.changeKudos(reward);
                 }
             });
         },

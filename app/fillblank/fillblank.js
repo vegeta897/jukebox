@@ -5,13 +5,13 @@ Application.Directives.directive('fillBlank',function() {
         templateUrl: 'app/fillblank/fillblank.html',
         replace: true,
         scope: {},
-        controller: function($scope,FillBlank,Global,ControlButtons) {
+        controller: function($scope,FillBlank,User,ControlButtons) {
             $scope.control = ControlButtons.addControl('fillBlank','Fill the B_ank',false,false);
             $scope.fillBlank = FillBlank.init();
             $scope.fillBlankGetTitle = FillBlank.getTitle;
             $scope.fillBlankInputChange = FillBlank.inputChange;
             $scope.fillBlankSubmit = FillBlank.submit;
-            $scope.getKudos = Global.getKudos;
+            $scope.getKudos = User.getKudos;
         },
         link: function(scope,element,attrs) {
             
@@ -38,18 +38,18 @@ Application.Directives.directive('letterInput', function() {
     };
 });
 
-Application.Services.factory('FillBlank',function(Global,Videos,FireService,Util,API) {
+Application.Services.factory('FillBlank',function(User,Videos,FireService,Util,API,Message) {
     var fillBlank;
     return {
         getTitle: function() {
-            if(!Global.getKudos() || Global.getKudos() < 5) return;
-            Global.changeKudos(-5);
+            if(!User.getKudos() || User.getKudos() < 5) return;
+            User.changeKudos(-5);
             fillBlank.loading = true;
             var currentID = Videos.getPlaying() ? Videos.getPlaying().video_id : 'abc';
             API.getVideos(1,currentID).then(function(data) {
                 if(!data || !data.data || data.data.length != 1 || !data.data[0].title) {
-                    //$scope.message = { type:'error',
-                    //    text:'Error retrieving video title. You can probably blame my hosting service.' }; 
+                    Message.set({ type:'error',
+                        text:'Error retrieving video title. You can probably blame my hosting service.' }); 
                     return;
                 }
                 var title = data.data[0].title.trim();
@@ -91,14 +91,14 @@ Application.Services.factory('FillBlank',function(Global,Videos,FireService,Util
             if(fillBlank.incomplete) return;
             if(fillBlank.guess.toUpperCase() == fillBlank.title.missing.toUpperCase()) {
                 var reward = fillBlank.title.missing.length * 5;
-                //$scope.message = { type: 'success', 
-                //    text: 'You guessed <strong>correctly!</strong> Nice one.', kudos: reward };
-                FireService.sendEvent(Global.getName(),
+                Message.set({ type: 'success', 
+                    text: 'You guessed <strong>correctly!</strong> Nice one.', kudos: reward });
+                FireService.sendEvent(User.getName(),
                     'just won <strong>' + reward + '</strong> kudos by filling in the blank!');
-                Global.changeKudos(reward);
+                User.changeKudos(reward);
             } else {
-                //$scope.message = { type: 'default', text: 'Sorry, the correct answer was "<strong>'+
-                //    fillBlank.title.missing+'</strong>". Try another!' };
+                Message.set({ text: 'Sorry, the correct answer was "<strong>'+
+                    fillBlank.title.missing+'</strong>". Try another!' });
             }
             fillBlank = { }; // Cleanup
         },

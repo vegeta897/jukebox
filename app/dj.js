@@ -1,5 +1,5 @@
 'use strict';
-Application.Services.factory('DJ',function($rootScope,Global,FireService,Videos,Util,API) {
+Application.Services.factory('DJ',function($rootScope,FireService,Videos,Util,API,User,Message) {
     var selfDJ, videoTimeout, voting, gettingVideos;
     
     $rootScope.$on('interval',function() {
@@ -42,7 +42,8 @@ Application.Services.factory('DJ',function($rootScope,Global,FireService,Videos,
         API.getVideos(6,currentID).then(function(data) {
             console.log('Videos retrieved',data.data);
             if(!data || !data.data || data.data.length != 6) {
-                //$scope.message = { type:'error',text:'Error retrieving videos. You can probably blame my hosting service.' }; 
+                Message.set({ type:'error',
+                    text:'Error retrieving videos. You can probably blame my hosting service.' }); 
                 return;
             }
             for(var d = 0, dl = data.data.length; d < dl; d++) {
@@ -59,7 +60,6 @@ Application.Services.factory('DJ',function($rootScope,Global,FireService,Videos,
         if(!selection) return;
         var winner = Util.randomIntRange(0,selection.length-1);
         FireService.once('votes', function(votes) {
-            //votes = angular.copy(votes);
             winner = votes ? Util.pickInObject(votes) : winner;
             console.log('winner chosen:',winner);
             var play = selection[winner];
@@ -76,14 +76,13 @@ Application.Services.factory('DJ',function($rootScope,Global,FireService,Videos,
     
     return {
         becomeDJ: function() {
-            if(!Global.getName()) return;
+            if(!User.getName()) return;
             selfDJ = true;
-            FireService.set('dj',Global.getName());
+            FireService.set('dj',User.getName());
             FireService.removeOnQuit('dj');
             FireService.remove('timeStampTests'); // Cleanup
             FireService.once('eventLog',function(purged) {
                 if(!purged) return;
-                console.log(purged);
                 for(var key in purged) { if(!purged.hasOwnProperty(key)) continue;
                     if(purged[key].time > FireService.getServerTime() - 3600000) continue;
                     FireService.remove('eventLog/'+key);

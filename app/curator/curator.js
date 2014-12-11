@@ -18,7 +18,7 @@ Application.Directives.directive('curator',function() {
     }
 });
 
-Application.Services.factory('Curator',function(Global,FireService,Util,API) {
+Application.Services.factory('Curator',function(User,FireService,Util,API,Message) {
     var curator;
     return {
         beginCurator: function() {
@@ -33,13 +33,13 @@ Application.Services.factory('Curator',function(Global,FireService,Util,API) {
                 API.pullUncurated(locked).then(function(data) {
                     console.log('Videos retrieved to be curated',data.data);
                     if(!data || !data.data || data.data.length != 5) {
-                        //$scope.message = { type:'error',
-                        //    text:'Error retrieving videos. You can probably blame my hosting service.' }; 
+                        Message.set({ type:'error',
+                            text:'Error retrieving videos. You can probably blame my hosting service.' }); 
                         return;
                     }
                     var curating = {}; // Object of video IDs 
                     for(var d = 0, dl = data.data.length; d < dl; d++) {
-                        curating[data.data[d].video_id] = Global.getName();
+                        curating[data.data[d].video_id] = User.getName();
                         data.data[d].duration = Util.parseUTCtime(data.data[d].duration);
                         data.data[d].index = d;
                     }
@@ -56,18 +56,18 @@ Application.Services.factory('Curator',function(Global,FireService,Util,API) {
         },
         saveCurated: function() {
             curator.saving = true;
-            API.saveCurated(curator.curateList, Global.getName()).then(function(results) {
+            API.saveCurated(curator.curateList, User.getName()).then(function(results) {
                 console.log(results);
                 curator.saving = false;
                 if(!results.data || !results.data.data) {
-                    //$scope.message = { type: 'error', 
-                    //    text: 'Sorry, there was a server error. Tell Vegeta about it.' }; 
+                    Message.set({ type: 'error', 
+                        text: 'Sorry, there was a server error. Tell Vegeta about it.' }); 
                     return;
                 }
-                //$scope.message = { type: 'success', 
-                //    text: '<strong>Thank you</strong> for your help curating the database!' };
+                Message.set({ type: 'success', 
+                    text: '<strong>Thank you</strong> for your help curating the database!' });
                 var addQuantity = results.data.data.videos.length == 1 ? 'a video' : results.data.data.videos.length + ' videos';
-                FireService.sendEvent(Global.getName(),
+                FireService.sendEvent(User.getName(),
                     'just curated ' + addQuantity + '! What ' + Util.buildSubject() + '!');
                 for(var i = 0, il = curator.curateList.length; i < il; i++) {
                     FireService.remove('curating/'+curator.curateList[i].video_id);

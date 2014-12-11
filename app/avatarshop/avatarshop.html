@@ -1,12 +1,12 @@
 <div class="avatar-shop control-panel" ng-show="control.show">
     <p>Click an avatar or color to purchase and/or wear it</p>
     <div class="clearfix">
-        <div ng-repeat="(colorID, color) in shop.avatarColors" ng-class="{owned: hasAvatarColor(colorID), equipped: (colorID == 'normal' && !getUser().avatarColor) || getUser().avatarColor == colorID}" ng-click="buyEquip('avatarColor',colorID)">
+        <div ng-repeat="(colorID, color) in shop.avatarColors" ng-class="{owned: hasAvatarColor(colorID), equipped: (colorID == 'normal' && !getUserData().avatarColor) || getUserData().avatarColor == colorID}" ng-click="buyEquip('avatarColor',colorID)">
             <i class="fa" ng-class="listenerClasses(users[username])" ng-style="{color: '#'+color[1]}"></i><span class="price" ng-class="{'cant-buy': !getKudos() || color[2] > getKudos()}">{{ color[2] }}</span> - <span class="name">{{ color[0] }}</span>
         </div>
     </div>
     <div class="clearfix">
-        <div ng-repeat="(avatarID, avatar) in shop.avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !getUser().avatar) || getUser().avatar == avatarID}" ng-click="buyEquip('avatar',avatarID)">
+        <div ng-repeat="(avatarID, avatar) in shop.avatars" ng-class="{owned: hasAvatar(avatarID), equipped: (avatarID == 'headphones' && !getUserData().avatar) || getUserData().avatar == avatarID}" ng-click="buyEquip('avatar',avatarID)">
             <i class="fa" ng-class="'fa-'+avatarID"></i><span class="price" ng-class="{'cant-buy': !getKudos() || avatar[1] > getKudos()}">{{ avatar[1] }}</span> - <span class="name">{{ avatar[0] }}</span>
         </div>
     </div>

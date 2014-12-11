@@ -17,12 +17,12 @@ Application.Directives.directive('avatarShop',function() {
         templateUrl: 'app/avatarshop/avatarshop.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,AvatarShop,Global,ControlButtons) {
+        controller: function($rootScope,$scope,AvatarShop,Global,ControlButtons,User) {
             $scope.control = ControlButtons.addControl('avatarShop','Avatar Shop',false,false);
             $scope.shop = AvatarShop.init();
-            $scope.getKudos = Global.getKudos;
-            $scope.getUser = Global.getUser;
-            $scope.hasAvatar = Global.hasAvatar;
+            $scope.getKudos = User.getKudos;
+            $scope.getUserData = User.getUserData;
+            $scope.hasAvatar = User.hasAvatar;
             $scope.hasAvatarColor = Global.hasAvatarColor;
             $scope.buyEquip = AvatarShop.buyEquip;
         },
@@ -32,21 +32,21 @@ Application.Directives.directive('avatarShop',function() {
     }
 });
 
-Application.Services.factory('AvatarShop',function(Global,FireService) {
+Application.Services.factory('AvatarShop',function(Global,FireService,User) {
     var shop;
     return {
         buyEquip: function(type,item) {
             var defaultItem = type == 'avatar' ? 'headphones' : 'normal';
-            if(item == defaultItem) { Global.setUserProperty('avatar',null); return; }
-            if(item == defaultItem || Global[type == 'avatar' ? 'hasAvatar' : 'hasAvatarColor'](item)) {
-                Global.setUserProperty(type,item); return;
+            if(item == defaultItem) { User.setUserProperty('avatar',null); return; }
+            if(item == defaultItem || User[type == 'avatar' ? 'hasAvatar' : 'hasAvatarColor'](item)) {
+                User.setUserProperty(type,item); return;
             }
             var cost = shop[type+'s'][item][type == 'avatar' ? 1 : 2];
-            if(!Global.getUser().kudos || Global.getUser().kudos < cost) { return; }
-            Global.changeKudos(cost*-1);
-            Global.setUserProperty(type+'s/'+item,true);
-            Global.setUserProperty(type,item);
-            FireService.sendEvent(Global.getName(),
+            if(!User.getKudos() || User.getKudos() < cost) { return; }
+            User.changeKudos(cost*-1);
+            User.setUserProperty(type+'s/'+item,true);
+            User.setUserProperty(type,item);
+            FireService.sendEvent(User.getName(),
                 'just bought the <strong>'+shop[type+'s'][item][0]+
                 '</strong> avatar'+(type == 'avatar' ? '' : ' color')+'!');
         },

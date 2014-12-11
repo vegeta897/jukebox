@@ -12,22 +12,15 @@
     <header>
         <h1>Jukebox</h1>
         <p><strong>v{{ version }}</strong> - <span class="muted">{{ versionName }}</span></p>
-        <form ng-submit="login()" ng-hide="auth || !isInit() || needUpdate()">
-            <fieldset>
-                <input type="text" name="username" id="username" ng-model="username" size="10" placeholder="username" />
-                <input type="text" name="passcode" id="passcode" ng-model="passcode" size="5" placeholder="passcode" />
-            </fieldset>
-            <button type="submit"><span>Log In</span></button>
-        </form>
-        <p ng-show="auth">{{ username }}<span><strong>{{ getKudos() || 0 | number }} </strong>kudos</span></p>
+        <user></user>
     </header>
     <p ng-show="needUpdate()" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="!isInit() || needUpdate()">
         <div class="canvas-header">
-            <span ng-repeat="mode in canvasModes" ng-click="changeCanvasMode(mode)" ng-class="{selected: canvasData.canvasMode == mode}" ng-show="auth">{{ mode }}</span>
+            <span ng-repeat="mode in canvasModes" ng-click="changeCanvasMode(mode)" ng-class="{selected: canvasData.canvasMode == mode}" ng-show="isAuthed()">{{ mode }}</span>
         </div>
         <div id="player"></div>
-        <div class="canvases" ng-show="auth"><div>
+        <div class="canvases" ng-show="isAuthed()"><div>
             <canvas id="mainUnderCanvas" width="640" height="370"></canvas>
             <canvas id="mainCanvas" width="640" height="370"></canvas>
             <canvas id="highUnderCanvas" width="640" height="370"></canvas>
@@ -54,7 +47,7 @@
         <videos></videos>
         <div class="dj">
             <p ng-show="getDJ()"><span class="muted">Current DJ: </span>{{ getDJ() }}</p>
-            <button ng-hide="getDJ() || !auth" ng-click="becomeDJ()">Become DJ</button>
+            <button ng-hide="getDJ() || !isAuthed()" ng-click="becomeDJ()">Become DJ</button>
         </div>
         <event-log></event-log>
         <div ng-show="getUsers()" class="listeners">
@@ -64,11 +57,8 @@
                 <div class="volume" ng-class="{muted:listener.muted}"><div ng-style="{width: listener.volume+'%'}"></div></div>
             </div>
         </div>
-        <div class="message" ng-show="message" ng-click="message = null">
-            <p ng-class="message.type" ng-bind-html="message.text"></p>
-            <p ng-show="message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
-        </div>
-        <p ng-show="getJackpot() && auth" style="text-align: center;">
+        <message></message>
+        <p ng-show="getJackpot() && isAuthed()" style="text-align: center;">
             <span class="muted">Current Jackpot:</span> <strong ng-style="{fontSize: (14+(getJackpot()/10000))+'px'}">{{ getJackpot() | number }}</strong>
         </p>
         <control-buttons></control-buttons>
@@ -82,7 +72,7 @@
         <mumble></mumble>
         <meta-stats></meta-stats>
         <admin></admin>
-        <button ng-hide="username != getDJ() || !auth" ng-click="forceVote()">Force Vote</button>
+        <button ng-hide="username != getDJ() || !isAuthed()" ng-click="forceVote()">Force Vote</button>
     </section>
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.1/angular.min.js"></script>
@@ -95,6 +85,7 @@
     <script src="app/app.js"></script> <!-- My Stuff -->
     <script src="app/api.js"></script>
     <script src="app/jukebox.js"></script>
+    <script src="app/user/user.js"></script>
     <script src="app/videos/videos.js"></script>
     <script src="app/controlbuttons/controlbuttons.js"></script>
     <script src="app/addvideo/addvideo.js"></script>
@@ -109,6 +100,7 @@
     <script src="app/fireservice.js"></script>
     <script src="app/global.js"></script>
     <script src="app/dj.js"></script>
+    <script src="app/message/message.js"></script>
     <script src="app/player/player.js"></script>
     <script src="app/canvas.js"></script>
     <script src="app/polyominoes.js"></script>

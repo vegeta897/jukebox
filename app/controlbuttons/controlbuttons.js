@@ -5,14 +5,15 @@ Application.Directives.directive('controlButtons',function() {
         templateUrl: 'app/controlbuttons/controlbuttons.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,$timeout,ControlButtons,Global) {
+        controller: function($rootScope,$scope,$timeout,ControlButtons,User) {
             $scope.controlList = ControlButtons.init();
 
             $scope.showControl = function(name) {
                 ControlButtons.showControl(name);
                 $timeout(function(){ window.scrollTo(0,document.body.scrollHeight); }); // Scroll to bottom
             };
-            $scope.getUsername = Global.getName;
+            $scope.getUsername = User.getName;
+            $scope.isAuthed = User.isAuthed;
         },
         link: function(scope,element,attrs) {
 

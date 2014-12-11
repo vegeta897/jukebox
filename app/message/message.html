@@ -1,0 +1,4 @@
+<div class="message" ng-show="message.text" ng-click="clearMessage()">
+    <p ng-class="message.type" ng-bind-html="message.text"></p>
+    <p ng-show="message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
+</div>

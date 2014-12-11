@@ -19,7 +19,7 @@ Application.Directives.directive('metaStats',function() {
     }
 });
 
-Application.Services.factory('MetaStats',function(Videos,Global,FireService,API) {
+Application.Services.factory('MetaStats',function(Videos,FireService,API,Message) {
     var meta;
     return {
         getVidCount: function() {
@@ -33,8 +33,8 @@ Application.Services.factory('MetaStats',function(Videos,Global,FireService,API)
                 }
                 API.getVideoCount().then(function(data) { // Get new data
                     if(!data || !data.data) {
-                        //$scope.message = { type:'error',
-                        //    text:'Error retrieving stats. You can probably blame my hosting service.' }; 
+                        Message.set({ type:'error',
+                            text:'Error retrieving stats. You can probably blame my hosting service.' }); 
                         return;
                     }
                     meta.vidCount.data = data.data;

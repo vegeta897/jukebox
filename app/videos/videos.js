@@ -5,7 +5,7 @@ Application.Directives.directive('videos',function() {
         templateUrl: 'app/videos/videos.html',
         replace: true,
         scope: {},
-        controller: function($timeout,$rootScope,$scope,Videos,FireService,Player,Global) {
+        controller: function($timeout,$rootScope,$scope,Videos,FireService,Global,User) {
             $rootScope.$on('playerReady',function() {
                 FireService.onValue('selection',function(newSelection) {
                     $scope.videoSelection = Videos.changeSelection(newSelection);
@@ -18,7 +18,8 @@ Application.Directives.directive('videos',function() {
             });
             $scope.vote = Videos.vote;
             $scope.getPlaying = Videos.getPlaying;
-            $scope.getUsername = Global.getName;
+            $scope.getUsername = User.getName;
+            $scope.isAuthed = User.isAuthed;
             $scope.getDJ = Global.getDJ;
             $scope.getVoteTimeLeft = function() {
                 return Math.max(0,parseInt((Videos.getVoteEnd() - FireService.getServerTime())/1000));
@@ -30,7 +31,7 @@ Application.Directives.directive('videos',function() {
     }
 });
 
-Application.Services.factory('Videos',function($rootScope,FireService,Global,Player) {
+Application.Services.factory('Videos',function($rootScope,FireService,User,Player) {
     var videoList, playing, voteEnd;
     
     return {
@@ -63,23 +64,23 @@ Application.Services.factory('Videos',function($rootScope,FireService,Global,Pla
                 startTime = Math.max(0,startTime > newVideo.duration.totalSec ? 0 : startTime+2);
                 Player.loadVideo(newVideo.video_id,startTime,'large');
                 //Canvas.clear();
-                if(Global.getName()) {
-                    Global.changeKudos(newVideo.votes && newVideo.votes[Global.getName()] ? 
-                        2 : Global.getVote() >= 0 ? 1 : 0);
+                if(User.getName()) {
+                    User.changeKudos(newVideo.votes && newVideo.votes[User.getName()] ? 
+                        2 : User.getVote() >= 0 ? 1 : 0);
                 }
             }
             playing = newVideo;
             return playing;
         },
         vote: function(index) {
-            if(!Global.getName() || !videoList) return;
+            if(!User.getName() || !videoList) return;
             if(Player.isMuted()) { // Can't vote while muted
                 return;
             }
-            FireService.set('votes/'+Global.getName(),index);
-            FireService.set('users/'+Global.getName()+'/vote',index);
+            FireService.set('votes/'+User.getName(),index);
+            FireService.set('users/'+User.getName()+'/vote',index);
             for(var i = 0, il = videoList.length; i < il; i++) {
-                FireService.set('selection/'+i+'/votes/'+Global.getName(),i == index ? true : null);
+                FireService.set('selection/'+i+'/votes/'+User.getName(),i == index ? true : null);
             }
         },
         modifyVideo: function(index,properties) { // Modify properties of a video in the list

@@ -5,7 +5,7 @@
         <h3 class="muted">added by {{ getPlaying().added_by }}</h3>
     </div>
     <div class="video-selection animate-selection" ng-show="videoSelection">
-        <h2 ng-show="getUsername()">Pick a video</h2>
+        <h2 ng-show="isAuthed()">Pick a video</h2>
         <div class="vote-timer"><span class="muted">Time Left:</span> {{ getVoteTimeLeft() }}</div>
         <table>
             <tr ng-repeat="video in videoSelection" ng-class="'has-'+countProperties(video.votes,false)+'-votes'">

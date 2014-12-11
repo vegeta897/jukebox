@@ -36,7 +36,7 @@ function onPlayerStateChange(event) {
 }
 function stopVideo() { player.stopVideo(); }
 
-Application.Services.factory('Player',function($rootScope,Global,localStorageService) {
+Application.Services.factory('Player',function($rootScope,Global,localStorageService,User) {
     var interval, muted, volume = localStorageService.get('volume');
     
     interval = setInterval(function(){
@@ -48,11 +48,11 @@ Application.Services.factory('Player',function($rootScope,Global,localStorageSer
     $rootScope.$on('interval',function() {
         if(!playing) return;
         if(muted != player.isMuted()) {
-            Global.setUserProperty('muted',player.isMuted());
+            User.setUserProperty('muted',player.isMuted());
         }
         if(parseInt(player.getVolume()) != volume) {
             volume = parseInt(player.getVolume()) || 0;
-            Global.setUserProperty('volume',volume);
+            User.setUserProperty('volume',volume);
             localStorageService.set('volume',volume);
         }
     });
