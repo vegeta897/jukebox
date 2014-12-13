@@ -39,7 +39,7 @@ Application.Directives.directive('admin',function() {
         templateUrl: 'app/miscpanels/admin.html',
         replace: true,
         scope: {},
-        controller: function($scope,MiscPanels,ControlButtons,FireService,Jukebox) {
+        controller: function($scope,ControlButtons,FireService,Jukebox) {
             $scope.control = ControlButtons.addControl('admin','Admin',true,false);
             $scope.requireVersion = function() { // Set firebase version
                 FireService.setGlobal('version',Jukebox.version);

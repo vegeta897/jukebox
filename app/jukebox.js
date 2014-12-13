@@ -1,5 +1,5 @@
 'use strict';
-Application.Controllers.controller('Jukebox', function($rootScope,$scope,$timeout,localStorageService,Canvas,FireService,DJ,Jukebox,AvatarShop,User) {
+Application.Controllers.controller('Jukebox', function($rootScope,$scope,$timeout,localStorageService,FireService,DJ,Jukebox,AvatarShop,User,Canvas) {
 
     $scope.version = Jukebox.version; $scope.versionName = Jukebox.versionName;
     $scope.getKudos = User.getKudos;
@@ -7,11 +7,14 @@ Application.Controllers.controller('Jukebox', function($rootScope,$scope,$timeou
     $scope.getJackpot = Jukebox.getJackpot;
     $scope.getUsers = Jukebox.getUsers;
     $scope.isInit = Jukebox.isInit;
+    $scope.isAuthed = User.isAuthed;
     $scope.needUpdate = Jukebox.needUpdate;
     $scope.becomeDJ = DJ.becomeDJ;
     $scope.forceVote = DJ.forceVote;
     $scope.getUserColor = AvatarShop.getUserColor;
     $scope.getListenerClasses = Jukebox.getListenerClasses;
+    $scope.getCanvasModes = Canvas.getModes;
+    $scope.changeCanvasMode = Canvas.changeMode;
     
     $rootScope.$on('interval',function() {
         $scope.theTime = FireService.getServerTime();
@@ -21,7 +24,7 @@ Application.Controllers.controller('Jukebox', function($rootScope,$scope,$timeou
 
 Application.Services.factory('Jukebox',function($rootScope,FireService) {
     var init, needUpdate, users, dj, jackpot;
-    var version = 0.358, versionName = 'Jukes of Hazzard';
+    var version = 0.359, versionName = 'Jukes of Hazzard';
     FireService.onceGlobal('version',function(ver) {
         if(version < ver) {
             needUpdate = true;

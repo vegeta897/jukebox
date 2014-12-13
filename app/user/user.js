@@ -45,15 +45,6 @@ Application.Services.factory('User',function($rootScope,FireService,localStorage
                 lastOnlineRef.onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
             }
         });
-        //$scope.canvasModes = Canvas.getModes();
-        //$scope.canvasData = {};
-        //$scope.canvasMode = 'polyominoes';
-        //Canvas.attachVars(fireRef.child('canvas'),$scope.canvasData,{
-        //    myColor: AvatarShop.avatarColors[$scope.user.avatarColor ? $scope.user.avatarColor : 'normal'][1],
-        //    fireUser: fireUser, api: services, playing: $scope.playing, users: Jukebox.getUsers(), username: username
-        //}); 
-        //Canvas.changeMode($scope.canvasMode);
-        //$scope.changeCanvasMode = Canvas.changeMode;
     };
     
     return {

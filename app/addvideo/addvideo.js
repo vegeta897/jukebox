@@ -17,7 +17,7 @@ Application.Directives.directive('addVideo',function() {
     }
 });
 
-Application.Services.factory('AddVideo',function(Videos,User,FireService,API,Util,Message) {
+Application.Services.factory('AddVideo',function(User,FireService,API,Util,Message) {
     var adding;
     return {
         parseURL: function() {

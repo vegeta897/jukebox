@@ -2,7 +2,7 @@
     <p>Click an avatar or color to purchase and/or wear it</p>
     <div class="clearfix">
         <div ng-repeat="(colorID, color) in shop.avatarColors" ng-class="{owned: hasAvatarColor(colorID), equipped: (colorID == 'normal' && !getUserData().avatarColor) || getUserData().avatarColor == colorID}" ng-click="buyEquip('avatarColor',colorID)">
-            <i class="fa" ng-class="listenerClasses(users[username])" ng-style="{color: '#'+color[1]}"></i><span class="price" ng-class="{'cant-buy': !getKudos() || color[2] > getKudos()}">{{ color[2] }}</span> - <span class="name">{{ color[0] }}</span>
+            <i class="fa" ng-class="getListenerClasses(getUsername())" ng-style="{color: '#'+color[1]}"></i><span class="price" ng-class="{'cant-buy': !getKudos() || color[2] > getKudos()}">{{ color[2] }}</span> - <span class="name">{{ color[0] }}</span>
         </div>
     </div>
     <div class="clearfix">

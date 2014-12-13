@@ -19,7 +19,7 @@ Application.Directives.directive('metaStats',function() {
     }
 });
 
-Application.Services.factory('MetaStats',function(Videos,FireService,API,Message) {
+Application.Services.factory('MetaStats',function(FireService,API,Message) {
     var meta;
     return {
         getVidCount: function() {

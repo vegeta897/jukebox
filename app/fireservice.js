@@ -18,8 +18,12 @@ Application.Services.factory('FireService',function() {
     
     return {
         set: function(path, value) { fireRef.child(path).set(value); },
-        remove: function(path) { fireRef.child(path).remove(); },
+        remove: function(path) {
+            if(path.constructor !== Array) path = [path];
+            for(var i = 0; i < path.length; i++) fireRef.child(path[i]).remove();
+        },
         update: function(path, properties) { fireRef.child(path).update(properties); },
+        push: function(path, value) { fireRef.child(path).push(value); },
         transact: function(path, amount) {
             fireRef.child(path).transaction(function(orig) {
                 return !orig ? +amount : +orig + +amount == 0 ? null : +orig + +amount
@@ -30,6 +34,13 @@ Application.Services.factory('FireService',function() {
         },
         onValue: function(path, handler) {
             fireRef.child(path).on('value',function(snap) { handler(snap.val()); });
+        },
+        onAddChild: function(path, handler) {
+            fireRef.child(path).on('child_added',function(snap) { handler(snap.val(),snap.name()); });
+        },
+        off: function(path) {
+            if(path.constructor !== Array) path = [path];
+            for(var i = 0; i < path.length; i++) fireRef.child(path[i]).off();
         },
         sendEvent: function(user,text) {
             if(!user || !text) return;

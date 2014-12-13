@@ -5,7 +5,7 @@ Application.Directives.directive('controlButtons',function() {
         templateUrl: 'app/controlbuttons/controlbuttons.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,$timeout,ControlButtons,User) {
+        controller: function($scope,$timeout,ControlButtons,User) {
             $scope.controlList = ControlButtons.init();
 
             $scope.showControl = function(name) {
@@ -24,14 +24,7 @@ Application.Directives.directive('controlButtons',function() {
 Application.Services.factory('ControlButtons',function() {
     var controlList = {};
     return {
-        init: function() { 
-            //controlList = {
-                //fillBlank: {title: 'Fill the B_ank'}, avatarShop: {title: 'Avatar Shop'},
-                //mumble: {title: 'Mumble'}, changelog: {title: 'Changelog'},
-                //meta: {title: 'Meta'}, admin: {title: 'Admin', admin: true}
-            //}; 
-            return controlList;
-        },
+        init: function() { return controlList; },
         addControl: function(name,title,admin,isNew) {
             controlList[name] = { title: title, admin: admin, new: isNew };
             return controlList[name];

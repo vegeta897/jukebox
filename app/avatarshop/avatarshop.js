@@ -17,14 +17,16 @@ Application.Directives.directive('avatarShop',function() {
         templateUrl: 'app/avatarshop/avatarshop.html',
         replace: true,
         scope: {},
-        controller: function($rootScope,$scope,AvatarShop,Jukebox,ControlButtons,User) {
+        controller: function($scope,AvatarShop,Jukebox,ControlButtons,User) {
             $scope.control = ControlButtons.addControl('avatarShop','Avatar Shop',false,false);
             $scope.shop = AvatarShop.init();
             $scope.getKudos = User.getKudos;
+            $scope.getUsername = User.getName;
             $scope.getUserData = User.getUserData;
             $scope.hasAvatar = User.hasAvatar;
-            $scope.hasAvatarColor = Jukebox.hasAvatarColor;
+            $scope.hasAvatarColor = User.hasAvatarColor;
             $scope.buyEquip = AvatarShop.buyEquip;
+            $scope.getListenerClasses = Jukebox.getListenerClasses;
         },
         link: function(scope,element,attrs) {
             
@@ -55,7 +57,6 @@ Application.Services.factory('AvatarShop',function(Jukebox,FireService,User) {
             var user = Jukebox.getUsers()[username];
             return user.avatarColor ? avatarColors[user.avatarColor][1] : avatarColors.normal[1];
         },
-        init: function() { shop = { avatars: avatars, avatarColors: avatarColors }; return shop; },
-        avatars: avatars, avatarColors: avatarColors
+        init: function() { shop = { avatars: avatars, avatarColors: avatarColors }; return shop; }
     };
 });

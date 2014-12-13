@@ -17,33 +17,11 @@
     <p ng-show="needUpdate()" class="error"><strong>Your version is out of date,</strong> or vegeta locked the app. <strong>Shift+F5</strong> to get the latest version.</p>
     <section ng-hide="!isInit() || needUpdate()">
         <div class="canvas-header">
-            <span ng-repeat="mode in canvasModes" ng-click="changeCanvasMode(mode)" ng-class="{selected: canvasData.canvasMode == mode}" ng-show="isAuthed()">{{ mode }}</span>
+            <span ng-repeat="(name,mode) in getCanvasModes()" ng-click="changeCanvasMode(name)" ng-class="{selected: mode.isActive()}" ng-show="isAuthed()">{{ mode.name }}</span>
         </div>
         <div id="player"></div>
-        <div class="canvases" ng-show="isAuthed()"><div>
-            <canvas id="mainUnderCanvas" width="640" height="370"></canvas>
-            <canvas id="mainCanvas" width="640" height="370"></canvas>
-            <canvas id="highUnderCanvas" width="640" height="370"></canvas>
-            <canvas id="highCanvas" width="640" height="370"></canvas>
-        </div></div>
-        <div class="isketch clearfix" ng-show="canvasData.canvasMode == 'isketch'">
-            <h3 ng-show="canvasData.isketch.challenge && !canvasData.isketch.winner">Your word is: <strong>{{ canvasData.isketch.challenge.word }}</strong></h3>
-            <h3 ng-show="canvasData.isketch.winner"><strong><span ng-style="{color: '#'+getUserColor(canvasData.isketch.winner.user)}">{{canvasData.isketch.winner.user}}</span> won! </strong>The answer was: <strong>{{ canvasData.isketch.winner.word }}</strong></h3>
-            <button ng-click="canvasData.isketch.startGame()" ng-disabled="canvasData.isketch.startingGame" ng-hide="canvasData.isketch.host && canvasData.isketch.status != 'loading'">Play iSketch!</button>
-            <div class="message" ng-show="canvasData.isketch.message" ng-click="canvasData.isketch.message = null">
-                <p ng-class="canvasData.isketch.message.type" ng-bind-html="canvasData.isketch.message.text"></p>
-                <p ng-show="canvasData.isketch.message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
-            </div>
-            <div class="guesses" ng-show="canvasData.isketch.status == 'playing'">
-                <ul><li ng-repeat="guess in canvasData.isketch.guesses | reverse" class="animate-repeat reverse">
-                    <strong ng-style="{color: '#'+getUserColor(guess.user)}">{{ guess.user }}</strong><span>:  {{guess.text}}</span>
-                </li></ul>
-            </div>
-            <form ng-submit="canvasData.isketch.submitGuess()" ng-show="canvasData.isketch.status == 'playing' && !canvasData.isketch.challenge">
-                <input ng-model="canvasData.isketch.myGuess" type="text" id="isketchGuess" name="isketchGuess" size="15" maxlength="16" />
-                <button type="submit">Guess</button>
-            </form>
-        </div>
+        <div class="canvas"></div>
+        <isketch></isketch>
         <videos></videos>
         <div class="dj">
             <p ng-show="getDJ()"><span class="muted">Current DJ: </span>{{ getDJ() }}</p>
@@ -86,6 +64,10 @@
     <script src="app/api.js"></script>
     <script src="app/jukebox.js"></script>
     <script src="app/user/user.js"></script>
+    <script src="app/player/player.js"></script>
+    <script src="app/canvas/canvas.js"></script>
+    <script src="app/canvas/polyominoes/polyominoes.js"></script>
+    <script src="app/canvas/isketch/isketch.js"></script>
     <script src="app/videos/videos.js"></script>
     <script src="app/controlbuttons/controlbuttons.js"></script>
     <script src="app/addvideo/addvideo.js"></script>
@@ -100,10 +82,6 @@
     <script src="app/fireservice.js"></script>
     <script src="app/dj.js"></script>
     <script src="app/message/message.js"></script>
-    <script src="app/player/player.js"></script>
-    <script src="app/canvas.js"></script>
-    <script src="app/polyominoes.js"></script>
-    <script src="app/isketch.js"></script>
     <script src="app/utility.js"></script>
     <script src="js/vendor/seedrandom.js"></script>
     <!-- Error Reporting -->

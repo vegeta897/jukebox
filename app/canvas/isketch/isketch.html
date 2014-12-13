@@ -1,0 +1,18 @@
+<div class="isketch clearfix" ng-show="isketch.active">
+    <h3 ng-show="isketch.challenge && !isketch.winner">Your word is: <strong>{{ isketch.challenge.word }}</strong></h3>
+    <h3 ng-show="isketch.winner"><strong><span ng-style="{color: '#'+getUserColor(isketch.winner.user)}">{{isketch.winner.user}}</span> won! </strong>The answer was: <strong>{{ isketch.winner.word }}</strong></h3>
+    <button ng-click="startGame()" ng-disabled="isketch.startingGame" ng-hide="isketch.host && isketch.status != 'loading'">Play iSketch!</button>
+    <div class="message" ng-show="isketch.message" ng-click="isketch.message = null">
+        <p ng-class="isketch.message.type" ng-bind-html="isketch.message.text"></p>
+        <p ng-show="isketch.message.kudos">You {{message.kudos > 0 ? 'gained' : 'lost'}} <strong>{{ message.kudos }}</strong> kudos!</p>
+    </div>
+    <div class="guesses" ng-show="isketch.status == 'playing'">
+        <ul><li ng-repeat="guess in isketch.guesses | reverse" class="animate-repeat reverse">
+            <strong ng-style="{color: '#'+getUserColor(guess.user)}">{{ guess.user }}</strong><span>:  {{guess.text}}</span>
+        </li></ul>
+    </div>
+    <form ng-submit="submitGuess()" ng-show="isketch.status == 'playing' && !isketch.challenge">
+        <input ng-model="isketch.myGuess" type="text" id="isketchGuess" name="isketchGuess" size="15" maxlength="16" />
+        <button type="submit">Guess</button>
+    </form>
+</div>
