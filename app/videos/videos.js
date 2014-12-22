@@ -31,7 +31,7 @@ Application.Directives.directive('videos',function() {
     }
 });
 
-Application.Services.factory('Videos',function($rootScope,FireService,User,Player) {
+Application.Services.factory('Videos',function($rootScope,FireService,User,Player,Message,Canvas) {
     var videoList, playing, voteEnd;
     
     return {
@@ -63,7 +63,7 @@ Application.Services.factory('Videos',function($rootScope,FireService,User,Playe
                 console.log('starting video',startTime,'seconds in');
                 startTime = Math.max(0,startTime > newVideo.duration.totalSec ? 0 : startTime+2);
                 Player.loadVideo(newVideo.video_id,startTime,'large');
-                //Canvas.clear();
+                Canvas.clear();
                 if(User.getName()) {
                     User.changeKudos(newVideo.votes && newVideo.votes[User.getName()] ? 
                         2 : User.getVote() >= 0 ? 1 : 0);
@@ -74,8 +74,9 @@ Application.Services.factory('Videos',function($rootScope,FireService,User,Playe
         },
         vote: function(index) {
             if(!User.getName() || !videoList) return;
-            if(Player.isMuted()) { // Can't vote while muted
-                return;
+            if(Player.isMuted() && !User.isAdmin()) { 
+                Message.set({text:'You can\'t vote while muted!',type:'error'});
+                return; // Can't vote while muted (and not an admin)
             }
             FireService.set('votes/'+User.getName(),index);
             FireService.set('users/'+User.getName()+'/vote',index);

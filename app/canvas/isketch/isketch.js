@@ -23,7 +23,7 @@ Application.Services.factory('Isketch', function(Canvas,Util,API,User,Videos,Ava
     var c = Canvas.getCanvases();
     var fire = Canvas.getFireService('isketch');
     var isketch, cursor = { x: '-', y: '-'}, cursorLast = {x: '-', y: '-'}, grid = 1, spamTimer,
-        drawing, erasing, drawTimer, currentSegment, segmentCount = 0, lineWidth = 2, eraseWidth = 12;
+        drawing, erasing, drawTimer, currentSegment, segmentCount = 0, lineWidth = 3, eraseWidth = 30;
     
     var controller = {
         name: 'iSketch',
@@ -42,30 +42,31 @@ Application.Services.factory('Isketch', function(Canvas,Util,API,User,Videos,Ava
             if(segmentCount > 200) return; // Spam prevention
             if(e.which == 3) erasing = true; // Right mouse
             if(e.which != 3) drawing = true;
-            c.high.lineWidth = erasing ? eraseWidth : lineWidth;
-            c.high.beginPath();
-            c.high.moveTo(cursor.x,cursor.y);
-            currentSegment = [(drawing ? AvatarShop.getUserColor(User.getName()) : 'erase'),cursor.x+':'+cursor.y];
-            drawTimer = setInterval(drawPoints,50);
+            startSegment();
         },
         onMouseUp: function(e) {
             if(e.which == 1 && erasing) return;
             if(e.which == 3 && drawing) return; // Right mouse
             if(e.which == 2) return; // Middle mouse
-            c.high.clearRect(0,0, c.highCanvas.width, c.highCanvas.height);
-            c.highUnder.clearRect(0,0, c.highUnderCanvas.width, c.highUnderCanvas.height);
             finishSegment();
         },
         onMouseOut: function() {
             cursor.x = cursor.y = '-';
-            c.high.clearRect(0,0, c.highCanvas.width, c.highCanvas.height);
-            c.highUnder.clearRect(0,0, c.highUnderCanvas.width, c.highUnderCanvas.height);
             finishSegment();
         },
         activate: function() {
             isketch.active = true;
             c.main.clearRect(0,0, c.mainCanvas.width, c.mainCanvas.height);
             c.mainUnder.clearRect(0,0, c.mainUnderCanvas.width, c.mainUnderCanvas.height);
+            fire.once('segments',function(segments) {
+                if(!segments) return;
+                var segmentKeys = Util.getSortedKeys(segments,true);
+                var limited = {};
+                for(var i = 0; i < Math.min(segmentKeys.length,150); i++) {
+                    limited[segmentKeys[i]] = segments[segmentKeys[i]];
+                }
+                fire.set('segments',limited);
+            });
             fire.onAddChild('segments',segmentAdded);
             fire.onValue('host',onHost);
             fire.onValue('status',statusChange);
@@ -94,17 +95,29 @@ Application.Services.factory('Isketch', function(Canvas,Util,API,User,Videos,Ava
         c.high.moveTo(cursor.x,cursor.y);
         currentSegment.push(cursor.x+':'+cursor.y);
         cursorLast.x = cursor.x; cursorLast.y = cursor.y;
-        if(currentSegment.length > 100) finishSegment(); // TODO: Auto-start a new segment
+        if(currentSegment.length > 30) finishSegment(true);
+    };
+
+    var startSegment = function() {
+        c.high.lineWidth = erasing ? eraseWidth : lineWidth;
+        c.high.beginPath();
+        c.high.moveTo(cursor.x,cursor.y);
+        currentSegment = [(drawing ? AvatarShop.getUserColor(User.getName()) : 'erase'),cursor.x+':'+cursor.y];
+        drawTimer = setInterval(drawPoints,50);
     };
     
-    var finishSegment = function() {
-        drawing = erasing = false;
+    var finishSegment = function(/* keep drawing/erasing? */) {
+        c.high.clearRect(0,0, c.highCanvas.width, c.highCanvas.height);
+        c.highUnder.clearRect(0,0, c.highUnderCanvas.width, c.highUnderCanvas.height);
+        var keepDrawing = arguments[0];
+        if(!keepDrawing) drawing = erasing = false;
         if(!currentSegment) return;
         if(cursor.x != '-' && cursor.y != '-') currentSegment.push(cursor.x+':'+cursor.y);
         if(!currentSegment || currentSegment.length < 3) return;
         segmentCount += currentSegment.length-1;
-        fire.push('segments',currentSegment.join('&')); // TODO: Limit number of segments stored on firebase (FIFO)
+        fire.push('segments',currentSegment.join('&'));
         currentSegment = null;
+        if(keepDrawing) startSegment();
     };
     
     var segmentAdded = function(data,key) {

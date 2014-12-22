@@ -1,3 +1,3 @@
 <div class="control-buttons" ng-show="isAuthed()">
-    <button ng-repeat="(name,control) in controlList" ng-click="showControl(name)" ng-class="{'selected': control.show}" ng-show="!control.admin || (getUsername() == 'vegeta897' || getUsername() == 'tester')" ng-disabled="control.disabled"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
+    <button ng-repeat="(name,control) in controlList" ng-click="showControl(name)" ng-class="{'selected': control.show}" ng-show="!control.admin || userIsAdmin()" ng-disabled="control.disabled"><i class="fa fa-star" ng-show="control.new"></i>{{ control.title }}</button>
 </div>

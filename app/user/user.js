@@ -75,6 +75,7 @@ Application.Services.factory('User',function($rootScope,FireService,localStorage
         getName: function() { return user && user.username ? user.username : false; },
         getUserData: function() { return user && user.data ? user.data : false; },
         isAuthed: function() { return auth && auth.uid; },
+        isAdmin: function() { return user.username == 'vegeta897' || user.username == 'tester'; },
         hasAvatar: function(avatar) {
             return avatar == 'headphones' ? true : user && user.data && user.data.avatars ?
                 user.data.avatars.hasOwnProperty(avatar) : false;

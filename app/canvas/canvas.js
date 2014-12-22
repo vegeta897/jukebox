@@ -71,6 +71,9 @@ Application.Services.factory('Canvas', function(FireService) {
             mode = modes[m];
             mode.activate();
         },
-        clear: function() { mode.clear(); }
+        clear: function() { 
+            if(!mode) return;
+            mode.clear(); 
+        }
     };
 });

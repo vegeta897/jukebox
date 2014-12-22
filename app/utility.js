@@ -103,7 +103,13 @@ Application.Services.service('Util', function() {
             for(var key in obj) { if(!obj.hasOwnProperty(key) || key == exception) { continue; } count++; } 
             return count;
         },
-    // Return a random element from input array
+        getSortedKeys: function(obj,descending) { // Return array of sorted keys from an object
+            var keys = [];
+            for(var key in obj) { if(!obj.hasOwnProperty(key)) continue;
+                keys.push(key);                
+            }
+            return descending ? keys.sort().reverse() : keys.sort();
+        },
         pickInObject: function(object) { // Return a random property from input object (attach name)
             var array = [];
             for(var key in object) { if(object.hasOwnProperty(key)) {

@@ -14,6 +14,7 @@ Application.Directives.directive('controlButtons',function() {
             };
             $scope.getUsername = User.getName;
             $scope.isAuthed = User.isAuthed;
+            $scope.userIsAdmin = User.isAdmin;
         },
         link: function(scope,element,attrs) {
 
