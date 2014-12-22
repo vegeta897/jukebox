@@ -6,7 +6,6 @@ Application.Directives.directive('canvas',function() {
         replace: true,
         scope: {},
         controller: function($scope,User,Jukebox,Canvas) {
-            //$scope.user = User.init();
             $scope.getKudos = User.getKudos;
             $scope.isAuthed = User.isAuthed;
             this.init = function(mcv,mucv,hcv,hucv,mc,muc,hc,huc) {

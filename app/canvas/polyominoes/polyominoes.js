@@ -1,15 +1,70 @@
 'use strict';
-Application.Services.factory('Polyominoes', function(Canvas,Util) {
+Application.Directives.directive('polyominoes',function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'app/canvas/polyominoes/polyominoes.html',
+        replace: true,
+        scope: {},
+        controller: function($scope,User,Polyominoes) {
+            $scope.polyominoes = Polyominoes.init();
+            $scope.getKudos = User.getKudos;
+        },
+        link: function(scope,element,attrs) {
+            
+        }
+    }
+});
+
+Application.Services.factory('Polyominoes', function(Canvas,Util,User) {
 
     var pieces=[""+"     "+"  #  "+" ### "+"  #",""+"     "+" # # "+" ###",""+"     "+"  ## "+" ##",""+"     "+" ##  "+"  ##",""+"     "+" #   "+" ### "+"   #",""+"     "+"   # "+" ### "+" #",""+"     "+"  ## "+"###",""+"     "+" ##  "+"  ###",""+"     "+" #   "+" ##  "+"  ##",""+"  #  "+"  #  "+"###",""+"     "+"  #  "+"####",""+"     "+"  #  "+" ####",""+"     "+"  #  "+" ##",""+"  #  "+"  #  "+" ##",""+"  #  "+"  #  "+"  ##",""+"  #  "+"  #  "+" ###",""+"     "+"  #  "+" ###",""+"     "+"  #  "+" ### "+"   #",""+"     "+"  #  "+" ### "+" #",""+"     "+" ##  "+" ##",""+"  #  "+" ##  "+" ##",""+" #   "+" ##  "+" ##",""+"     "+"     "+"#####",""+"     "+"     "+"####",""+"     "+"     "+" ###",""+"     "+"     "+" ##",""+"     "+"     "+"  #"];
 
     var c = Canvas.getCanvases();
     var fire = Canvas.getFireService('polyominoes');
-    var scope, fireRef, link, cursor = { x: '-', y: '-'}, grid = 10, 
+    var polyominoes, cursor = { x: '-', y: '-'}, grid = 10, 
         nextPiece = Util.randomIntRange(0,pieces.length-1), rotation = Util.randomIntRange(0,3),
         blockGrid = {};
     
-    Canvas.addMode('polyominoes',{ name: 'Polyominoes', selected: false });
+    var controller = {
+        name: 'Polyominoes',
+        onMouseMove: function(e) {
+            var offset = jQuery(c.highCanvas).offset();
+            var newX = e.pageX - offset.left < 0 ? 0 : Math.floor((e.pageX - offset.left)/grid);
+            var newY = e.pageY - offset.top < 0 ? 0 : Math.floor((e.pageY - offset.top)/grid);
+            var moved = cursor.x != newX || cursor.y != newY;
+            cursor.x = newX; cursor.y = newY;
+            if(moved) drawHigh();
+        },
+        onMouseDown: function(e) {
+            if(e.which == 3) { rotation = rotation == 3 ? 0 : rotation + 1; drawHigh(); return; } // Right mouse
+            if(e.which == 2) return; // Middle mouse
+            if(checkCollision(nextPiece,cursor.x,cursor.y,rotation)) return;
+            fire.set('pieces/'+cursor.x+':'+cursor.y,[nextPiece,rotation,User.getName()].join(':'));
+            nextPiece = Util.randomIntRange(0,pieces.length-1);
+            rotation = Util.randomIntRange(0,3);
+            drawHigh();
+        },
+        onMouseUp: function(e) {  },
+        onMouseOut: function() {
+            cursor.x = cursor.y = '-';
+            c.high.clearRect(0,0,c.highCanvas.width,c.highCanvas.height);
+            c.highUnder.clearRect(0,0,c.highUnderCanvas.width,c.highUnderCanvas.height);
+        },
+        activate: function() {
+            polyominoes.active = true;
+            blockGrid = {};
+            c.main.clearRect(0,0,c.mainCanvas.width,c.mainCanvas.height);
+            c.mainUnder.clearRect(0,0,c.mainUnderCanvas.width,c.mainUnderCanvas.height);
+            fire.onAddChild('pieces',pieceAdded);
+        },
+        disable: function() { fire.off('pieces'); polyominoes.active = false; },
+        isActive: function() { return polyominoes ? polyominoes.active : false; },
+        clear: function() {
+            c.main.clearRect(0,0, c.mainCanvas.width, c.mainCanvas.height);
+            c.mainUnder.clearRect(0,0, c.mainUnderCanvas.width, c.mainUnderCanvas.height);
+        }
+    };
+    Canvas.addMode('polyominoes',controller);
     
     var rotatePiece = function(piece,rot) {
         if(rot == 0) return piece;
@@ -81,48 +136,9 @@ Application.Services.factory('Polyominoes', function(Canvas,Util) {
     };
     
     return {
-        onMouseMove: function(e) {
-            var offset = jQuery(c.highCanvas).offset();
-            var newX = e.pageX - offset.left < 0 ? 0 : Math.floor((e.pageX - offset.left)/grid);
-            var newY = e.pageY - offset.top < 0 ? 0 : Math.floor((e.pageY - offset.top)/grid);
-            var moved = cursor.x != newX || cursor.y != newY;
-            cursor.x = newX; cursor.y = newY;
-            if(moved) drawHigh();
-        },
-        onMouseDown: function(e) {
-            if(e.which == 3) { rotation = rotation == 3 ? 0 : rotation + 1; drawHigh(); return; } // Right mouse
-            if(e.which == 2) return; // Middle mouse
-            if(checkCollision(nextPiece,cursor.x,cursor.y,rotation)) return;
-            fire.set('pieces/'+cursor.x+':'+cursor.y,[nextPiece,rotation,link.username].join(':'));
-            nextPiece = Util.randomIntRange(0,pieces.length-1);
-            rotation = Util.randomIntRange(0,3);
-            drawHigh();
-        },
-        onMouseUp: function(e) {  },
-        onMouseOut: function() {
-            cursor.x = cursor.y = '-';
-            c.high.clearRect(0,0,c.highCanvas.width,c.highCanvas.height);
-            c.highUnder.clearRect(0,0,c.highUnderCanvas.width,c.highUnderCanvas.height);
-        },
-        //attachCanvases: function(mCan,mUCan,hCan,hUCan,mCon,mUCon,hCon,hUCon) {
-        //    c.mainCanvas = mCan; c.mainUnderCanvas = mUCan; c.highCanvas = hCan; c.highUnderCanvas = hUCan;
-        //    c.main = mCon; c.mainUnder = mUCon;
-        //    c.high = hCon; c.highUnder = hUCon;
-        //},
-        clear: function() {
-            blockGrid = {};
-            c.main.clearRect(0,0,c.mainCanvas.width,c.mainCanvas.height);
-            c.mainUnder.clearRect(0,0,c.mainUnderCanvas.width,c.mainUnderCanvas.height);
-        },
-        attachVars: function(fire,s,l) {
-            fireRef = fire; scope = s; link = l;
-        },
-        activate: function() {
-            blockGrid = {};
-            c.main.clearRect(0,0,c.mainCanvas.width,c.mainCanvas.height);
-            c.mainUnder.clearRect(0,0,c.mainUnderCanvas.width,c.mainUnderCanvas.height);
-            fire.onAddChild('pieces',pieceAdded);
-        },
-        disable: function() { fire.off('pieces'); }
+        init: function() {
+            polyominoes = { cursor: cursor, active: false };
+            return polyominoes;
+        }
     };
 });

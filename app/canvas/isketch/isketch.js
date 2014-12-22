@@ -6,7 +6,6 @@ Application.Directives.directive('isketch',function() {
         replace: true,
         scope: {},
         controller: function($scope,User,Isketch,AvatarShop) {
-            //$scope.user = User.init();
             $scope.isketch = Isketch.init();
             $scope.startGame = Isketch.startGame;
             $scope.submitGuess = Isketch.submitGuess;
@@ -84,7 +83,6 @@ Application.Services.factory('Isketch', function(Canvas,Util,API,User,Videos,Ava
         }
     };
     Canvas.addMode('isketch',controller);
-    
     
     var drawPoints = function() {
         if(!drawing && !erasing) return;
