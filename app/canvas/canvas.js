@@ -66,6 +66,7 @@ Application.Services.factory('Canvas', function(FireService) {
         addMode: function(name,mode) { modes[name] = mode; },
         getModes: function() { return modes; },
         changeMode: function(m) {
+            if(modes[m] == mode) return;
             if(mode) mode.disable();
             mode = modes[m];
             mode.activate();
