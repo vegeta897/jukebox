@@ -56,10 +56,18 @@ Application.Services.factory('Canvas', function(FireService) {
                 set: function(path,value) { FireService.set('canvas/'+prefix+'/'+path,value); },
                 push: function(path,value) { FireService.push('canvas/'+prefix+'/'+path,value); },
                 once: function(path,callback) { FireService.once('canvas/'+prefix+'/'+path,callback); },
-                remove: function(path) { FireService.remove('canvas/'+prefix+'/'+path); },
+                remove: function(path) {
+                    if(path.constructor !== Array) path = [path];
+                    for(var i = 0; i < path.length; i++) { path[i] = 'canvas/'+prefix+'/'+path[i]; }
+                    FireService.remove(path); 
+                },
                 onValue: function(path,callback) { FireService.onValue('canvas/'+prefix+'/'+path,callback); },
                 onAddChild: function(path,callback) { FireService.onAddChild('canvas/'+prefix+'/'+path,callback); },
-                off: function(path) { FireService.off('canvas/'+prefix+'/'+path); },
+                off: function(path) {
+                    if(path.constructor !== Array) path = [path];
+                    for(var i = 0; i < path.length; i++) { path[i] = 'canvas/'+prefix+'/'+path[i]; }
+                    FireService.off(path); 
+                },
                 ref: FireService.ref.child('canvas/'+prefix)
             };
         },

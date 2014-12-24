@@ -202,7 +202,9 @@ Application.Services.factory('Isketch', function(Canvas,Util,API,User,Videos,Ava
                 isketch.startingGame = true;
                 API.getVideos(1,Videos.getPlaying().video_id).then(function(data) {
                     if(!data || !data.data || data.data.length != 1 || !data.data[0].title) {
-                        isketch.message = { type:'error',text:'Error retrieving video title. You can probably blame my hosting service.' }; return;
+                        isketch.message = { type:'error',
+                            text:'Error retrieving video title. You can probably blame my hosting service.' };
+                        return;
                     }
                     var title = data.data[0].title.trim();
                     //var title = 'guys it\'s ~cool~ to *play* isketch!';

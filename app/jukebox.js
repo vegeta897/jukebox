@@ -24,7 +24,7 @@ Application.Controllers.controller('Jukebox', function($rootScope,$scope,$timeou
 
 Application.Services.factory('Jukebox',function($rootScope,FireService) {
     var init, needUpdate, users, dj, jackpot;
-    var version = 0.359, versionName = 'Jukes of Hazzard';
+    var version = 0.36, versionName = 'Jukes of Hazzard';
     FireService.onceGlobal('version',function(ver) {
         if(version < ver) {
             needUpdate = true;
