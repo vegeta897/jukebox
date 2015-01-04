@@ -37,6 +37,9 @@ header form button { float: left; width: 66px; height: 24px; }
 .isketch form { height: 40px; float: left; width: 240px; }
 .isketch form input { margin-right: 8px; }
 
+.virtua-box { margin: 12px 8px; }
+.virtua-box slider { top: -7px; }
+
 .now-playing { padding: 8px 0 0; }
 .now-playing h2 { margin-bottom: 6px; }
 .video-selection { margin: 20px 0; overflow: hidden; }
@@ -88,7 +91,7 @@ header form button { float: left; width: 66px; height: 24px; }
 .title-gamble .field:last-of-type input { text-align: center; }
 .title-gamble .field label { width: 256px; }
 .title-gamble form p { margin-bottom: 0.5em; }
-.title-gamble slider, .add-bounty slider { width: 300px; }
+.title-gamble slider, .add-bounty slider, .virtua-box slider { width: 300px; }
 .add-bounty slider { top: -6px; }
 .add-bounty select { float: left; width: 340px; margin-bottom: 12px; }
 .add-bounty .hint, .title-gamble .hint { float: left; }

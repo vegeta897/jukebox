@@ -14,3 +14,5 @@
     - Click bird to shoo (also synced, and get kudos)
     - Use flash to animate them, flat colors with .gif format
         - Flying in/away animation uses large gif positioned in the right spot
+- Users control panel
+    - Shows offline users with last online date

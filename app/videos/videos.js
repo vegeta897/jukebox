@@ -33,7 +33,7 @@ Application.Directives.directive('videos',function() {
 
 Application.Services.factory('Videos',function($rootScope,FireService,User,Player,Message,Canvas) {
     var videoList, playing, voteEnd;
-    
+    var noVideo = false; // Disable video
     return {
         changeSelection: function(newList) {
             if(newList == null) { videoList = null; return null; }
@@ -55,7 +55,7 @@ Application.Services.factory('Videos',function($rootScope,FireService,User,Playe
             return videoList;
         },
         changeVideo: function(newVideo) {
-            if(newVideo == null) { playing = null; return null; }
+            if(newVideo == null || noVideo) { playing = null; return null; }
             console.log('playing update',newVideo);
             if(!playing || newVideo.video_id != playing.video_id) { // If video changed, load it
                 $rootScope.$broadcast('newVideo');

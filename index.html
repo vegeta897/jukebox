@@ -23,6 +23,7 @@
         <div class="canvas"></div>
         <isketch></isketch>
         <polyominoes></polyominoes>
+        <virtua-box></virtua-box>
         <videos></videos>
         <div class="dj">
             <p ng-show="getDJ()"><span class="muted">Current DJ: </span>{{ getDJ() }}</p>
@@ -58,9 +59,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.1/angular-animate.min.js"></script>
     <script src="js/vendor/angular-sanitize.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="js/vendor/angular-slider.min.js"></script>
+    <script src="js/vendor/angular-slider.js"></script>
     <script src="js/vendor/localStorageModule.js"></script>
     <script src='https://cdn.firebase.com/js/client/1.1.2/firebase.js'></script>
+    <script src="js/vendor/babylon.math.js"></script>
     <script src="app/app.js"></script> <!-- My Stuff -->
     <script src="app/api.js"></script>
     <script src="app/jukebox.js"></script>
@@ -69,6 +71,9 @@
     <script src="app/canvas/canvas.js"></script>
     <script src="app/canvas/polyominoes/polyominoes.js"></script>
     <script src="app/canvas/isketch/isketch.js"></script>
+    <script src="app/canvas/virtuabox/virtuabox.js"></script>
+    <script src="app/canvas/virtuabox/renderer.js"></script>
+    <script src="app/canvas/virtuabox/meshbuilder.js"></script>
     <script src="app/videos/videos.js"></script>
     <script src="app/controlbuttons/controlbuttons.js"></script>
     <script src="app/addvideo/addvideo.js"></script>

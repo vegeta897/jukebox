@@ -169,4 +169,9 @@ Application.Filters.filter('capitalize', function() {
             if(!items) return items;
             return items.slice().reverse();
         }
+    }).filter('radsToDegrees', function() {
+        return function(rads) {
+            if(!rads) return rads;
+            return rads * (180/3.1415) >> 0;
+        }
     });
