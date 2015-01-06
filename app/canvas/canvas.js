@@ -44,7 +44,7 @@ Application.Services.factory('Canvas', function(FireService) {
 
     return {
         attachCanvases: function(c) { canvases = c; },
-        getCanvases: function() { return canvases; },
+        getCanvases: function() { return canvases; }, // TODO: Sometimes this isn't ready
         initListeners: function(c) {
             c.addEventListener('mousemove',onMouseMove,false);
             c.addEventListener('mouseleave',onMouseOut,false);

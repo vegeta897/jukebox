@@ -37,6 +37,10 @@ Application.Services.factory('MeshBuilder', function() {
                     new BABYLON.Vector3(w,-h,-d), new BABYLON.Vector3(-w,h,d), new BABYLON.Vector3(-w,h,-d),
                     new BABYLON.Vector3(-w,-h,d), new BABYLON.Vector3(-w,-h,-d)
                 ],
+                faces: [
+                    // Front     Back      Top     Bottom     Right     Left
+                    [1,3,7,5],[0,2,6,4],[0,1,5,4],[2,3,7,6],[0,1,3,2],[4,5,7,6] 
+                ],
                 position: new BABYLON.Vector3(x,y,z),
                 rotation: BABYLON.Vector3.Zero()
             }
